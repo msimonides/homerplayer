@@ -1,0 +1,148 @@
+package com.studio4plus.audiobookplayer.ui;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.speech.tts.TextToSpeech;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
+
+import com.studio4plus.audiobookplayer.R;
+import com.studio4plus.audiobookplayer.model.AudioBook;
+import com.studio4plus.audiobookplayer.model.AudioBookManager;
+import com.studio4plus.audiobookplayer.service.PlaybackService;
+
+import fr.castorflex.android.verticalviewpager.VerticalViewPager;
+
+public class MainActivity
+        extends FragmentActivity implements TextToSpeech.OnInitListener, AudioBookManager.Listener {
+
+    private static final int TTS_CHECK_CODE = 1;
+
+    private VerticalViewPager actionViewPager;
+    private TextToSpeech tts;
+    private boolean ttsReady;
+
+    private final PlaybackServiceConnection playbackServiceConnection =
+            new PlaybackServiceConnection();
+    private PlaybackService playbackService;
+    private boolean isPlaybackServiceBound;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main_activity);
+
+        ttsReady = false;
+
+        actionViewPager = (VerticalViewPager) findViewById(R.id.actionPager);
+        Fragment[] actionFragments = { new FragmentBookList(), new FragmentPlayback() };
+        actionViewPager.setAdapter(new ActionPagerAdapter(getSupportFragmentManager(), actionFragments));
+        actionViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 1) {
+                    if (playbackService != null) {
+                        playbackService.startPlayback(AudioBookManager.getInstance().getCurrentBook());
+                        if (tts != null)
+                            tts.stop();
+                    }
+                } else {
+                    if (playbackService != null) {
+                        playbackService.stopPlayback();
+                    }
+                }
+            }
+        });
+
+        AudioBookManager.getInstance().addWeakListener(this);
+        Intent serviceIntent = new Intent(this, PlaybackService.class);
+        bindService(serviceIntent, playbackServiceConnection, Context.BIND_AUTO_CREATE);
+        isPlaybackServiceBound = true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (playbackService != null && playbackService.isPlaying())
+            actionViewPager.setCurrentItem(1);  // TODO: avoid magic numbers
+
+
+        Intent checkIntent = new Intent();
+        checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+        startActivityForResult(checkIntent, TTS_CHECK_CODE);
+    }
+
+    @Override
+    protected void onStop() {
+        if (ttsReady) {
+            ttsReady = false;
+            tts.shutdown();
+            tts = null;
+        }
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (isPlaybackServiceBound) {
+            unbindService(playbackServiceConnection);
+            isPlaybackServiceBound = false;
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+            ttsReady = true;
+            tts.setLanguage(getResources().getConfiguration().locale);
+        }
+    }
+
+    @Override
+    public void onCurrentBookChanged(AudioBook book) {
+        speak(book.getTitle());
+    }
+
+    private void speak(String text) {
+        if (ttsReady) {
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+        }
+    }
+
+    protected void onActivityResult(
+            int requestCode, int resultCode, Intent data) {
+        if (requestCode == TTS_CHECK_CODE) {
+            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+                // success, create the TTS instance
+                tts = new TextToSpeech(this, this);
+            } else {
+                // missing data, install it
+                Intent installIntent = new Intent();
+                installIntent.setAction(
+                        TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                startActivity(installIntent);
+            }
+        }
+    }
+
+    private class PlaybackServiceConnection implements ServiceConnection {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            playbackService = ((PlaybackService.ServiceBinder) service).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // TODO: handle this case
+            playbackService = null;
+        }
+    }
+}
