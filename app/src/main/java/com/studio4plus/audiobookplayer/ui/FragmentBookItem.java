@@ -12,9 +12,9 @@ import com.studio4plus.audiobookplayer.model.AudioBook;
 
 public class FragmentBookItem extends FragmentWithBook {
 
-    public static FragmentBookItem newInstance(String directoryName) {
+    public static FragmentBookItem newInstance(String bookId) {
         FragmentBookItem newFragment = new FragmentBookItem();
-        setArgDirectoryName(newFragment, directoryName);
+        setArgBookId(newFragment, bookId);
         return newFragment;
     }
 

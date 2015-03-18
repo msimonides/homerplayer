@@ -1,12 +1,19 @@
 package com.studio4plus.audiobookplayer.model;
 
 import android.os.Environment;
-import android.provider.MediaStore;
+import android.util.Base64;
+
+import com.studio4plus.audiobookplayer.util.DirectoryFilter;
+import com.studio4plus.audiobookplayer.util.OrFilter;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.WeakHashMap;
@@ -19,22 +26,21 @@ public class AudioBookManager {
 
     private static final String AUDIOBOOKS_DIRECTORY = "AudioBooks";
 
-    private static AudioBookManager instance;
-
     private final List<AudioBook> audioBooks = new ArrayList<>();
     private final WeakHashMap<Listener, Void> weakListeners = new WeakHashMap<>();
+    private final Storage storage;
     private AudioBook currentBook;
 
-    public static AudioBookManager getInstance() {
-        if (instance == null)
-            instance = new AudioBookManager();
-        return instance;
-    }
-
-    private AudioBookManager() {
+    public AudioBookManager(Storage storage) {
+        this.storage = storage;
+        addWeakListener(storage);
         initializeFromDisk();
-        if (audioBooks.size() > 0)
-            currentBook = audioBooks.get(0);
+        if (audioBooks.size() > 0) {
+            String id = storage.getCurrentAudioBook();
+            currentBook = getById(id);
+            if (currentBook == null)
+                currentBook = audioBooks.get(0);
+        }
     }
 
     public List<AudioBook> getAudioBooks() {
@@ -55,9 +61,9 @@ public class AudioBookManager {
         return audioBooks.indexOf(currentBook);
     }
 
-    public AudioBook get(String directoryName) {
+    public AudioBook getById(String id) {
         for (AudioBook book : audioBooks)
-            if (book.getDirectoryName().equals(directoryName))
+            if (book.getId().equals(id))
                 return book;
         return null;
     }
@@ -81,6 +87,13 @@ public class AudioBookManager {
                         audioBooks.add(audioBook);
                 }
             }
+
+            Collections.sort(audioBooks, new Comparator<AudioBook>() {
+                @Override
+                public int compare(AudioBook lhs, AudioBook rhs) {
+                    return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
+                }
+            });
         } else {
             // TODO: notify the user.
         }
@@ -96,12 +109,33 @@ public class AudioBookManager {
         String[] filePaths = new String[allFiles.length];
         int bookDirectoryPathLength = bookDirectory.getAbsolutePath().length();
 
-        for (int i = 0; i < filePaths.length; ++i) {
-            String path = allFiles[i].getAbsolutePath();
-            String relativePath = path.substring(bookDirectoryPathLength);
-            filePaths[i] = relativePath;
+        ByteBuffer bufferLong = ByteBuffer.allocate(Long.SIZE);
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            for (int i = 0; i < filePaths.length; ++i) {
+                String path = allFiles[i].getAbsolutePath();
+                String relativePath = path.substring(bookDirectoryPathLength);
+                filePaths[i] = relativePath;
+
+                // TODO: what if the same book is in two directories?
+                bufferLong.putLong(0, allFiles[i].length());
+                digest.update(relativePath.getBytes());
+                digest.update(bufferLong);
+            }
+            String id = Base64.encodeToString(digest.digest(), Base64.NO_PADDING | Base64.NO_WRAP);
+            if (filePaths.length > 0) {
+                Position lastPosition = storage.getPositionForAudioBook(id);
+                AudioBook book = new AudioBook(id, bookDirectory.getName(), filePaths, lastPosition);
+                book.setPositionObserver(storage);
+                return book;
+            } else {
+                return null;
+            }
+        } catch (NoSuchAlgorithmException e) {
+            // Never happens.
+            e.printStackTrace();
+            throw new RuntimeException("MD5 not available");
         }
-        return filePaths.length > 0 ? new AudioBook(bookDirectory.getName(), filePaths) : null;
     }
 
     private File[] getAllAudioFiles(File directory) {
@@ -148,29 +182,4 @@ public class AudioBookManager {
         return fileName.toLowerCase().endsWith(".mp3");
     }
 
-    private static class OrFilter implements FileFilter {
-
-        private final FileFilter[] filters;
-
-        public OrFilter(FileFilter... filters) {
-            this.filters = filters;
-        }
-
-        @Override
-        public boolean accept(File pathname) {
-            for (FileFilter filter : filters) {
-                if (filter.accept(pathname))
-                    return true;
-            }
-            return false;
-        }
-    }
-
-    private static class DirectoryFilter implements FileFilter {
-
-        @Override
-        public boolean accept(File pathname) {
-            return pathname.isDirectory();
-        }
-    }
 }

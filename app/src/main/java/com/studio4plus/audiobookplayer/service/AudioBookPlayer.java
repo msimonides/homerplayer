@@ -3,8 +3,8 @@ package com.studio4plus.audiobookplayer.service;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 
+import com.studio4plus.audiobookplayer.AudioBookPlayerApplication;
 import com.studio4plus.audiobookplayer.model.AudioBook;
-import com.studio4plus.audiobookplayer.model.AudioBookManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class AudioBookPlayer implements
         }
 
         File currentFile = new File(
-                AudioBookManager.getInstance().getAbsolutePath(audioBook),
+                AudioBookPlayerApplication.getAudioBookManager().getAbsolutePath(audioBook),
                 audioBook.getLastPosition().filePath);
         try {
             mediaPlayer.setDataSource(currentFile.getAbsolutePath());

@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 
+import com.studio4plus.audiobookplayer.AudioBookPlayerApplication;
 import com.studio4plus.audiobookplayer.R;
 import com.studio4plus.audiobookplayer.model.AudioBook;
 import com.studio4plus.audiobookplayer.model.AudioBookManager;
@@ -39,6 +40,7 @@ public class MainActivity
 
         ttsReady = false;
 
+        final AudioBookManager audioBookManager = AudioBookPlayerApplication.getAudioBookManager();
         actionViewPager = (VerticalViewPager) findViewById(R.id.actionPager);
         Fragment[] actionFragments = { new FragmentBookList(), new FragmentPlayback() };
         actionViewPager.setAdapter(new ActionPagerAdapter(getSupportFragmentManager(), actionFragments));
@@ -47,7 +49,7 @@ public class MainActivity
             public void onPageSelected(int position) {
                 if (position == 1) {
                     if (playbackService != null) {
-                        playbackService.startPlayback(AudioBookManager.getInstance().getCurrentBook());
+                        playbackService.startPlayback(audioBookManager.getCurrentBook());
                         if (tts != null)
                             tts.stop();
                     }
@@ -59,7 +61,7 @@ public class MainActivity
             }
         });
 
-        AudioBookManager.getInstance().addWeakListener(this);
+        audioBookManager.addWeakListener(this);
         Intent serviceIntent = new Intent(this, PlaybackService.class);
         bindService(serviceIntent, playbackServiceConnection, Context.BIND_AUTO_CREATE);
         isPlaybackServiceBound = true;

@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.studio4plus.audiobookplayer.AudioBookPlayerApplication;
 import com.studio4plus.audiobookplayer.R;
 import com.studio4plus.audiobookplayer.model.AudioBook;
 import com.studio4plus.audiobookplayer.model.AudioBookManager;
@@ -30,6 +31,7 @@ public class FragmentBookList extends Fragment {
             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_book_list, container, false);
 
+        final AudioBookManager audioBookManager = AudioBookPlayerApplication.getAudioBookManager();
         final BookListPagerAdapter adapter =
                 new BookListPagerAdapter(getFragmentManager());
         bookPager = (ViewPager) view.findViewById(R.id.bookListPager);
@@ -38,15 +40,11 @@ public class FragmentBookList extends Fragment {
             @Override
             public void onPageSelected(int i) {
                 FragmentBookItem itemFragment = (FragmentBookItem) adapter.getItem(i);
-                AudioBookManager.getInstance().setCurrentBook(itemFragment.getAudioBook());
+                audioBookManager.setCurrentBook(itemFragment.getAudioBook());
             }
         });
 
-        if (savedInstanceState != null) {
-            int itemIndex = savedInstanceState.getInt(STATE_KEY_ITEM_INDEX, 0);
-            if (itemIndex < adapter.getCount())
-                bookPager.setCurrentItem(itemIndex);
-        }
+        bookPager.setCurrentItem(audioBookManager.getCurrentBookIndex());
 
         return view;
     }
@@ -63,12 +61,12 @@ public class FragmentBookList extends Fragment {
 
         public BookListPagerAdapter(FragmentManager fm) {
             super(fm);
-            this.audioBooks = AudioBookManager.getInstance().getAudioBooks();
+            this.audioBooks = AudioBookPlayerApplication.getAudioBookManager().getAudioBooks();
         }
 
         @Override
         public Fragment getItem(int i) {
-            return FragmentBookItem.newInstance(audioBooks.get(i).getDirectoryName());
+            return FragmentBookItem.newInstance(audioBooks.get(i).getId());
         }
 
         @Override
