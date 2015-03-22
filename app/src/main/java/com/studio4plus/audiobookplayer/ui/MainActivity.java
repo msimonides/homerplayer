@@ -17,6 +17,8 @@ import com.studio4plus.audiobookplayer.model.AudioBook;
 import com.studio4plus.audiobookplayer.model.AudioBookManager;
 import com.studio4plus.audiobookplayer.service.PlaybackService;
 
+import java.util.Arrays;
+
 import fr.castorflex.android.verticalviewpager.VerticalViewPager;
 
 public class MainActivity
@@ -33,6 +35,33 @@ public class MainActivity
     private PlaybackService playbackService;
     private boolean isPlaybackServiceBound;
 
+    enum Page {
+        BOOK_LIST(new FragmentBookList()),
+        PLAYBACK(new FragmentPlayback());
+
+        public final Fragment fragment;
+
+        Page(Fragment fragment) {
+            this.fragment = fragment;
+        }
+
+        public static Fragment[] getAllFragments() {
+            Page[] values = values();
+            Fragment[] fragments = new Fragment[values.length];
+            for (int i = 0; i < values.length; ++i)
+                fragments[i] = getByPosition(i).fragment;
+            return fragments;
+        }
+
+        public static Page getByPosition(int position) {
+            return values()[position];
+        }
+
+        public static int getPosition(Page page) {
+            return Arrays.asList(values()).indexOf(page);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,24 +71,9 @@ public class MainActivity
 
         final AudioBookManager audioBookManager = AudioBookPlayerApplication.getAudioBookManager();
         actionViewPager = (VerticalViewPager) findViewById(R.id.actionPager);
-        Fragment[] actionFragments = { new FragmentBookList(), new FragmentPlayback() };
-        actionViewPager.setAdapter(new ActionPagerAdapter(getSupportFragmentManager(), actionFragments));
-        actionViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                if (position == 1) {
-                    if (playbackService != null) {
-                        playbackService.startPlayback(audioBookManager.getCurrentBook());
-                        if (tts != null)
-                            tts.stop();
-                    }
-                } else {
-                    if (playbackService != null) {
-                        playbackService.stopPlayback();
-                    }
-                }
-            }
-        });
+        actionViewPager.setAdapter(
+                new ActionPagerAdapter(getSupportFragmentManager(), Page.getAllFragments()));
+        actionViewPager.setOnPageChangeListener(new PlayStopTrigger(audioBookManager));
 
         audioBookManager.addWeakListener(this);
         Intent serviceIntent = new Intent(this, PlaybackService.class);
@@ -73,7 +87,7 @@ public class MainActivity
         super.onStart();
 
         if (playbackService != null && playbackService.isPlaying())
-            actionViewPager.setCurrentItem(1);  // TODO: avoid magic numbers
+            actionViewPager.setCurrentItem(Page.getPosition(Page.PLAYBACK));
 
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
@@ -134,13 +148,37 @@ public class MainActivity
         }
     }
 
+    private class PlayStopTrigger extends ViewPager.SimpleOnPageChangeListener {
+
+        private final AudioBookManager audioBookManager;
+
+        private PlayStopTrigger(AudioBookManager audioBookManager) {
+            this.audioBookManager = audioBookManager;
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            if (Page.getByPosition(position) == Page.PLAYBACK) {
+                if (playbackService != null) {
+                    playbackService.startPlayback(audioBookManager.getCurrentBook());
+                    if (tts != null)
+                        tts.stop();
+                }
+            } else {
+                if (playbackService != null) {
+                    playbackService.stopPlayback();
+                }
+            }
+        }
+    }
+
     private class PlaybackServiceConnection implements ServiceConnection {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             playbackService = ((PlaybackService.ServiceBinder) service).getService();
             if (playbackService.isPlaying())
-                actionViewPager.setCurrentItem(1);  // TODO: avoid magic numbers
+                actionViewPager.setCurrentItem(Page.getPosition(Page.PLAYBACK));
         }
 
         @Override
