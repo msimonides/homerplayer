@@ -63,6 +63,7 @@ public class MainActivity
 
         audioBookManager.addWeakListener(this);
         Intent serviceIntent = new Intent(this, PlaybackService.class);
+        startService(serviceIntent);
         bindService(serviceIntent, playbackServiceConnection, Context.BIND_AUTO_CREATE);
         isPlaybackServiceBound = true;
     }
@@ -73,7 +74,6 @@ public class MainActivity
 
         if (playbackService != null && playbackService.isPlaying())
             actionViewPager.setCurrentItem(1);  // TODO: avoid magic numbers
-
 
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
@@ -139,6 +139,8 @@ public class MainActivity
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             playbackService = ((PlaybackService.ServiceBinder) service).getService();
+            if (playbackService.isPlaying())
+                actionViewPager.setCurrentItem(1);  // TODO: avoid magic numbers
         }
 
         @Override
