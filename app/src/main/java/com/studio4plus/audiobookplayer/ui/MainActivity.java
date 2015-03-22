@@ -96,7 +96,7 @@ public class MainActivity
 
     @Override
     protected void onStop() {
-        if (ttsReady) {
+        if (tts != null) {
             ttsReady = false;
             tts.shutdown();
             tts = null;
