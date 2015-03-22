@@ -127,8 +127,8 @@ public class AudioBookManager {
             }
             String id = Base64.encodeToString(digest.digest(), Base64.NO_PADDING | Base64.NO_WRAP);
             if (filePaths.length > 0) {
-                Position lastPosition = storage.getPositionForAudioBook(id);
-                AudioBook book = new AudioBook(id, bookDirectory.getName(), filePaths, lastPosition);
+                AudioBook book = new AudioBook(id, bookDirectory.getName(), filePaths);
+                storage.readAudioBookState(book);
                 book.setPositionObserver(storage);
                 return book;
             } else {
@@ -199,9 +199,9 @@ public class AudioBookManager {
                         Math.max(0, startNeighbourIndex),
                         Math.min(lastIndex, endNeighbourIndex));
                 currentBook.setColourScheme(ColourScheme.getRandom(coloursToAvoid));
+                storage.writeAudioBookState(currentBook);
             }
         }
-        // TODO: save the colour info to persistent storage.
     }
 
     private List<ColourScheme> getColoursInRange(int startIndex, int endIndex) {

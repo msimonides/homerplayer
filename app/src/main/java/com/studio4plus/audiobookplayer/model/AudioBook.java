@@ -18,16 +18,12 @@ public class AudioBook {
 
     private PositionObserver positionObserver;
 
-    public AudioBook(String id, String directoryName, String[] filePaths, Position lastPosition) {
+    public AudioBook(String id, String directoryName, String[] filePaths) {
         this.id = id;
         this.directoryName = directoryName;
         this.filePaths = new ArrayList<>(filePaths.length);
         this.filePaths.addAll(Arrays.asList(filePaths));
-
-        if (lastPosition != null)
-            this.lastPosition = lastPosition;
-        else
-            this.lastPosition = new Position(filePaths[0], 0);
+        this.lastPosition = new Position(filePaths[0], 0);
     }
 
     public void setPositionObserver(PositionObserver positionObserver) {
@@ -48,6 +44,14 @@ public class AudioBook {
 
     public Position getLastPosition() {
         return lastPosition;
+    }
+
+    /**
+     * Set the last position.
+     * Doesn't call the position observer. Use only when reading AudioBook state from storage.
+     */
+    void setLastPosition(Position lastPosition) {
+        this.lastPosition = lastPosition;
     }
 
     public void updatePosition(int seekPosition) {
