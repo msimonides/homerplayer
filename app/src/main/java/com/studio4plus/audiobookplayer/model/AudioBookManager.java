@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.WeakHashMap;
 
+// TODO: loading book data from storage should be moved to a separate class.
 public class AudioBookManager {
 
     public interface Listener {
@@ -36,6 +37,8 @@ public class AudioBookManager {
         addWeakListener(storage);
         initializeFromDisk();
         if (audioBooks.size() > 0) {
+            assignColoursToNewBooks();
+
             String id = storage.getCurrentAudioBook();
             currentBook = getById(id);
             if (currentBook == null)
@@ -182,4 +185,32 @@ public class AudioBookManager {
         return fileName.toLowerCase().endsWith(".mp3");
     }
 
+    private void assignColoursToNewBooks() {
+        final int MAX_NEIGHBOUR_DISTANCE = 2;
+
+        int count = audioBooks.size();
+        int lastIndex = count - 1;
+        for (int i = 0; i < count; ++i) {
+            AudioBook currentBook = audioBooks.get(i);
+            if (currentBook.getColourScheme() == null) {
+                int startNeighbourIndex = i - MAX_NEIGHBOUR_DISTANCE;
+                int endNeighbourIndex = i + MAX_NEIGHBOUR_DISTANCE;
+                List<ColourScheme> coloursToAvoid = getColoursInRange(
+                        Math.max(0, startNeighbourIndex),
+                        Math.min(lastIndex, endNeighbourIndex));
+                currentBook.setColourScheme(ColourScheme.getRandom(coloursToAvoid));
+            }
+        }
+        // TODO: save the colour info to persistent storage.
+    }
+
+    private List<ColourScheme> getColoursInRange(int startIndex, int endIndex) {
+        List<ColourScheme> colours = new ArrayList<>();
+        for (int i = startIndex; i <= endIndex; ++i) {
+            ColourScheme colourScheme = audioBooks.get(i).getColourScheme();
+            if (colourScheme != null)
+                colours.add(colourScheme);
+        }
+        return colours;
+    }
 }

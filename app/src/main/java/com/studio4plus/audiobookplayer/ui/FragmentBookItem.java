@@ -25,6 +25,9 @@ public class FragmentBookItem extends FragmentWithBook {
         AudioBook audioBook = getAudioBook();
         TextView textView = (TextView) view.findViewById(R.id.title);
         textView.setText(audioBook.getTitle());
+        textView.setTextColor(audioBook.getColourScheme().textColour);
+
+        view.setBackgroundColor(audioBook.getColourScheme().backgroundColour);
 
         return view;
     }

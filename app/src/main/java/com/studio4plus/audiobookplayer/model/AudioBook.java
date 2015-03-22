@@ -13,6 +13,7 @@ public class AudioBook {
     private final String id;
     private final String directoryName;
     private final List<String> filePaths;
+    private ColourScheme colourScheme;
     private Position lastPosition;
 
     private PositionObserver positionObserver;
@@ -57,6 +58,14 @@ public class AudioBook {
     public void resetPosition() {
         lastPosition = new Position(filePaths.get(0), 0);
         notifyPositionObserver();
+    }
+
+    public ColourScheme getColourScheme() {
+        return colourScheme;
+    }
+
+    public void setColourScheme(ColourScheme colourScheme) {
+        this.colourScheme = colourScheme;
     }
 
     public boolean advanceFile() {
