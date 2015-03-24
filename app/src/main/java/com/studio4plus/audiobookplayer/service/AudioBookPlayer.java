@@ -24,13 +24,11 @@ public class AudioBookPlayer implements
     }
 
     public void startPlayback() {
-        if (mediaPlayer == null) {
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setOnPreparedListener(this);
-            mediaPlayer.setOnErrorListener(this);
-            mediaPlayer.setOnCompletionListener(this);
-        }
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mediaPlayer.setOnPreparedListener(this);
+        mediaPlayer.setOnErrorListener(this);
+        mediaPlayer.setOnCompletionListener(this);
 
         File currentFile = new File(
                 AudioBookPlayerApplication.getAudioBookManager().getAbsolutePath(audioBook),
@@ -60,13 +58,14 @@ public class AudioBookPlayer implements
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        releaseMediaPlayer();
         boolean playMore = audioBook.advanceFile();
         if (playMore) {
             startPlayback();
         } else {
             audioBook.resetPosition();
             isPlaying = false;
-            releaseMediaPlayer();
+            // TODO: notify the UI that playback has finished.
         }
     }
 
@@ -84,7 +83,6 @@ public class AudioBookPlayer implements
     }
 
     private void releaseMediaPlayer() {
-        // TODO: reuse the MediaPlayer, preferably across multiple books.
         mediaPlayer.release();
         mediaPlayer = null;
     }
