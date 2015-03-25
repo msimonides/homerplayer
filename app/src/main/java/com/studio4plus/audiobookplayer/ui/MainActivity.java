@@ -68,6 +68,7 @@ public class MainActivity
         setContentView(R.layout.main_activity);
 
         ttsReady = false;
+        startTts();
 
         final AudioBookManager audioBookManager = AudioBookPlayerApplication.getAudioBookManager();
         actionViewPager = (VerticalViewPager) findViewById(R.id.actionPager);
@@ -89,19 +90,6 @@ public class MainActivity
         if (playbackService != null && playbackService.isPlaying())
             actionViewPager.setCurrentItem(Page.getPosition(Page.PLAYBACK));
 
-        Intent checkIntent = new Intent();
-        checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-        startActivityForResult(checkIntent, TTS_CHECK_CODE);
-    }
-
-    @Override
-    protected void onStop() {
-        if (tts != null) {
-            ttsReady = false;
-            tts.shutdown();
-            tts = null;
-        }
-        super.onStop();
     }
 
     @Override
@@ -110,6 +98,7 @@ public class MainActivity
             unbindService(playbackServiceConnection);
             isPlaybackServiceBound = false;
         }
+        stopTts();
         super.onDestroy();
     }
 
@@ -145,6 +134,20 @@ public class MainActivity
                         TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
                 startActivity(installIntent);
             }
+        }
+    }
+
+    private void startTts() {
+        Intent checkIntent = new Intent();
+        checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+        startActivityForResult(checkIntent, TTS_CHECK_CODE);
+    }
+
+    private void stopTts() {
+        if (tts != null) {
+            ttsReady = false;
+            tts.shutdown();
+            tts = null;
         }
     }
 
