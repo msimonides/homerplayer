@@ -1,6 +1,9 @@
 package com.studio4plus.audiobookplayer.service;
 
 import android.app.Notification;
+import android.content.Context;
+import android.hardware.SensorManager;
+import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -12,11 +15,12 @@ import com.studio4plus.audiobookplayer.R;
 import com.studio4plus.audiobookplayer.model.AudioBook;
 import com.studio4plus.audiobookplayer.ui.MainActivity;
 
-public class PlaybackService extends Service {
+public class PlaybackService extends Service implements FaceDownDetector.Listener {
 
     private static final int NOTIFICATION = R.string.playback_service_notification;
 
     private AudioBookPlayer player;
+    private FaceDownDetector faceDownDetector;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -26,6 +30,11 @@ public class PlaybackService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        if (FaceDownDetector.hasSensors(sensorManager)) {
+            faceDownDetector =
+                    new FaceDownDetector(sensorManager, new Handler(getMainLooper()), this);
+        }
     }
 
     @Override
@@ -41,6 +50,9 @@ public class PlaybackService extends Service {
         player = new AudioBookPlayer(book);
         player.startPlayback();
 
+        if (faceDownDetector != null)
+            faceDownDetector.enable();
+
         startForeground(NOTIFICATION, createNotification());
     }
 
@@ -52,8 +64,16 @@ public class PlaybackService extends Service {
         if (player != null)
             player.stopPlayback();
 
+        if (faceDownDetector != null)
+            faceDownDetector.disable();
+
         player = null;
         stopForeground(true);
+    }
+
+    @Override
+    public void onDeviceFaceDown() {
+        stopPlayback();
     }
 
     private Notification createNotification() {
