@@ -87,7 +87,7 @@ public class MainActivity
     protected void onStart() {
         super.onStart();
 
-        if (playbackService != null && playbackService.isPlaying())
+        if (playbackService != null && playbackService.isInPlaybackMode())
             actionViewPager.setCurrentItem(Page.getPosition(Page.PLAYBACK));
 
     }
@@ -180,7 +180,7 @@ public class MainActivity
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             playbackService = ((PlaybackService.ServiceBinder) service).getService();
-            if (playbackService.isPlaying())
+            if (playbackService.isInPlaybackMode())
                 actionViewPager.setCurrentItem(Page.getPosition(Page.PLAYBACK));
         }
 

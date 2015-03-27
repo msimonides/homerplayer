@@ -56,8 +56,8 @@ public class PlaybackService extends Service implements FaceDownDetector.Listene
         startForeground(NOTIFICATION, createNotification());
     }
 
-    public boolean isPlaying() {
-        return player != null && player.isPlaying();
+    public boolean isInPlaybackMode() {
+        return player != null;
     }
 
     public void stopPlayback() {

@@ -1,5 +1,7 @@
 package com.studio4plus.audiobookplayer.model;
 
+import com.studio4plus.audiobookplayer.util.DebugUtil;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -55,11 +57,13 @@ public class AudioBook {
     }
 
     public void updatePosition(int seekPosition) {
+        DebugUtil.verifyIsOnMainThread();
         lastPosition = new Position(lastPosition.filePath, seekPosition);
         notifyPositionObserver();
     }
 
     public void resetPosition() {
+        DebugUtil.verifyIsOnMainThread();
         lastPosition = new Position(filePaths.get(0), 0);
         notifyPositionObserver();
     }
@@ -73,6 +77,7 @@ public class AudioBook {
     }
 
     public boolean advanceFile() {
+        DebugUtil.verifyIsOnMainThread();
         int newIndex = filePaths.indexOf(lastPosition.filePath) + 1;
         boolean hasMoreFiles = newIndex < filePaths.size();
         if (hasMoreFiles) {
