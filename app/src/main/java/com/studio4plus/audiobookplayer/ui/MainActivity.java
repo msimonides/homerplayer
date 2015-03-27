@@ -22,7 +22,11 @@ import java.util.Arrays;
 import fr.castorflex.android.verticalviewpager.VerticalViewPager;
 
 public class MainActivity
-        extends FragmentActivity implements TextToSpeech.OnInitListener, AudioBookManager.Listener {
+        extends FragmentActivity
+        implements
+                TextToSpeech.OnInitListener,
+                AudioBookManager.Listener,
+                PlaybackService.StopListener {
 
     private static final int TTS_CHECK_CODE = 1;
 
@@ -115,6 +119,11 @@ public class MainActivity
         speak(book.getTitle());
     }
 
+    @Override
+    public void onPlaybackStopped() {
+        actionViewPager.setCurrentItem(Page.getPosition(Page.BOOK_LIST), true);
+    }
+
     private void speak(String text) {
         if (ttsReady) {
             tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
@@ -181,12 +190,14 @@ public class MainActivity
         public void onServiceConnected(ComponentName name, IBinder service) {
             playbackService = ((PlaybackService.ServiceBinder) service).getService();
             if (playbackService.isInPlaybackMode())
-                actionViewPager.setCurrentItem(Page.getPosition(Page.PLAYBACK));
+                actionViewPager.setCurrentItem(Page.getPosition(Page.PLAYBACK), false);
+            playbackService.registerStopListener(MainActivity.this);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             // TODO: handle this case
+            playbackService.unregisterStopListener(MainActivity.this);
             playbackService = null;
         }
     }

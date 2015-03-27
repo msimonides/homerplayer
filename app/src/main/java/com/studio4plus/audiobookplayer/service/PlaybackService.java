@@ -14,11 +14,21 @@ import android.os.IBinder;
 import com.studio4plus.audiobookplayer.R;
 import com.studio4plus.audiobookplayer.model.AudioBook;
 import com.studio4plus.audiobookplayer.ui.MainActivity;
+import com.studio4plus.audiobookplayer.util.DebugUtil;
 
-public class PlaybackService extends Service implements FaceDownDetector.Listener {
+import java.util.WeakHashMap;
+
+public class PlaybackService
+        extends Service
+        implements AudioBookPlayer.Observer, FaceDownDetector.Listener {
+
+    public interface StopListener {
+        public void onPlaybackStopped();
+    }
 
     private static final int NOTIFICATION = R.string.playback_service_notification;
 
+    private final WeakHashMap<StopListener, Void> stopListeners = new WeakHashMap<>();
     private AudioBookPlayer player;
     private FaceDownDetector faceDownDetector;
 
@@ -43,11 +53,19 @@ public class PlaybackService extends Service implements FaceDownDetector.Listene
         stopPlayback();
     }
 
+    public void registerStopListener(StopListener weakListener) {
+        stopListeners.put(weakListener, null);
+    }
+
+    public void unregisterStopListener(StopListener listener) {
+        stopListeners.remove(listener);
+    }
+
     public void startPlayback(AudioBook book) {
         if (player != null)
             player.stopPlayback();
 
-        player = new AudioBookPlayer(book);
+        player = new AudioBookPlayer(this, book);
         player.startPlayback();
 
         if (faceDownDetector != null)
@@ -69,6 +87,15 @@ public class PlaybackService extends Service implements FaceDownDetector.Listene
 
         player = null;
         stopForeground(true);
+    }
+
+    @Override
+    public void onPlaybackStopped() {
+        DebugUtil.verifyIsOnMainThread();
+        if (player != null)
+            stopPlayback();
+        for (StopListener listener : stopListeners.keySet())
+            listener.onPlaybackStopped();
     }
 
     @Override

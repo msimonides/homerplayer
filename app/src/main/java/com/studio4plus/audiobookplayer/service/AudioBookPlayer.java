@@ -16,15 +16,21 @@ import java.io.IOException;
 
 public class AudioBookPlayer extends Handler {
 
+    public interface Observer {
+        public void onPlaybackStopped();
+    }
+
     private static final int MSG_CONTROL_FILE_COMPLETE = 1;
-    private static final int MSG_CONTROL_UPDATE_SEEK_POSITION = 2;
+    private static final int MSG_CONTROL_STOPPED = 2;
 
     private final Handler playbackThreadHandler;
+    private final Observer observer;
 
     private AudioBook audioBook;
 
-    public AudioBookPlayer(AudioBook book) {
+    public AudioBookPlayer(Observer observer, AudioBook book) {
         super(Looper.getMainLooper());
+        this.observer = observer;
         this.audioBook = book;
         HandlerThread thread = new HandlerThread("Playback");
         thread.start();
@@ -51,13 +57,14 @@ public class AudioBookPlayer extends Handler {
                     startPlayback();
                 } else {
                     audioBook.resetPosition();
+                    observer.onPlaybackStopped();
                 }
                 break;
-            case MSG_CONTROL_UPDATE_SEEK_POSITION: {
+            case MSG_CONTROL_STOPPED: {
                 audioBook.updatePosition(message.arg1);
+                observer.onPlaybackStopped();
                 break;
             }
-
         }
     }
 
@@ -126,7 +133,7 @@ public class AudioBookPlayer extends Handler {
         private void stopPlayback() {
             if (mediaPlayer != null) {
                 mediaPlayer.stop();
-                Message message = controlHandler.obtainMessage(MSG_CONTROL_UPDATE_SEEK_POSITION);
+                Message message = controlHandler.obtainMessage(MSG_CONTROL_STOPPED);
                 message.arg1 = mediaPlayer.getCurrentPosition();
                 controlHandler.sendMessage(message);
                 releaseMediaPlayer();
