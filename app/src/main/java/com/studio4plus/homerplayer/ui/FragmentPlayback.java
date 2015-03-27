@@ -1,4 +1,4 @@
-package com.studio4plus.audiobookplayer.ui;
+package com.studio4plus.homerplayer.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,10 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.studio4plus.audiobookplayer.AudioBookPlayerApplication;
-import com.studio4plus.audiobookplayer.R;
-import com.studio4plus.audiobookplayer.model.AudioBook;
-import com.studio4plus.audiobookplayer.model.AudioBookManager;
+import com.studio4plus.homerplayer.HomerPlayerApplication;
+import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.model.AudioBook;
+import com.studio4plus.homerplayer.model.AudioBookManager;
 
 public class FragmentPlayback extends Fragment implements AudioBookManager.Listener {
 
@@ -24,7 +24,7 @@ public class FragmentPlayback extends Fragment implements AudioBookManager.Liste
             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_playback, container, false);
 
-        AudioBookManager audioBookManager = AudioBookPlayerApplication.getAudioBookManager();
+        AudioBookManager audioBookManager = HomerPlayerApplication.getAudioBookManager();
 
         titleTextView = (TextView) view.findViewById(R.id.title);
         if (audioBookManager.getCurrentBook() != null)

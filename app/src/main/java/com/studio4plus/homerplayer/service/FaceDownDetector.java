@@ -1,4 +1,4 @@
-package com.studio4plus.audiobookplayer.service;
+package com.studio4plus.homerplayer.service;
 
 import android.hardware.Sensor;
 import android.hardware.SensorManager;

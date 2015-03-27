@@ -1,4 +1,4 @@
-package com.studio4plus.audiobookplayer.ui;
+package com.studio4plus.homerplayer.ui;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

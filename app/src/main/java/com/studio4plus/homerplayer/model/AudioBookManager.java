@@ -1,10 +1,10 @@
-package com.studio4plus.audiobookplayer.model;
+package com.studio4plus.homerplayer.model;
 
 import android.os.Environment;
 import android.util.Base64;
 
-import com.studio4plus.audiobookplayer.util.DirectoryFilter;
-import com.studio4plus.audiobookplayer.util.OrFilter;
+import com.studio4plus.homerplayer.util.DirectoryFilter;
+import com.studio4plus.homerplayer.util.OrFilter;
 
 import java.io.File;
 import java.io.FileFilter;

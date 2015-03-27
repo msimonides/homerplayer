@@ -1,9 +1,8 @@
-package com.studio4plus.audiobookplayer.service;
+package com.studio4plus.homerplayer.service;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.util.Log;
 
 /**
  * Gather accelerometer data for a short period of time.

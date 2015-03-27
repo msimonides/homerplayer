@@ -1,6 +1,6 @@
-package com.studio4plus.audiobookplayer.model;
+package com.studio4plus.homerplayer.model;
 
-import com.studio4plus.audiobookplayer.util.DebugUtil;
+import com.studio4plus.homerplayer.util.DebugUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;

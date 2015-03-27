@@ -1,4 +1,4 @@
-package com.studio4plus.audiobookplayer.service;
+package com.studio4plus.homerplayer.service;
 
 import android.app.Notification;
 import android.content.Context;
@@ -11,10 +11,10 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
-import com.studio4plus.audiobookplayer.R;
-import com.studio4plus.audiobookplayer.model.AudioBook;
-import com.studio4plus.audiobookplayer.ui.MainActivity;
-import com.studio4plus.audiobookplayer.util.DebugUtil;
+import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.model.AudioBook;
+import com.studio4plus.homerplayer.ui.MainActivity;
+import com.studio4plus.homerplayer.util.DebugUtil;
 
 import java.util.WeakHashMap;
 

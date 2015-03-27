@@ -1,4 +1,4 @@
-package com.studio4plus.audiobookplayer;
+package com.studio4plus.homerplayer;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

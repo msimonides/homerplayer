@@ -1,4 +1,4 @@
-package com.studio4plus.audiobookplayer.ui;
+package com.studio4plus.homerplayer.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,10 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.studio4plus.audiobookplayer.AudioBookPlayerApplication;
-import com.studio4plus.audiobookplayer.R;
-import com.studio4plus.audiobookplayer.model.AudioBook;
-import com.studio4plus.audiobookplayer.model.AudioBookManager;
+import com.studio4plus.homerplayer.HomerPlayerApplication;
+import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.model.AudioBook;
+import com.studio4plus.homerplayer.model.AudioBookManager;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class FragmentBookList extends Fragment {
             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_book_list, container, false);
 
-        final AudioBookManager audioBookManager = AudioBookPlayerApplication.getAudioBookManager();
+        final AudioBookManager audioBookManager = HomerPlayerApplication.getAudioBookManager();
         final BookListPagerAdapter adapter =
                 new BookListPagerAdapter(getFragmentManager());
         bookPager = (ViewPager) view.findViewById(R.id.bookListPager);
@@ -61,7 +61,7 @@ public class FragmentBookList extends Fragment {
 
         public BookListPagerAdapter(FragmentManager fm) {
             super(fm);
-            this.audioBooks = AudioBookPlayerApplication.getAudioBookManager().getAudioBooks();
+            this.audioBooks = HomerPlayerApplication.getAudioBookManager().getAudioBooks();
         }
 
         @Override

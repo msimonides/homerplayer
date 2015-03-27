@@ -1,4 +1,4 @@
-package com.studio4plus.audiobookplayer.service;
+package com.studio4plus.homerplayer.service;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -7,9 +7,9 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
-import com.studio4plus.audiobookplayer.AudioBookPlayerApplication;
-import com.studio4plus.audiobookplayer.model.AudioBook;
-import com.studio4plus.audiobookplayer.model.Position;
+import com.studio4plus.homerplayer.HomerPlayerApplication;
+import com.studio4plus.homerplayer.model.AudioBook;
+import com.studio4plus.homerplayer.model.Position;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,7 +74,7 @@ public class AudioBookPlayer extends Handler {
 
         private BookPlaybackInfo(AudioBook audioBook) {
             this.directoryPath =
-                    AudioBookPlayerApplication.getAudioBookManager().getAbsolutePath(audioBook);
+                    HomerPlayerApplication.getAudioBookManager().getAbsolutePath(audioBook);
             this.position = audioBook.getLastPosition();
         }
     }

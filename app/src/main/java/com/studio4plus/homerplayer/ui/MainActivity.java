@@ -1,4 +1,4 @@
-package com.studio4plus.audiobookplayer.ui;
+package com.studio4plus.homerplayer.ui;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,11 +11,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 
-import com.studio4plus.audiobookplayer.AudioBookPlayerApplication;
-import com.studio4plus.audiobookplayer.R;
-import com.studio4plus.audiobookplayer.model.AudioBook;
-import com.studio4plus.audiobookplayer.model.AudioBookManager;
-import com.studio4plus.audiobookplayer.service.PlaybackService;
+import com.studio4plus.homerplayer.HomerPlayerApplication;
+import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.model.AudioBook;
+import com.studio4plus.homerplayer.model.AudioBookManager;
+import com.studio4plus.homerplayer.service.PlaybackService;
 
 import java.util.Arrays;
 
@@ -74,7 +74,7 @@ public class MainActivity
         ttsReady = false;
         startTts();
 
-        final AudioBookManager audioBookManager = AudioBookPlayerApplication.getAudioBookManager();
+        final AudioBookManager audioBookManager = HomerPlayerApplication.getAudioBookManager();
         actionViewPager = (VerticalViewPager) findViewById(R.id.actionPager);
         actionViewPager.setAdapter(
                 new ActionPagerAdapter(getSupportFragmentManager(), Page.getAllFragments()));

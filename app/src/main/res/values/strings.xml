@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">AudioBookPlayer</string>
+    <string name="app_name">HomerPlayer</string>
     <string name="playback_service_notification">Audio Book Playing</string>
 </resources>

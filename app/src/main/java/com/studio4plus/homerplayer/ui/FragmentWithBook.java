@@ -1,11 +1,10 @@
-package com.studio4plus.audiobookplayer.ui;
+package com.studio4plus.homerplayer.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
-import com.studio4plus.audiobookplayer.AudioBookPlayerApplication;
-import com.studio4plus.audiobookplayer.model.AudioBook;
-import com.studio4plus.audiobookplayer.model.AudioBookManager;
+import com.studio4plus.homerplayer.HomerPlayerApplication;
+import com.studio4plus.homerplayer.model.AudioBook;
 
 public class FragmentWithBook extends Fragment {
 
@@ -21,7 +20,7 @@ public class FragmentWithBook extends Fragment {
 
     public AudioBook getAudioBook() {
         if (audioBook == null) {
-            audioBook = AudioBookPlayerApplication.getAudioBookManager().getById(
+            audioBook = HomerPlayerApplication.getAudioBookManager().getById(
                     getArguments().getString(ARG_BOOK_ID));
         }
         return audioBook;

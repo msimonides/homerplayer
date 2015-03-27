@@ -1,4 +1,4 @@
-package com.studio4plus.audiobookplayer.ui;
+package com.studio4plus.homerplayer.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,8 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.studio4plus.audiobookplayer.R;
-import com.studio4plus.audiobookplayer.model.AudioBook;
+import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.model.AudioBook;
 
 public class FragmentBookItem extends FragmentWithBook {
 

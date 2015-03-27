@@ -1,12 +1,12 @@
-package com.studio4plus.audiobookplayer;
+package com.studio4plus.homerplayer;
 
 import android.app.Application;
 
-import com.studio4plus.audiobookplayer.model.AudioBookManager;
-import com.studio4plus.audiobookplayer.model.Storage;
+import com.studio4plus.homerplayer.model.AudioBookManager;
+import com.studio4plus.homerplayer.model.Storage;
 
 // A bag for globals...
-public class AudioBookPlayerApplication extends Application {
+public class HomerPlayerApplication extends Application {
 
     private static AudioBookManager audioBookManager;
 
