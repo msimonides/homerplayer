@@ -1,12 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="@dimen/bookListItemPadding">
+
+        <TextView
+            android:id="@+id/noBooksText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/noBooksMessage"
+            android:textSize="@dimen/bookListTextSize"/>
+
+        <TextView
+            android:id="@+id/noBooksPath"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/noBooksPathTextSize"/>
+    </LinearLayout>
 
     <fr.castorflex.android.verticalviewpager.VerticalViewPager
         android:id="@+id/actionPager"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
-</LinearLayout>
+</FrameLayout>

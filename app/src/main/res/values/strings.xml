@@ -1,4 +1,5 @@
 <resources>
-    <string name="app_name">HomerPlayer</string>
+    <string name="app_name" translatable="false">HomerPlayer</string>
     <string name="playback_service_notification">Audio Book Playing</string>
+    <string name="noBooksMessage">There are no audio books on the device.</string>
 </resources>

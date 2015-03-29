@@ -10,6 +10,7 @@ import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.widget.TextView;
 
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
@@ -79,6 +80,9 @@ public class MainActivity
         actionViewPager.setAdapter(
                 new ActionPagerAdapter(getSupportFragmentManager(), Page.getAllFragments()));
         actionViewPager.setOnPageChangeListener(new PlayStopTrigger(audioBookManager));
+
+        TextView noBooksPath = (TextView) findViewById(R.id.noBooksPath);
+        noBooksPath.setText(audioBookManager.getAudioBooksDirectory().getAbsolutePath());
 
         audioBookManager.addWeakListener(this);
         Intent serviceIntent = new Intent(this, PlaybackService.class);
@@ -171,7 +175,7 @@ public class MainActivity
         @Override
         public void onPageSelected(int position) {
             if (Page.getByPosition(position) == Page.PLAYBACK) {
-                if (playbackService != null) {
+                if (playbackService != null && audioBookManager.getCurrentBook() != null) {
                     playbackService.startPlayback(audioBookManager.getCurrentBook());
                     if (tts != null)
                         tts.stop();

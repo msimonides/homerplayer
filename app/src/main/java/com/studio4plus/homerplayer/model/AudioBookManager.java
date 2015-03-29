@@ -35,6 +35,7 @@ public class AudioBookManager {
     public AudioBookManager(Storage storage) {
         this.storage = storage;
         addWeakListener(storage);
+        // TODO: refresh if the disk contents is updated.
         initializeFromDisk();
         if (audioBooks.size() > 0) {
             assignColoursToNewBooks();
@@ -102,7 +103,7 @@ public class AudioBookManager {
         }
     }
 
-    private File getAudioBooksDirectory() {
+    public File getAudioBooksDirectory() {
         File externalStorage = Environment.getExternalStorageDirectory();
         return new File(externalStorage, AUDIOBOOKS_DIRECTORY);
     }
