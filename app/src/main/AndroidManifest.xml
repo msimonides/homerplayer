@@ -18,6 +18,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.SettingsActivity">
+        </activity>
+
         <service android:name=".service.PlaybackService"/>
     </application>
 

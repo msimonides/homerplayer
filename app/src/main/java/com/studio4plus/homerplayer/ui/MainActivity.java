@@ -10,6 +10,7 @@ import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.view.View;
 import android.widget.TextView;
 
 import com.studio4plus.homerplayer.HomerPlayerApplication;
@@ -17,6 +18,7 @@ import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.model.AudioBook;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.service.PlaybackService;
+import com.studio4plus.homerplayer.widget.MultiTapInterceptor;
 
 import java.util.Arrays;
 
@@ -69,6 +71,15 @@ public class MainActivity
         setContentView(R.layout.main_activity);
 
         startTts();
+
+        MultiTapInterceptor multiTapInterceptor =
+                (MultiTapInterceptor) findViewById(R.id.mainContainer);
+        multiTapInterceptor.setOnMultitapListener(new MultiTapInterceptor.Listener() {
+            @Override
+            public void onMultiTap(View view) {
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            }
+        });
 
         final AudioBookManager audioBookManager = HomerPlayerApplication.getAudioBookManager();
         actionViewPager = (VerticalViewPager) findViewById(R.id.actionPager);
