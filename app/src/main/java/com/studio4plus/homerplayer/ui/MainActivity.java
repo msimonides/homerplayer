@@ -24,16 +24,12 @@ import fr.castorflex.android.verticalviewpager.VerticalViewPager;
 
 public class MainActivity
         extends FragmentActivity
-        implements
-                TextToSpeech.OnInitListener,
-                AudioBookManager.Listener,
-                PlaybackService.StopListener {
+        implements AudioBookManager.Listener, PlaybackService.StopListener {
 
     private static final int TTS_CHECK_CODE = 1;
 
     private VerticalViewPager actionViewPager;
-    private TextToSpeech tts;
-    private boolean ttsReady;
+    private Speaker speaker;
 
     private final PlaybackServiceConnection playbackServiceConnection =
             new PlaybackServiceConnection();
@@ -72,7 +68,6 @@ public class MainActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-        ttsReady = false;
         startTts();
 
         final AudioBookManager audioBookManager = HomerPlayerApplication.getAudioBookManager();
@@ -101,6 +96,17 @@ public class MainActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        final AudioBookManager audioBookManager = HomerPlayerApplication.getAudioBookManager();
+        if (audioBookManager.getCurrentBook() != null) {
+            speak(audioBookManager.getCurrentBook().getTitle());
+        } else {
+            speak(getResources().getString(R.string.noBooksMessage));
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         if (isPlaybackServiceBound) {
             unbindService(playbackServiceConnection);
@@ -108,14 +114,6 @@ public class MainActivity
         }
         stopTts();
         super.onDestroy();
-    }
-
-    @Override
-    public void onInit(int status) {
-        if (status == TextToSpeech.SUCCESS) {
-            ttsReady = true;
-            tts.setLanguage(getResources().getConfiguration().locale);
-        }
     }
 
     @Override
@@ -129,9 +127,13 @@ public class MainActivity
     }
 
     private void speak(String text) {
-        if (ttsReady) {
-            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-        }
+        if (speaker != null)
+            speaker.speak(text);
+    }
+
+    private void stopSpeaking() {
+        if (speaker != null)
+            speaker.stop();
     }
 
     protected void onActivityResult(
@@ -139,7 +141,7 @@ public class MainActivity
         if (requestCode == TTS_CHECK_CODE) {
             if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
                 // success, create the TTS instance
-                tts = new TextToSpeech(this, this);
+                speaker = new Speaker(this);
             } else {
                 // missing data, install it
                 Intent installIntent = new Intent();
@@ -157,10 +159,9 @@ public class MainActivity
     }
 
     private void stopTts() {
-        if (tts != null) {
-            ttsReady = false;
-            tts.shutdown();
-            tts = null;
+        if (speaker != null) {
+            speaker.shutdown();
+            speaker = null;
         }
     }
 
@@ -177,8 +178,8 @@ public class MainActivity
             if (Page.getByPosition(position) == Page.PLAYBACK) {
                 if (playbackService != null && audioBookManager.getCurrentBook() != null) {
                     playbackService.startPlayback(audioBookManager.getCurrentBook());
-                    if (tts != null)
-                        tts.stop();
+                    stopSpeaking();
+
                 }
             } else {
                 if (playbackService != null) {
