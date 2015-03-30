@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false"></string>
     <string name="noBooksMessage">Na urządzeniu nie ma żadnych audiobooków.</string>
     <string name="playback_service_notification">Odtwarzanie audiobooka</string>
+    <string name="settings_title">Ustawienia</string>
+    <string name="pref_kiosk_mode_summary_off">Nie pozwalaj na opuszczenie Homer Playera</string>
+    <string name="pref_kiosk_mode_summary_old_version">Wymagany Android 5.0 lub nowszy</string>
+    <string name="pref_kiosk_mode_summary_on">Włączone</string>
+    <string name="pref_kiosk_mode_title">Zablokuj wyjście do systemu</string>
+    <string name="settings_device_owner_required_alert">Aplikacja musibyć ustawiona jako "device owner" w systemie. TODO: dodać linka do strony z instukcją.</string>
 </resources>

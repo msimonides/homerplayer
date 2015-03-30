@@ -1,8 +1,16 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppThemeBase" parent="android:Theme.DeviceDefault">
         <!-- Customize your theme here. -->
+    </style>
+
+    <style name="AppTheme" parent="AppThemeBase">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="SettingsTheme" parent="AppThemeBase">
     </style>
 
 </resources>

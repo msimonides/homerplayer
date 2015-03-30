@@ -18,10 +18,29 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.SettingsActivity">
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:label="@string/settings_title"
+            android:theme="@style/SettingsTheme">
         </activity>
 
         <service android:name=".service.PlaybackService"/>
+
+        <receiver android:name=".HomerPlayerDeviceAdmin"
+            android:label="@string/device_admin_label"
+            android:description="@string/device_admin_description">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_info"/>
+
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED"/>
+            </intent-filter>
+
+
+        </receiver>
+
+
     </application>
 
 </manifest>

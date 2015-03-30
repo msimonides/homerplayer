@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    android:title="Settings">
-
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:key="kiosk_mode_preference"
+        android:title="@string/pref_kiosk_mode_title"
+        android:summaryOn="@string/pref_kiosk_mode_summary_on"
+        android:summaryOff="@string/pref_kiosk_mode_summary_off"
+        android:defaultValue="false"/>
 </PreferenceScreen>
