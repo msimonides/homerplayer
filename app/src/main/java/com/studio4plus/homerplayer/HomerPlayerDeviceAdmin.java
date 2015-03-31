@@ -15,7 +15,7 @@ public class HomerPlayerDeviceAdmin extends DeviceAdminReceiver {
     }
 
     @TargetApi(21)
-    public static class API21 {
+    private static class API21 {
         public static void enableLockTask(Context context) {
             DevicePolicyManager dpm =
                     (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
