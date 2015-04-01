@@ -71,7 +71,7 @@ public class MainActivity
         setContentView(R.layout.main_activity);
 
         startTts();
-        TaskLocker.onActivityCreated(this);
+        ApplicationLocker.onActivityCreated(this);
 
         MultiTapInterceptor multiTapInterceptor =
                 (MultiTapInterceptor) findViewById(R.id.mainContainer);

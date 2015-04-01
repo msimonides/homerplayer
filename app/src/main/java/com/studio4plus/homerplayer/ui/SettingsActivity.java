@@ -3,13 +3,18 @@ package com.studio4plus.homerplayer.ui;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
+import android.widget.Toast;
 
 import com.studio4plus.homerplayer.R;
 
@@ -65,10 +70,10 @@ public class SettingsActivity extends Activity {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             if (key.equals(KEY_KIOSK_MODE)) {
-                boolean isTaskLocked = TaskLocker.isTaskLocked(getActivity());
+                boolean isTaskLocked = ApplicationLocker.isTaskLocked(getActivity());
                 boolean newKioskModeEnabled = sharedPreferences.getBoolean(KEY_KIOSK_MODE, false);
                 if (newKioskModeEnabled && !isTaskLocked) {
-                    boolean isLocked = TaskLocker.lockScreen(getActivity());
+                    boolean isLocked = ApplicationLocker.lockApplication(getActivity());
                     if (!isLocked) {
                         AlertDialog dialog = new AlertDialog.Builder(getActivity())
                                 .setMessage(getResources().getString(
@@ -82,10 +87,9 @@ public class SettingsActivity extends Activity {
                         switchPreference.setChecked(false);
                     }
                 } else if (!newKioskModeEnabled && isTaskLocked) {
-                    TaskLocker.unlockScreen(getActivity());
+                    ApplicationLocker.unlockApplication(getActivity());
                 }
             }
         }
     }
-
 }

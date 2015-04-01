@@ -11,17 +11,21 @@
             android:label="HomerPlayer"
             android:name=".ui.MainActivity"
             android:launchMode="singleTask"
+            android:clearTaskOnLaunch="true"
             android:screenOrientation="userLandscape">
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </activity>
 
         <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/settings_title"
-            android:theme="@style/SettingsTheme">
+            android:theme="@style/SettingsTheme"
+            android:excludeFromRecents="true">
         </activity>
 
         <service android:name=".service.PlaybackService"/>
