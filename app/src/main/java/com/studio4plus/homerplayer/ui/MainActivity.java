@@ -1,8 +1,10 @@
 package com.studio4plus.homerplayer.ui;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -37,6 +39,7 @@ public class MainActivity
             new PlaybackServiceConnection();
     private PlaybackService playbackService;
     private boolean isPlaybackServiceBound;
+    private BroadcastReceiver screenOnReceiver;
 
     enum Page {
         BOOK_LIST(new FragmentBookList()),
@@ -104,18 +107,14 @@ public class MainActivity
 
         if (playbackService != null && playbackService.isInPlaybackMode())
             actionViewPager.setCurrentItem(Page.getPosition(Page.PLAYBACK));
-
+        else
+            registerScreenOnReceiver();
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        final AudioBookManager audioBookManager = HomerPlayerApplication.getAudioBookManager();
-        if (audioBookManager.getCurrentBook() != null) {
-            speak(audioBookManager.getCurrentBook().getTitle());
-        } else {
-            speak(getResources().getString(R.string.noBooksMessage));
-        }
+    protected void onStop() {
+        super.onStop();
+        unregisterScreenOnReceiver();
     }
 
     @Override
@@ -136,6 +135,15 @@ public class MainActivity
     @Override
     public void onPlaybackStopped() {
         actionViewPager.setCurrentItem(Page.getPosition(Page.BOOK_LIST), true);
+    }
+
+    private void speakCurrentTitle() {
+        final AudioBookManager audioBookManager = HomerPlayerApplication.getAudioBookManager();
+        if (audioBookManager.getCurrentBook() != null) {
+            speak(audioBookManager.getCurrentBook().getTitle());
+        } else {
+            speak(getResources().getString(R.string.noBooksMessage));
+        }
     }
 
     private void speak(String text) {
@@ -174,6 +182,23 @@ public class MainActivity
         if (speaker != null) {
             speaker.shutdown();
             speaker = null;
+        }
+    }
+
+    private void registerScreenOnReceiver() {
+        screenOnReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                speakCurrentTitle();
+            }
+        };
+        registerReceiver(screenOnReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
+    }
+
+    private void unregisterScreenOnReceiver() {
+        if (screenOnReceiver != null) {
+            unregisterReceiver(screenOnReceiver);
+            screenOnReceiver = null;
         }
     }
 
