@@ -3,4 +3,6 @@
     <dimen name="bookListTextSize">50sp</dimen>
     <dimen name="bookListItemPadding">50dp</dimen>
     <dimen name="noBooksPathTextSize">30sp</dimen>
+    <dimen name="horizontalScreenMargin">120dp</dimen>
+    <dimen name="verticalScreenMargin">100dp</dimen>
 </resources>

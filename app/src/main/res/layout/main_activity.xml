@@ -1,36 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.studio4plus.homerplayer.widget.MultiTapInterceptor
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mainContainer"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#ff000000">
 
-    <LinearLayout
+    <View
+        android:id="@+id/touchEventEater"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <!-- TODO: make the margins configurable. -->
+    <com.studio4plus.homerplayer.widget.MultiTapInterceptor
+        android:id="@+id/mainContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="@dimen/bookListItemPadding">
+        android:layout_marginLeft="@dimen/horizontalScreenMargin"
+        android:layout_marginRight="@dimen/horizontalScreenMargin"
+        android:layout_marginBottom="@dimen/verticalScreenMargin">
 
-        <TextView
-            android:id="@+id/noBooksText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/noBooksMessage"
-            android:textSize="@dimen/bookListTextSize"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="@dimen/bookListItemPadding">
 
-        <TextView
-            android:id="@+id/noBooksPath"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/noBooksPathTextSize"/>
-    </LinearLayout>
+            <TextView
+                android:id="@+id/noBooksText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/noBooksMessage"
+                android:textSize="@dimen/bookListTextSize"/>
 
-    <fr.castorflex.android.verticalviewpager.VerticalViewPager
-        android:id="@+id/actionPager"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"/>
+            <TextView
+                android:id="@+id/noBooksPath"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/noBooksPathTextSize"/>
+        </LinearLayout>
 
-</com.studio4plus.homerplayer.widget.MultiTapInterceptor>
+        <fr.castorflex.android.verticalviewpager.VerticalViewPager
+            android:id="@+id/actionPager"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"/>
+
+    </com.studio4plus.homerplayer.widget.MultiTapInterceptor>
+</FrameLayout>
