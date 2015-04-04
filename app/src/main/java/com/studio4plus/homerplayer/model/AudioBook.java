@@ -2,8 +2,6 @@ package com.studio4plus.homerplayer.model;
 
 import com.studio4plus.homerplayer.util.DebugUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class AudioBook {
@@ -12,20 +10,15 @@ public class AudioBook {
         public void onAudioBookPositionChanged(AudioBook audioBook);
     }
 
-    private final String id;
-    private final String directoryName;
-    private final List<String> filePaths;
+    private FileSet fileSet;
     private ColourScheme colourScheme;
     private Position lastPosition;
 
     private PositionObserver positionObserver;
 
-    public AudioBook(String id, String directoryName, String[] filePaths) {
-        this.id = id;
-        this.directoryName = directoryName;
-        this.filePaths = new ArrayList<>(filePaths.length);
-        this.filePaths.addAll(Arrays.asList(filePaths));
-        this.lastPosition = new Position(filePaths[0], 0);
+    public AudioBook(FileSet fileSet) {
+        this.fileSet = fileSet;
+        this.lastPosition = new Position(fileSet.filePaths.get(0), 0);
     }
 
     public void setPositionObserver(PositionObserver positionObserver) {
@@ -33,15 +26,15 @@ public class AudioBook {
     }
 
     public String getDirectoryName() {
-        return directoryName;
+        return fileSet.directoryName;
     }
 
     public String getTitle() {
-        return directoryName;
+        return fileSet.directoryName;
     }
 
     public String getId() {
-        return id;
+        return fileSet.id;
     }
 
     public Position getLastPosition() {
@@ -64,7 +57,7 @@ public class AudioBook {
 
     public void resetPosition() {
         DebugUtil.verifyIsOnMainThread();
-        lastPosition = new Position(filePaths.get(0), 0);
+        lastPosition = new Position(fileSet.filePaths.get(0), 0);
         notifyPositionObserver();
     }
 
@@ -78,6 +71,7 @@ public class AudioBook {
 
     public boolean advanceFile() {
         DebugUtil.verifyIsOnMainThread();
+        final List<String> filePaths = fileSet.filePaths;
         int newIndex = filePaths.indexOf(lastPosition.filePath) + 1;
         boolean hasMoreFiles = newIndex < filePaths.size();
         if (hasMoreFiles) {

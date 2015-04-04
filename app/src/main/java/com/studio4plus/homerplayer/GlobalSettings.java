@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.studio4plus.homerplayer.ui.SettingsActivity;
-
 public class GlobalSettings {
 
     // TODO: figure out if these constants can somehow be shared with the keys in preferences.xml
