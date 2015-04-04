@@ -3,25 +3,20 @@ package com.studio4plus.homerplayer.ui;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
-import android.widget.Toast;
 
 import com.studio4plus.homerplayer.R;
 
 public class SettingsActivity extends Activity {
 
     // TODO: figure out if these constants can somehow be shared with the keys in preferences.xml
-    public static final String KEY_KIOSK_MODE = "kiosk_mode_preference";
+    private static final String KEY_KIOSK_MODE = "kiosk_mode_preference";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
