@@ -23,6 +23,9 @@ public class AudioBookPlayer extends Handler {
     private static final int MSG_CONTROL_FILE_COMPLETE = 1;
     private static final int MSG_CONTROL_STOPPED = 2;
 
+    // TODO: a candidate for a configuration setting.
+    private static final int JUMP_BACK_ON_RESUME_MS = 15000;
+
     private final Handler playbackThreadHandler;
     private final Observer observer;
 
@@ -38,15 +41,7 @@ public class AudioBookPlayer extends Handler {
     }
 
     public void startPlayback() {
-        Message message = playbackThreadHandler.obtainMessage(PlaybackHandler.MSG_PLAYBACK_START);
-
-        Position position = audioBook.getLastPosition();
-        File bookDirectory =
-                HomerPlayerApplication.getAudioBookManager().getAbsolutePath(audioBook);
-        File currentFile = new File(bookDirectory, position.filePath);
-
-        message.obj = new PlaybackStartInfo(currentFile.getAbsolutePath(), position.seekPosition);
-        playbackThreadHandler.sendMessage(message);
+        startPlayback(JUMP_BACK_ON_RESUME_MS);
     }
 
     public void stopPlayback() {
@@ -60,7 +55,7 @@ public class AudioBookPlayer extends Handler {
             case MSG_CONTROL_FILE_COMPLETE:
                 boolean playMore = audioBook.advanceFile();
                 if (playMore) {
-                    startPlayback();
+                    continuePlayback();
                 } else {
                     audioBook.resetPosition();
                     observer.onPlaybackStopped();
@@ -72,6 +67,23 @@ public class AudioBookPlayer extends Handler {
                 break;
             }
         }
+    }
+
+    private void continuePlayback() {
+        startPlayback(0);
+    }
+
+    private void startPlayback(int jumpBackOffset) {
+        Message message = playbackThreadHandler.obtainMessage(PlaybackHandler.MSG_PLAYBACK_START);
+
+        Position position = audioBook.getLastPosition();
+        File bookDirectory =
+                HomerPlayerApplication.getAudioBookManager().getAbsolutePath(audioBook);
+        File currentFile = new File(bookDirectory, position.filePath);
+
+        int startPosition = Math.max(0, position.seekPosition - jumpBackOffset);
+        message.obj = new PlaybackStartInfo(currentFile.getAbsolutePath(), startPosition);
+        playbackThreadHandler.sendMessage(message);
     }
 
     private static class PlaybackStartInfo {
