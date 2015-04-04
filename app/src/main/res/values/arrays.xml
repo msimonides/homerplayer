@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="jump_back_entries">
+        <item>@string/pref_jump_back_entry_disabled</item>
+        <item>5s</item>
+        <item>15s</item>
+        <item>30s</item>
+        <item>45s</item>
+    </string-array>
+    <string-array name="jump_back_values">
+        <item>0</item>
+        <item>5</item>
+        <item>15</item>
+        <item>30</item>
+        <item>45</item>
+    </string-array>
+</resources>

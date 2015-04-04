@@ -65,7 +65,7 @@ public class PlaybackService
         if (player != null)
             player.stopPlayback();
 
-        player = new AudioBookPlayer(this, book);
+        player = new AudioBookPlayer(getApplicationContext(), this, book);
         player.startPlayback();
 
         if (faceDownDetector != null)

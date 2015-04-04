@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:key="jump_back_preference"
+        android:title="@string/pref_jump_back_title"
+        android:entries="@array/jump_back_entries"
+        android:entryValues="@array/jump_back_values"
+        android:defaultValue="@string/pref_jump_back_default_value"/>
     <SwitchPreference
         android:key="kiosk_mode_preference"
         android:title="@string/pref_kiosk_mode_title"

@@ -10,4 +10,8 @@
     <string name="pref_kiosk_mode_summary_off">Never exit Homer Player</string>
     <string name="pref_kiosk_mode_summary_on">Locked</string>
     <string name="pref_kiosk_mode_summary_old_version">Android 5.0 or newer required</string>
+    <string name="pref_jump_back_default_value">5</string>
+    <string name="pref_jump_back_entry_disabled">Disabled</string>
+    <string name="pref_jump_back_title">Jump back when resuming playback</string>
+    <string name="pref_jump_back_summary">Jump %d seconds back</string>
 </resources>

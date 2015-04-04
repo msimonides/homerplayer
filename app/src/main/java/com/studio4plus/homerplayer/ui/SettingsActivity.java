@@ -11,12 +11,10 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 
+import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.R;
 
 public class SettingsActivity extends Activity {
-
-    // TODO: figure out if these constants can somehow be shared with the keys in preferences.xml
-    private static final String KEY_KIOSK_MODE = "kiosk_mode_preference";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +35,10 @@ public class SettingsActivity extends Activity {
             super.onCreate(savedInstanceState);
 
             addPreferencesFromResource(R.xml.preferences);
+
+            SharedPreferences sharedPreferences =
+                    PreferenceManager.getDefaultSharedPreferences(getActivity());
+            updateJumpBackSummary(sharedPreferences);
 
             if (Build.VERSION.SDK_INT < 21) {
                 Preference kioskModePreference = findPreference("kiosk_mode_preference");
@@ -61,29 +63,56 @@ public class SettingsActivity extends Activity {
             sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
         }
 
-        @SuppressLint("CommitPrefEdits")
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if (key.equals(KEY_KIOSK_MODE)) {
-                boolean isTaskLocked = ApplicationLocker.isTaskLocked(getActivity());
-                boolean newKioskModeEnabled = sharedPreferences.getBoolean(KEY_KIOSK_MODE, false);
-                if (newKioskModeEnabled && !isTaskLocked) {
-                    boolean isLocked = ApplicationLocker.lockApplication(getActivity());
-                    if (!isLocked) {
-                        AlertDialog dialog = new AlertDialog.Builder(getActivity())
-                                .setMessage(getResources().getString(
-                                        R.string.settings_device_owner_required_alert))
-                                .setNeutralButton(android.R.string.ok, null)
-                                .create();
-                        dialog.show();
-                        sharedPreferences.edit().putBoolean(KEY_KIOSK_MODE, false).commit();
-                        SwitchPreference switchPreference =
-                                (SwitchPreference) findPreference(KEY_KIOSK_MODE);
-                        switchPreference.setChecked(false);
-                    }
-                } else if (!newKioskModeEnabled && isTaskLocked) {
-                    ApplicationLocker.unlockApplication(getActivity());
+            switch(key) {
+                case GlobalSettings.KEY_KIOSK_MODE:
+                    onKioskModeSwitched(sharedPreferences);
+                    break;
+                case GlobalSettings.KEY_JUMP_BACK:
+                    updateJumpBackSummary(sharedPreferences);
+                    break;
+            }
+        }
+
+        private void updateJumpBackSummary(SharedPreferences sharedPreferences) {
+            String stringValue = sharedPreferences.getString(
+                    GlobalSettings.KEY_JUMP_BACK, getString(R.string.pref_jump_back_default_value));
+            int value = Integer.parseInt(stringValue);
+            Preference preference = findPreference(GlobalSettings.KEY_JUMP_BACK);
+            if (value == 0) {
+                preference.setSummary(R.string.pref_jump_back_entry_disabled);
+            } else {
+                preference.setSummary(String.format(
+                        getString(R.string.pref_jump_back_summary), value));
+            }
+        }
+
+        @SuppressLint("CommitPrefEdits")
+        private void onKioskModeSwitched(SharedPreferences sharedPreferences) {
+            boolean isTaskLocked = ApplicationLocker.isTaskLocked(getActivity());
+            boolean newKioskModeEnabled =
+                    sharedPreferences.getBoolean(GlobalSettings.KEY_KIOSK_MODE, false);
+            if (newKioskModeEnabled && !isTaskLocked) {
+                boolean isLocked = ApplicationLocker.lockApplication(getActivity());
+                if (!isLocked) {
+                    AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                            .setMessage(getResources().getString(
+                                    R.string.settings_device_owner_required_alert))
+                            .setNeutralButton(android.R.string.ok, null)
+                            .create();
+                    dialog.show();
+
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean(GlobalSettings.KEY_KIOSK_MODE, false);
+                    editor.commit();
+
+                    SwitchPreference switchPreference =
+                            (SwitchPreference) findPreference(GlobalSettings.KEY_KIOSK_MODE);
+                    switchPreference.setChecked(false);
                 }
+            } else if (!newKioskModeEnabled && isTaskLocked) {
+                ApplicationLocker.unlockApplication(getActivity());
             }
         }
     }
