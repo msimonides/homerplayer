@@ -39,7 +39,13 @@ public class AudioBookPlayer extends Handler {
 
     public void startPlayback() {
         Message message = playbackThreadHandler.obtainMessage(PlaybackHandler.MSG_PLAYBACK_START);
-        message.obj = new BookPlaybackInfo(audioBook);
+
+        Position position = audioBook.getLastPosition();
+        File bookDirectory =
+                HomerPlayerApplication.getAudioBookManager().getAbsolutePath(audioBook);
+        File currentFile = new File(bookDirectory, position.filePath);
+
+        message.obj = new PlaybackStartInfo(currentFile.getAbsolutePath(), position.seekPosition);
         playbackThreadHandler.sendMessage(message);
     }
 
@@ -68,18 +74,18 @@ public class AudioBookPlayer extends Handler {
         }
     }
 
-    private static class BookPlaybackInfo {
-        public final File directoryPath;
-        public final Position position;
+    private static class PlaybackStartInfo {
+        public final String filePath;
+        public final int startPosition;
 
-        private BookPlaybackInfo(AudioBook audioBook) {
-            this.directoryPath =
-                    HomerPlayerApplication.getAudioBookManager().getAbsolutePath(audioBook);
-            this.position = audioBook.getLastPosition();
+        private PlaybackStartInfo(String filePath, int startPosition) {
+            this.filePath = filePath;
+            this.startPosition = startPosition;
         }
     }
 
-    private static class PlaybackHandler extends Handler implements MediaPlayer.OnCompletionListener  {
+    private static class PlaybackHandler
+            extends Handler implements MediaPlayer.OnCompletionListener {
 
         public static final int MSG_PLAYBACK_START = 1;
         public static final int MSG_PLAYBACK_STOP = 2;
@@ -96,8 +102,8 @@ public class AudioBookPlayer extends Handler {
         public void handleMessage(Message message) {
             switch(message.what) {
                 case MSG_PLAYBACK_START:
-                    BookPlaybackInfo playbackInfo = (BookPlaybackInfo) message.obj;
-                    startPlayback(playbackInfo.directoryPath, playbackInfo.position);
+                    PlaybackStartInfo playbackInfo = (PlaybackStartInfo) message.obj;
+                    startPlayback(playbackInfo.filePath, playbackInfo.startPosition);
                     break;
                 case MSG_PLAYBACK_STOP:
                     stopPlayback();
@@ -105,16 +111,15 @@ public class AudioBookPlayer extends Handler {
             }
         }
 
-        private void startPlayback(final File directoryPath, final Position lastPosition) {
+        private void startPlayback(final String filePath, final int startPosition) {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setOnCompletionListener(this);
 
-            File currentFile = new File(directoryPath, lastPosition.filePath);
             try {
-                mediaPlayer.setDataSource(currentFile.getAbsolutePath());
+                mediaPlayer.setDataSource(filePath);
                 mediaPlayer.prepare();
-                mediaPlayer.seekTo(lastPosition.seekPosition);
+                mediaPlayer.seekTo(startPosition);
                 mediaPlayer.start();
             } catch (IOException e) {
                 // TODO: notify the UI and clean up.
