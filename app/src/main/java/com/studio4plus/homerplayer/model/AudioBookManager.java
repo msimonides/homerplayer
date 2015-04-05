@@ -1,14 +1,21 @@
 package com.studio4plus.homerplayer.model;
 
+import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
 import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
+import com.studio4plus.homerplayer.events.MediaScannerTriggeredEvent;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
 
 public class AudioBookManager {
+
+    private static final AudioBooksChangedEvent AUDIO_BOOKS_CHANGED_EVENT =
+            new AudioBooksChangedEvent();
 
     private final List<AudioBook> audioBooks = new ArrayList<>();
     private final FileScanner fileScanner;
@@ -18,6 +25,12 @@ public class AudioBookManager {
     public AudioBookManager(FileScanner fileScanner, Storage storage) {
         this.fileScanner = fileScanner;
         this.storage = storage;
+        scanFiles();
+        EventBus.getDefault().register(this);
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEvent(MediaScannerTriggeredEvent ignored) {
         scanFiles();
     }
 
@@ -54,26 +67,60 @@ public class AudioBookManager {
     }
 
     public void scanFiles() {
+        boolean audioBooksChanged;
         List<FileSet> fileSets = fileScanner.scanAudioBooksDirectory();
-        audioBooks.clear();
+
+        // This isn't very efficient but there shouldn't be more than a dozen audio books on the
+        // device.
+        List<AudioBook> booksToRemove = new ArrayList<>();
+        for (AudioBook audioBook : audioBooks) {
+            String id = audioBook.getId();
+            boolean isInFileSet = false;
+            for (FileSet fileSet : fileSets) {
+                if (id.equals(fileSet.id)) {
+                    isInFileSet = true;
+                    break;
+                }
+            }
+            if (!isInFileSet)
+                booksToRemove.add(audioBook);
+        }
+        if (booksToRemove.contains(currentBook))
+            currentBook = null;
+        audioBooksChanged = audioBooks.removeAll(booksToRemove);
+
         if (fileSets != null) {
             for (FileSet fileSet : fileSets) {
-                AudioBook audioBook = new AudioBook(fileSet);
-                storage.readAudioBookState(audioBook);
-                audioBook.setPositionObserver(storage);
-                audioBooks.add(audioBook);
+                if (getById(fileSet.id) == null) {
+                    AudioBook audioBook = new AudioBook(fileSet);
+                    storage.readAudioBookState(audioBook);
+                    audioBook.setPositionObserver(storage);
+                    audioBooks.add(audioBook);
+                    audioBooksChanged = true;
+                }
             }
         }
 
         if (audioBooks.size() > 0) {
-            assignColoursToNewBooks();
+            Collections.sort(audioBooks, new Comparator<AudioBook>() {
+                @Override
+                public int compare(AudioBook lhs, AudioBook rhs) {
+                    return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
+                }
+            });
 
-            String id = storage.getCurrentAudioBook();
-            currentBook = getById(id);
-            if (currentBook == null)
-                currentBook = audioBooks.get(0);
+            assignColoursToNewBooks();
         }
-        // TODO: refresh UI.
+        if (currentBook == null) {
+            String id = storage.getCurrentAudioBook();
+            AudioBook candidate = getById(id);
+            if (candidate == null)
+                candidate = audioBooks.get(0);
+            setCurrentBook(candidate);
+        }
+
+        if (audioBooksChanged)
+            EventBus.getDefault().post(AUDIO_BOOKS_CHANGED_EVENT);
     }
 
     private void assignColoursToNewBooks() {

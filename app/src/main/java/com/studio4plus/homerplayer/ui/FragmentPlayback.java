@@ -1,6 +1,5 @@
 package com.studio4plus.homerplayer.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -33,18 +32,14 @@ public class FragmentPlayback extends Fragment {
         if (audioBookManager.getCurrentBook() != null)
             titleTextView.setText(audioBookManager.getCurrentBook().getTitle());
 
+        EventBus.getDefault().register(this);
+
         return view;
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onDestroyView() {
+        super.onDestroyView();
         EventBus.getDefault().unregister(this);
     }
 

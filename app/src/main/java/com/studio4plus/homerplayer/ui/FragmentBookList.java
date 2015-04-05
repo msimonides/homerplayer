@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,17 +12,19 @@ import android.view.ViewGroup;
 
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
+import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
+
 public class FragmentBookList extends Fragment {
 
-    private static final String CLASS_ID = FragmentBookList.class.getSimpleName();
-    private static final String STATE_KEY_ITEM_INDEX = CLASS_ID + "_item_index";
-
     private ViewPager bookPager;
+    private BookListPagerAdapter bookAdapter;
 
     @Override
     public View onCreateView(
@@ -32,36 +34,52 @@ public class FragmentBookList extends Fragment {
         View view = inflater.inflate(R.layout.fragment_book_list, container, false);
 
         final AudioBookManager audioBookManager = HomerPlayerApplication.getAudioBookManager();
-        final BookListPagerAdapter adapter =
-                new BookListPagerAdapter(getFragmentManager());
+        bookAdapter = new BookListPagerAdapter(getFragmentManager(), audioBookManager);
         bookPager = (ViewPager) view.findViewById(R.id.bookListPager);
-        bookPager.setAdapter(adapter);
+        bookPager.setAdapter(bookAdapter);
         bookPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int i) {
-                FragmentBookItem itemFragment = (FragmentBookItem) adapter.getItem(i);
+                FragmentBookItem itemFragment = (FragmentBookItem) bookAdapter.getItem(i);
                 audioBookManager.setCurrentBook(itemFragment.getAudioBook());
             }
         });
 
-        bookPager.setCurrentItem(audioBookManager.getCurrentBookIndex());
+        bookPager.setCurrentItem(
+                HomerPlayerApplication.getAudioBookManager().getCurrentBookIndex());
+        EventBus.getDefault().register(this);
 
         return view;
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(STATE_KEY_ITEM_INDEX, bookPager.getCurrentItem());
+    public void onDestroyView() {
+        super.onDestroyView();
+        EventBus.getDefault().unregister(this);
     }
 
-    private class BookListPagerAdapter extends FragmentPagerAdapter {
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEvent(AudioBooksChangedEvent event) {
+        bookAdapter = new BookListPagerAdapter(
+                getFragmentManager(), HomerPlayerApplication.getAudioBookManager());
+        bookPager.setAdapter(bookAdapter);
+        bookPager.setCurrentItem(
+                HomerPlayerApplication.getAudioBookManager().getCurrentBookIndex());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void OnEvent(CurrentBookChangedEvent event) {
+        bookPager.setCurrentItem(
+                HomerPlayerApplication.getAudioBookManager().getCurrentBookIndex());
+    }
+
+    private class BookListPagerAdapter extends FragmentStatePagerAdapter {
 
         private final List<AudioBook> audioBooks;
 
-        public BookListPagerAdapter(FragmentManager fm) {
+        public BookListPagerAdapter(FragmentManager fm, AudioBookManager audioBookManager) {
             super(fm);
-            this.audioBooks = HomerPlayerApplication.getAudioBookManager().getAudioBooks();
+            this.audioBooks = audioBookManager.getAudioBooks();
         }
 
         @Override

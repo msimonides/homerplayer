@@ -43,13 +43,6 @@ public class FileScanner {
                         fileSets.add(fileSet);
                 }
             }
-
-            Collections.sort(fileSets, new Comparator<FileSet>() {
-                @Override
-                public int compare(FileSet lhs, FileSet rhs) {
-                    return lhs.directoryName.compareToIgnoreCase(rhs.directoryName);
-                }
-            });
             return fileSets;
         } else {
             return null;

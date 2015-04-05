@@ -23,11 +23,13 @@ public class FragmentBookItem extends FragmentWithBook {
         View view = inflater.inflate(R.layout.fragment_book_item, container, false);
 
         AudioBook audioBook = getAudioBook();
-        TextView textView = (TextView) view.findViewById(R.id.title);
-        textView.setText(audioBook.getTitle());
-        textView.setTextColor(audioBook.getColourScheme().textColour);
+        if (audioBook != null) {
+            TextView textView = (TextView) view.findViewById(R.id.title);
+            textView.setText(audioBook.getTitle());
+            textView.setTextColor(audioBook.getColourScheme().textColour);
 
-        view.setBackgroundColor(audioBook.getColourScheme().backgroundColour);
+            view.setBackgroundColor(audioBook.getColourScheme().backgroundColour);
+        }
 
         return view;
     }
