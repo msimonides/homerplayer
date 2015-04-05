@@ -1,18 +1,16 @@
 package com.studio4plus.homerplayer.model;
 
+import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.WeakHashMap;
+
+import de.greenrobot.event.EventBus;
 
 public class AudioBookManager {
 
-    public interface Listener {
-        public void onCurrentBookChanged(AudioBook book);
-    }
-
     private final List<AudioBook> audioBooks = new ArrayList<>();
-    private final WeakHashMap<Listener, Void> weakListeners = new WeakHashMap<>();
     private final FileScanner fileScanner;
     private final Storage storage;
     private AudioBook currentBook;
@@ -20,7 +18,6 @@ public class AudioBookManager {
     public AudioBookManager(FileScanner fileScanner, Storage storage) {
         this.fileScanner = fileScanner;
         this.storage = storage;
-        addWeakListener(storage);
         scanFiles();
     }
 
@@ -30,8 +27,7 @@ public class AudioBookManager {
 
     public void setCurrentBook(AudioBook book) {
         currentBook = book;
-        for (Listener listener : weakListeners.keySet())
-            listener.onCurrentBookChanged(book);
+        EventBus.getDefault().post(new CurrentBookChangedEvent(book));
     }
 
     public AudioBook getCurrentBook() {
@@ -47,10 +43,6 @@ public class AudioBookManager {
             if (book.getId().equals(id))
                 return book;
         return null;
-    }
-
-    public void addWeakListener(Listener listener) {
-        weakListeners.put(listener, null);
     }
 
     public File getAbsolutePath(AudioBook book) {

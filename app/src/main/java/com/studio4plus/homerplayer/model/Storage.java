@@ -3,11 +3,15 @@ package com.studio4plus.homerplayer.model;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-public class Storage implements AudioBook.PositionObserver, AudioBookManager.Listener {
+import de.greenrobot.event.EventBus;
+
+public class Storage implements AudioBook.PositionObserver {
 
     private static final String PREFERENCES_NAME = Storage.class.getSimpleName();
     private static final String AUDIOBOOK_KEY_PREFIX = "audiobook_";
@@ -23,6 +27,7 @@ public class Storage implements AudioBook.PositionObserver, AudioBookManager.Lis
 
     public Storage(Context context) {
         this.preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+        EventBus.getDefault().register(this);
     }
 
     public void readAudioBookState(AudioBook audioBook) {
@@ -84,8 +89,8 @@ public class Storage implements AudioBook.PositionObserver, AudioBookManager.Lis
         return AUDIOBOOK_KEY_PREFIX + id;
     }
 
-    @Override
-    public void onCurrentBookChanged(AudioBook book) {
-        writeCurrentAudioBook(book.getId());
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEvent(CurrentBookChangedEvent event) {
+        writeCurrentAudioBook(event.audioBook.getId());
     }
 }

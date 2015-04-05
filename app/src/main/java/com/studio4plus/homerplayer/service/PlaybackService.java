@@ -12,23 +12,20 @@ import android.os.Binder;
 import android.os.IBinder;
 
 import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.events.PlaybackStoppedEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
 import com.studio4plus.homerplayer.ui.MainActivity;
 import com.studio4plus.homerplayer.util.DebugUtil;
 
-import java.util.WeakHashMap;
+import de.greenrobot.event.EventBus;
 
 public class PlaybackService
         extends Service
         implements AudioBookPlayer.Observer, FaceDownDetector.Listener {
 
-    public interface StopListener {
-        public void onPlaybackStopped();
-    }
-
     private static final int NOTIFICATION = R.string.playback_service_notification;
+    private static final PlaybackStoppedEvent PLAYBACK_STOPPED_EVENT = new PlaybackStoppedEvent();
 
-    private final WeakHashMap<StopListener, Void> stopListeners = new WeakHashMap<>();
     private AudioBookPlayer player;
     private FaceDownDetector faceDownDetector;
 
@@ -51,14 +48,6 @@ public class PlaybackService
     public void onDestroy() {
         super.onDestroy();
         stopPlayback();
-    }
-
-    public void registerStopListener(StopListener weakListener) {
-        stopListeners.put(weakListener, null);
-    }
-
-    public void unregisterStopListener(StopListener listener) {
-        stopListeners.remove(listener);
     }
 
     public void startPlayback(AudioBook book) {
@@ -94,8 +83,7 @@ public class PlaybackService
         DebugUtil.verifyIsOnMainThread();
         if (player != null)
             stopPlayback();
-        for (StopListener listener : stopListeners.keySet())
-            listener.onPlaybackStopped();
+        EventBus.getDefault().post(PLAYBACK_STOPPED_EVENT);
     }
 
     @Override

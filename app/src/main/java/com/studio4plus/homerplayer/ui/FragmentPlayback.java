@@ -1,5 +1,6 @@
 package com.studio4plus.homerplayer.ui;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,10 +11,12 @@ import android.widget.TextView;
 
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
-import com.studio4plus.homerplayer.model.AudioBook;
+import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 
-public class FragmentPlayback extends Fragment implements AudioBookManager.Listener {
+import de.greenrobot.event.EventBus;
+
+public class FragmentPlayback extends Fragment {
 
     private TextView titleTextView;
 
@@ -30,14 +33,24 @@ public class FragmentPlayback extends Fragment implements AudioBookManager.Liste
         if (audioBookManager.getCurrentBook() != null)
             titleTextView.setText(audioBookManager.getCurrentBook().getTitle());
 
-        audioBookManager.addWeakListener(this);
-
         return view;
     }
 
     @Override
-    public void onCurrentBookChanged(AudioBook book) {
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEvent(CurrentBookChangedEvent event) {
         if (titleTextView != null)
-            titleTextView.setText(book.getTitle());
+            titleTextView.setText(event.audioBook.getTitle());
     }
 }

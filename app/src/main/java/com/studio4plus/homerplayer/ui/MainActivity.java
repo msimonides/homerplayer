@@ -18,18 +18,18 @@ import android.widget.TextView;
 
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
-import com.studio4plus.homerplayer.model.AudioBook;
+import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
+import com.studio4plus.homerplayer.events.PlaybackStoppedEvent;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.service.PlaybackService;
 import com.studio4plus.homerplayer.widget.MultiTapInterceptor;
 
 import java.util.Arrays;
 
+import de.greenrobot.event.EventBus;
 import fr.castorflex.android.verticalviewpager.VerticalViewPager;
 
-public class MainActivity
-        extends FragmentActivity
-        implements AudioBookManager.Listener, PlaybackService.StopListener {
+public class MainActivity extends FragmentActivity {
 
     private static final int TTS_CHECK_CODE = 1;
 
@@ -104,7 +104,6 @@ public class MainActivity
         TextView noBooksPath = (TextView) findViewById(R.id.noBooksPath);
         noBooksPath.setText(audioBookManager.getAudioBooksDirectory().getAbsolutePath());
 
-        audioBookManager.addWeakListener(this);
         Intent serviceIntent = new Intent(this, PlaybackService.class);
         startService(serviceIntent);
         bindService(serviceIntent, playbackServiceConnection, Context.BIND_AUTO_CREATE);
@@ -115,6 +114,8 @@ public class MainActivity
     protected void onStart() {
         super.onStart();
 
+        EventBus.getDefault().register(this);
+
         if (playbackService != null && playbackService.isInPlaybackMode())
             actionViewPager.setCurrentItem(Page.getPosition(Page.PLAYBACK));
         else
@@ -124,6 +125,7 @@ public class MainActivity
     @Override
     protected void onStop() {
         super.onStop();
+        EventBus.getDefault().unregister(this);
         unregisterScreenOnReceiver();
     }
 
@@ -137,13 +139,13 @@ public class MainActivity
         super.onDestroy();
     }
 
-    @Override
-    public void onCurrentBookChanged(AudioBook book) {
-        speak(book.getTitle());
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEvent(CurrentBookChangedEvent event) {
+        speak(event.audioBook.getTitle());
     }
 
-    @Override
-    public void onPlaybackStopped() {
+    @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
+    public void onEvent(PlaybackStoppedEvent ignored) {
         actionViewPager.setCurrentItem(Page.getPosition(Page.BOOK_LIST), true);
     }
 
@@ -243,13 +245,10 @@ public class MainActivity
             playbackService = ((PlaybackService.ServiceBinder) service).getService();
             if (playbackService.isInPlaybackMode())
                 actionViewPager.setCurrentItem(Page.getPosition(Page.PLAYBACK), false);
-            playbackService.registerStopListener(MainActivity.this);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            // TODO: handle this case
-            playbackService.unregisterStopListener(MainActivity.this);
             playbackService = null;
         }
     }
