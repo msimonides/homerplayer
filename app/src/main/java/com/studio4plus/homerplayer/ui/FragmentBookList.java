@@ -38,15 +38,26 @@ public class FragmentBookList extends Fragment {
         bookPager = (ViewPager) view.findViewById(R.id.bookListPager);
         bookPager.setAdapter(bookAdapter);
         bookPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            int currentViewIndex;
+
             @Override
             public void onPageSelected(int i) {
                 FragmentBookItem itemFragment = (FragmentBookItem) bookAdapter.getItem(i);
                 audioBookManager.setCurrentBook(itemFragment.getAudioBook());
+                currentViewIndex = i;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if (state == ViewPager.SCROLL_STATE_IDLE) {
+                    int adjustedIndex = bookAdapter.wrapViewIndex(currentViewIndex);
+                    if (adjustedIndex != currentViewIndex)
+                        bookPager.setCurrentItem(adjustedIndex, false);
+                }
             }
         });
 
-        bookPager.setCurrentItem(
-                HomerPlayerApplication.getAudioBookManager().getCurrentBookIndex());
+        updateViewPosition();
         EventBus.getDefault().register(this);
 
         return view;
@@ -63,17 +74,22 @@ public class FragmentBookList extends Fragment {
         bookAdapter = new BookListPagerAdapter(
                 getFragmentManager(), HomerPlayerApplication.getAudioBookManager());
         bookPager.setAdapter(bookAdapter);
-        bookPager.setCurrentItem(
-                HomerPlayerApplication.getAudioBookManager().getCurrentBookIndex());
+        updateViewPosition();
     }
 
     @SuppressWarnings("UnusedDeclaration")
     public void OnEvent(CurrentBookChangedEvent event) {
-        bookPager.setCurrentItem(
-                HomerPlayerApplication.getAudioBookManager().getCurrentBookIndex());
+        updateViewPosition();
+    }
+
+    private void updateViewPosition() {
+        int currentBookIndex = HomerPlayerApplication.getAudioBookManager().getCurrentBookIndex();
+        bookPager.setCurrentItem(bookAdapter.bookIndexToViewIndex(currentBookIndex), false);
     }
 
     private class BookListPagerAdapter extends FragmentStatePagerAdapter {
+
+        private static final int OFFSET = 1;
 
         private final List<AudioBook> audioBooks;
 
@@ -83,13 +99,35 @@ public class FragmentBookList extends Fragment {
         }
 
         @Override
-        public Fragment getItem(int i) {
-            return FragmentBookItem.newInstance(audioBooks.get(i).getId());
+        public Fragment getItem(int viewIndex) {
+            int bookIndex = viewIndex - OFFSET;
+            if (bookIndex < 0)
+                bookIndex = audioBooks.size() + bookIndex;
+            else
+                bookIndex = bookIndex % audioBooks.size();
+
+            return FragmentBookItem.newInstance(audioBooks.get(bookIndex).getId());
         }
 
         @Override
         public int getCount() {
-            return audioBooks.size();
+            return audioBooks.size() + 2*OFFSET;
+        }
+
+        public int bookIndexToViewIndex(int bookIndex) {
+            return bookIndex + OFFSET;
+        }
+
+        public int wrapViewIndex(int viewIndex) {
+            if (viewIndex < OFFSET) {
+                viewIndex += audioBooks.size();
+            } else {
+                final int audioBookCount = audioBooks.size();
+                final int lastBookIndex = audioBookCount - 1;
+                if (viewIndex - OFFSET > lastBookIndex)
+                    viewIndex -= audioBookCount;
+            }
+            return viewIndex;
         }
     }
 }
