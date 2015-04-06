@@ -116,10 +116,12 @@ public class MainActivity extends FragmentActivity {
 
         EventBus.getDefault().register(this);
 
-        if (playbackService != null && playbackService.isInPlaybackMode())
-            actionViewPager.setCurrentItem(Page.getPosition(Page.PLAYBACK));
-        else
+        if (playbackService != null && playbackService.isInPlaybackMode()) {
+            actionViewPager.setCurrentItem(Page.getPosition(Page.PLAYBACK), false);
+        } else {
+            actionViewPager.setCurrentItem(Page.getPosition(Page.BOOK_LIST), false);
             registerScreenOnReceiver();
+        }
     }
 
     @Override
