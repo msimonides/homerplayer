@@ -1,18 +1,15 @@
 package com.studio4plus.homerplayer;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import com.studio4plus.homerplayer.model.AudioBookManager;
-import com.studio4plus.homerplayer.model.FileScanner;
-import com.studio4plus.homerplayer.model.Storage;
-
-// A bag for globals...
 public class HomerPlayerApplication extends Application {
 
     private static final String AUDIOBOOKS_DIRECTORY = "AudioBooks";
-    private static AudioBookManager audioBookManager;
+
+    private ApplicationComponent component;
 
     private MediaScannerReceiver mediaScannerReceiver;
 
@@ -20,9 +17,9 @@ public class HomerPlayerApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Storage storage = new Storage(this);
-        FileScanner fileScanner = new FileScanner(AUDIOBOOKS_DIRECTORY);
-        audioBookManager = new AudioBookManager(fileScanner, storage);
+        component = DaggerApplicationComponent.builder()
+                .audioBookManagerModule(new AudioBookManagerModule(AUDIOBOOKS_DIRECTORY))
+                .build();
 
         IntentFilter intentFilter =  new IntentFilter(Intent.ACTION_MEDIA_SCANNER_STARTED);
         intentFilter.addDataScheme("file");
@@ -37,7 +34,7 @@ public class HomerPlayerApplication extends Application {
         mediaScannerReceiver = null;
     }
 
-    public static AudioBookManager getAudioBookManager() {
-        return audioBookManager;
+    public static ApplicationComponent getComponent(Context context) {
+        return ((HomerPlayerApplication) context.getApplicationContext()).component;
     }
 }

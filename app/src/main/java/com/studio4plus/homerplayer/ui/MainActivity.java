@@ -26,6 +26,8 @@ import com.studio4plus.homerplayer.widget.MultiTapInterceptor;
 
 import java.util.Arrays;
 
+import javax.inject.Inject;
+
 import de.greenrobot.event.EventBus;
 import fr.castorflex.android.verticalviewpager.VerticalViewPager;
 
@@ -41,6 +43,8 @@ public class MainActivity extends FragmentActivity {
     private PlaybackService playbackService;
     private boolean isPlaybackServiceBound;
     private BroadcastReceiver screenOnReceiver;
+
+    @Inject public AudioBookManager audioBookManager;
 
     enum Page {
         BOOK_LIST(new FragmentBookList()),
@@ -74,6 +78,8 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
+        HomerPlayerApplication.getComponent(this).inject(this);
+
         startTts();
         ApplicationLocker.onActivityCreated(this);
 
@@ -95,7 +101,6 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
-        final AudioBookManager audioBookManager = HomerPlayerApplication.getAudioBookManager();
         actionViewPager = (VerticalViewPager) findViewById(R.id.actionPager);
         actionViewPager.setAdapter(
                 new ActionPagerAdapter(getSupportFragmentManager(), Page.getAllFragments()));
@@ -152,7 +157,6 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void speakCurrentTitle() {
-        final AudioBookManager audioBookManager = HomerPlayerApplication.getAudioBookManager();
         if (audioBookManager.getCurrentBook() != null) {
             speak(audioBookManager.getCurrentBook().getTitle());
         } else {

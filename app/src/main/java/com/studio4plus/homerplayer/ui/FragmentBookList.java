@@ -19,6 +19,8 @@ import com.studio4plus.homerplayer.model.AudioBookManager;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import de.greenrobot.event.EventBus;
 
 public class FragmentBookList extends Fragment {
@@ -26,14 +28,16 @@ public class FragmentBookList extends Fragment {
     private ViewPager bookPager;
     private BookListPagerAdapter bookAdapter;
 
+    @Inject public AudioBookManager audioBookManager;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_book_list, container, false);
+        HomerPlayerApplication.getComponent(view.getContext()).inject(this);
 
-        final AudioBookManager audioBookManager = HomerPlayerApplication.getAudioBookManager();
         bookAdapter = new BookListPagerAdapter(getFragmentManager(), audioBookManager);
         bookPager = (ViewPager) view.findViewById(R.id.bookListPager);
         bookPager.setAdapter(bookAdapter);
@@ -43,7 +47,7 @@ public class FragmentBookList extends Fragment {
             @Override
             public void onPageSelected(int i) {
                 FragmentBookItem itemFragment = (FragmentBookItem) bookAdapter.getItem(i);
-                audioBookManager.setCurrentBook(itemFragment.getAudioBook());
+                audioBookManager.setCurrentBook(itemFragment.getAudioBookId());
                 currentViewIndex = i;
             }
 
@@ -71,8 +75,7 @@ public class FragmentBookList extends Fragment {
 
     @SuppressWarnings("UnusedDeclaration")
     public void onEvent(AudioBooksChangedEvent event) {
-        bookAdapter = new BookListPagerAdapter(
-                getFragmentManager(), HomerPlayerApplication.getAudioBookManager());
+        bookAdapter = new BookListPagerAdapter(getFragmentManager(), audioBookManager);
         bookPager.setAdapter(bookAdapter);
         updateViewPosition();
     }
@@ -83,7 +86,7 @@ public class FragmentBookList extends Fragment {
     }
 
     private void updateViewPosition() {
-        int currentBookIndex = HomerPlayerApplication.getAudioBookManager().getCurrentBookIndex();
+        int currentBookIndex = audioBookManager.getCurrentBookIndex();
         bookPager.setCurrentItem(bookAdapter.bookIndexToViewIndex(currentBookIndex), false);
     }
 
@@ -106,7 +109,7 @@ public class FragmentBookList extends Fragment {
             else
                 bookIndex = bookIndex % audioBooks.size();
 
-            return FragmentBookItem.newInstance(audioBooks.get(bookIndex).getId());
+            return FragmentBookItem.newInstance(audioBooks.get(bookIndex));
         }
 
         @Override

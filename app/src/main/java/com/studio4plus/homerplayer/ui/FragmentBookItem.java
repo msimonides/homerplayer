@@ -2,6 +2,7 @@ package com.studio4plus.homerplayer.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,28 +11,48 @@ import android.widget.TextView;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.model.AudioBook;
 
-public class FragmentBookItem extends FragmentWithBook {
+public class FragmentBookItem extends Fragment {
 
-    public static FragmentBookItem newInstance(String bookId) {
+    public static FragmentBookItem newInstance(AudioBook book) {
         FragmentBookItem newFragment = new FragmentBookItem();
-        setArgBookId(newFragment, bookId);
+        Bundle args = new Bundle();
+        bookToBundle(args, book);
+        newFragment.setArguments(args);
         return newFragment;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_book_item, container, false);
 
-        AudioBook audioBook = getAudioBook();
-        if (audioBook != null) {
+        Bundle args = getArguments();
+        String bookId = args.getString(ARG_BOOK_ID);
+        if (bookId != null) {
             TextView textView = (TextView) view.findViewById(R.id.title);
-            textView.setText(audioBook.getTitle());
-            textView.setTextColor(audioBook.getColourScheme().textColour);
-
-            view.setBackgroundColor(audioBook.getColourScheme().backgroundColour);
+            textView.setText(args.getString(ARG_BOOK_TITLE));
+            textView.setTextColor(args.getInt(ARG_BOOK_TEXT_COLOR));
+            view.setBackgroundColor(args.getInt(ARG_BOOK_BACKGROUND_COLOR));
         }
 
         return view;
     }
 
+    public String getAudioBookId() {
+        return getArguments().getString(ARG_BOOK_ID);
+    }
+
+    private static final String ARG_BOOK_ID = "bookId";
+    private static final String ARG_BOOK_TITLE = "bookTitle";
+    private static final String ARG_BOOK_TEXT_COLOR = "bookTextColor";
+    private static final String ARG_BOOK_BACKGROUND_COLOR = "bookBackgroundColor";
+
+    protected static void bookToBundle(Bundle bundle, AudioBook audioBook) {
+        bundle.putString(ARG_BOOK_ID, audioBook.getId());
+        bundle.putString(ARG_BOOK_TITLE, audioBook.getTitle());
+        bundle.putInt(ARG_BOOK_TEXT_COLOR, audioBook.getColourScheme().textColour);
+        bundle.putInt(ARG_BOOK_BACKGROUND_COLOR, audioBook.getColourScheme().backgroundColour);
+    }
 }

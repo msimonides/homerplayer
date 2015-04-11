@@ -11,10 +11,13 @@ import android.os.Message;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.model.AudioBook;
+import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.model.Position;
 
 import java.io.File;
 import java.io.IOException;
+
+import javax.inject.Inject;
 
 public class AudioBookPlayer extends Handler {
 
@@ -27,18 +30,27 @@ public class AudioBookPlayer extends Handler {
 
     private final Context context;
     private final Handler playbackThreadHandler;
-    private final Observer observer;
+    private final AudioBookManager audioBookManager;
 
+    private Observer observer;
     private AudioBook audioBook;
 
-    public AudioBookPlayer(Context context, Observer observer, AudioBook book) {
+    @Inject
+    public AudioBookPlayer(Context context, AudioBookManager audioBookManager) {
         super(Looper.getMainLooper());
         this.context = context;
-        this.observer = observer;
-        this.audioBook = book;
+        this.audioBookManager = audioBookManager;
         HandlerThread thread = new HandlerThread("Playback");
         thread.start();
         playbackThreadHandler = new PlaybackHandler(thread.getLooper(), this);
+    }
+
+    public void setObserver(Observer observer) {
+        this.observer = observer;
+    }
+
+    public void setAudioBook(AudioBook audioBook) {
+        this.audioBook = audioBook;
     }
 
     public void startPlayback() {
@@ -78,8 +90,7 @@ public class AudioBookPlayer extends Handler {
         Message message = playbackThreadHandler.obtainMessage(PlaybackHandler.MSG_PLAYBACK_START);
 
         Position position = audioBook.getLastPosition();
-        File bookDirectory =
-                HomerPlayerApplication.getAudioBookManager().getAbsolutePath(audioBook);
+        File bookDirectory = audioBookManager.getAbsolutePath(audioBook);
         File currentFile = new File(bookDirectory, position.filePath);
 
         int startPosition = Math.max(0, position.seekPosition - jumpBackOffset);

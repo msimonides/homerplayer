@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
+import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.events.PlaybackStoppedEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
@@ -54,7 +55,9 @@ public class PlaybackService
         if (player != null)
             player.stopPlayback();
 
-        player = new AudioBookPlayer(getApplicationContext(), this, book);
+        player = HomerPlayerApplication.getComponent(getApplicationContext()).getAudioBookPlayer();
+        player.setObserver(this);
+        player.setAudioBook(book);
         player.startPlayback();
 
         if (faceDownDetector != null)

@@ -38,9 +38,9 @@ public class AudioBookManager {
         return audioBooks;
     }
 
-    public void setCurrentBook(AudioBook book) {
-        currentBook = book;
-        EventBus.getDefault().post(new CurrentBookChangedEvent(book));
+    public void setCurrentBook(String bookId) {
+        currentBook = getById(bookId);
+        EventBus.getDefault().post(new CurrentBookChangedEvent(currentBook));
     }
 
     public AudioBook getCurrentBook() {
@@ -113,10 +113,9 @@ public class AudioBookManager {
         }
         if (currentBook == null) {
             String id = storage.getCurrentAudioBook();
-            AudioBook candidate = getById(id);
-            if (candidate == null)
-                candidate = audioBooks.get(0);
-            setCurrentBook(candidate);
+            if (getById(id) == null)
+                id = audioBooks.get(0).getId();
+            setCurrentBook(id);
         }
 
         if (audioBooksChanged)
