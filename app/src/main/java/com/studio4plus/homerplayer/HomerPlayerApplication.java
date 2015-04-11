@@ -18,6 +18,7 @@ public class HomerPlayerApplication extends Application {
         super.onCreate();
 
         component = DaggerApplicationComponent.builder()
+                .applicationModule(new ApplicationModule(this))
                 .audioBookManagerModule(new AudioBookManagerModule(AUDIOBOOKS_DIRECTORY))
                 .build();
 
