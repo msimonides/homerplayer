@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="jump_back_entries">
+    <string-array name="jump_back_entries" translatable="false">
         <item>@string/pref_jump_back_entry_disabled</item>
         <item>5s</item>
         <item>15s</item>
         <item>30s</item>
         <item>45s</item>
     </string-array>
-    <string-array name="jump_back_values">
+    <string-array name="jump_back_values" translatable="false">
         <item>0</item>
         <item>5</item>
         <item>15</item>
