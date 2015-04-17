@@ -114,7 +114,7 @@ public class FragmentBookList extends Fragment {
 
         @Override
         public int getCount() {
-            return audioBooks.size() + 2*OFFSET;
+            return audioBooks.size() > 0 ? audioBooks.size() + 2*OFFSET : 0;
         }
 
         public int bookIndexToViewIndex(int bookIndex) {

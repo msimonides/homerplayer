@@ -113,9 +113,11 @@ public class AudioBookManager {
         }
         if (currentBook == null) {
             String id = storage.getCurrentAudioBook();
-            if (getById(id) == null)
+            if (getById(id) == null && audioBooks.size() > 0)
                 id = audioBooks.get(0).getId();
-            setCurrentBook(id);
+
+            if (id != null)
+                setCurrentBook(id);
         }
 
         if (audioBooksChanged)
