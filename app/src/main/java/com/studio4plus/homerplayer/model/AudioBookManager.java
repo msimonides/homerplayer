@@ -39,8 +39,11 @@ public class AudioBookManager {
     }
 
     public void setCurrentBook(String bookId) {
-        currentBook = getById(bookId);
-        EventBus.getDefault().post(new CurrentBookChangedEvent(currentBook));
+        AudioBook newBook = getById(bookId);
+        if (newBook != currentBook) {
+            currentBook = getById(bookId);
+            EventBus.getDefault().post(new CurrentBookChangedEvent(currentBook));
+        }
     }
 
     public AudioBook getCurrentBook() {
