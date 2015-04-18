@@ -11,8 +11,7 @@
             android:label="HomerPlayer"
             android:name=".ui.MainActivity"
             android:launchMode="singleTask"
-            android:clearTaskOnLaunch="true"
-            android:screenOrientation="userLandscape">
+            android:clearTaskOnLaunch="true">
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

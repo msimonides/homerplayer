@@ -14,4 +14,14 @@
         <item>30</item>
         <item>45</item>
     </string-array>
+    <string-array name="screen_orientation_entries">
+        <item>Landscape Auto</item>
+        <item>Locked Landscape</item>
+        <item>Locked Landscape Reversed</item>
+    </string-array>
+    <string-array name="screen_orientation_values" translatable="false">
+        <item>LANDSCAPE_AUTO</item>
+        <item>LANDSCAPE_LOCKED</item>
+        <item>LANDSCAPE_REVERSE_LOCKED</item>
+    </string-array>
 </resources>

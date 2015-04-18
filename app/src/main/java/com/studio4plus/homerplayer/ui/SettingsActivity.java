@@ -1,11 +1,11 @@
 package com.studio4plus.homerplayer.ui;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -14,7 +14,7 @@ import android.preference.SwitchPreference;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.R;
 
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +38,7 @@ public class SettingsActivity extends Activity {
 
             SharedPreferences sharedPreferences =
                     PreferenceManager.getDefaultSharedPreferences(getActivity());
+            updateScreenOrientationSummary(sharedPreferences);
             updateJumpBackSummary(sharedPreferences);
 
             if (Build.VERSION.SDK_INT < 21) {
@@ -72,7 +73,20 @@ public class SettingsActivity extends Activity {
                 case GlobalSettings.KEY_JUMP_BACK:
                     updateJumpBackSummary(sharedPreferences);
                     break;
+                case GlobalSettings.KEY_SCREEN_ORIENTATION:
+                    updateScreenOrientationSummary(sharedPreferences);
+                    break;
             }
+        }
+
+        private void updateScreenOrientationSummary(SharedPreferences sharedPreferences) {
+            String stringValue = sharedPreferences.getString(
+                    GlobalSettings.KEY_SCREEN_ORIENTATION,
+                    getString(R.string.pref_screen_orientation_default_value));
+            ListPreference preference =
+                    (ListPreference) findPreference(GlobalSettings.KEY_SCREEN_ORIENTATION);
+            int index = preference.findIndexOfValue(stringValue);
+            preference.setSummary(preference.getEntries()[index]);
         }
 
         private void updateJumpBackSummary(SharedPreferences sharedPreferences) {

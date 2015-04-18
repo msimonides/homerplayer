@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <ListPreference
+        android:key="screen_orientation_preference"
+        android:title="@string/pref_screen_orientation"
+        android:entries="@array/screen_orientation_entries"
+        android:entryValues="@array/screen_orientation_values"
+        android:defaultValue="@string/pref_screen_orientation_default_value"/>
+    <ListPreference
         android:key="jump_back_preference"
         android:title="@string/pref_jump_back_title"
         android:entries="@array/jump_back_entries"

@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,7 +30,7 @@ import javax.inject.Inject;
 import de.greenrobot.event.EventBus;
 import fr.castorflex.android.verticalviewpager.VerticalViewPager;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends BaseActivity {
 
     private static final int TTS_CHECK_CODE = 1;
 

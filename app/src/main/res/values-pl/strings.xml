@@ -12,4 +12,5 @@
     <string name="pref_jump_back_entry_disabled">Wyłączone</string>
     <string name="pref_jump_back_summary">Cofnij o %d sekund</string>
     <string name="playback_in_progress">Odtwarzanie</string>
+    <string name="pref_screen_orientation">Orientacja ekranu</string>
 </resources>
