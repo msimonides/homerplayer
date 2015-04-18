@@ -116,16 +116,16 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onStart() {
-        super.onStart();
-
-        EventBus.getDefault().register(this);
-
         if (playbackService != null && playbackService.isInPlaybackMode()) {
             actionViewPager.setCurrentItem(Page.getPosition(Page.PLAYBACK), false);
         } else {
             actionViewPager.setCurrentItem(Page.getPosition(Page.BOOK_LIST), false);
             registerScreenOnReceiver();
         }
+
+        EventBus.getDefault().register(this);
+
+        super.onStart();
     }
 
     @Override
