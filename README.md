@@ -3,6 +3,7 @@ Homer Player
 
 An audio book player for the elderly and visually impaired.
 
+[See a video.](http://www.youtube.com/watch?v=OyCvFbOJRFg)
 
 Project Goal
 ------------
