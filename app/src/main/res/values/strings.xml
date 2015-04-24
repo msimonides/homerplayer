@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">HomerPlayer</string>
+    <string name="app_name" translatable="false">Homer Player</string>
     <string name="playback_service_notification">Audio Book Playing</string>
     <string name="noBooksMessage">There are no audio books on the device.</string>
     <string name="device_admin_label" translatable="false">Homer Player</string>
@@ -16,5 +16,6 @@
     <string name="pref_jump_back_summary">Jump %d seconds back</string>
     <string name="pref_screen_orientation">Screen orientation</string>
     <string name="pref_screen_orientation_default_value" translatable="false">LANDSCAPE_LOCKED</string>
+    <string name="pref_version_title">Version</string>
     <string name="playback_in_progress">Playback in progress</string>
 </resources>

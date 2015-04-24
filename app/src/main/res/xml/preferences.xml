@@ -18,4 +18,7 @@
         android:summaryOn="@string/pref_kiosk_mode_summary_on"
         android:summaryOff="@string/pref_kiosk_mode_summary_off"
         android:defaultValue="false"/>
+    <Preference
+        android:key="version_preference"
+        android:title="@string/pref_version_title"/>
 </PreferenceScreen>

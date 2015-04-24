@@ -11,6 +11,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 
+import com.studio4plus.homerplayer.BuildConfig;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.R;
 
@@ -25,7 +26,6 @@ public class SettingsActivity extends BaseActivity {
                 .replace(android.R.id.content, new SettingsFragment())
                 .commit();
     }
-
 
     public static class SettingsFragment
             extends PreferenceFragment
@@ -46,6 +46,8 @@ public class SettingsActivity extends BaseActivity {
                 kioskModePreference.setEnabled(false);
                 kioskModePreference.setSummary(R.string.pref_kiosk_mode_summary_old_version);
             }
+
+            updateVersionSummary();
         }
 
         @Override
@@ -100,6 +102,11 @@ public class SettingsActivity extends BaseActivity {
                 preference.setSummary(String.format(
                         getString(R.string.pref_jump_back_summary), value));
             }
+        }
+
+        private void updateVersionSummary() {
+            Preference preference = findPreference("version_preference");
+            preference.setSummary(BuildConfig.VERSION_NAME);
         }
 
         @SuppressLint("CommitPrefEdits")
