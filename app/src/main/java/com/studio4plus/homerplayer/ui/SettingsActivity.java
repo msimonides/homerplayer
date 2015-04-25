@@ -53,13 +53,10 @@ public class SettingsActivity extends BaseActivity {
             if (Build.VERSION.SDK_INT < 21) {
                 Preference kioskModePreference = findPreference(GlobalSettings.KEY_KIOSK_MODE);
                 kioskModePreference.setEnabled(false);
-                kioskModePreference.setSummary(R.string.pref_kiosk_mode_summary_old_version);
             }
-
-            updateVersionSummary();
+            updateKioskModeSummary();
 
             Preference preference = findPreference(KEY_UNREGISTER_DEVICE_OWNER);
-
             if (Build.VERSION.SDK_INT >= 21) {
                 preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                         @Override
@@ -73,6 +70,8 @@ public class SettingsActivity extends BaseActivity {
             } else {
                 getPreferenceScreen().removePreference(preference);
             }
+
+            updateVersionSummary();
         }
 
         @Override
@@ -136,6 +135,20 @@ public class SettingsActivity extends BaseActivity {
             }
         }
 
+        private void updateKioskModeSummary() {
+            SwitchPreference preference =
+                    (SwitchPreference) findPreference(GlobalSettings.KEY_KIOSK_MODE);
+            int summaryStringId;
+            if (Build.VERSION.SDK_INT < 21) {
+                summaryStringId = R.string.pref_kiosk_mode_summary_old_version;
+            } else {
+                summaryStringId = preference.isChecked()
+                        ? R.string.pref_kiosk_mode_summary_on
+                        : R.string.pref_kiosk_mode_summary_off;
+            }
+            preference.setSummary(summaryStringId);
+        }
+
         private void updateUnregisterDeviceOwner(boolean isEnabled) {
             Preference preference = findPreference(KEY_UNREGISTER_DEVICE_OWNER);
             preference.setEnabled(isEnabled);
@@ -192,7 +205,6 @@ public class SettingsActivity extends BaseActivity {
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putBoolean(GlobalSettings.KEY_KIOSK_MODE, false);
                     editor.commit();
-
                     SwitchPreference switchPreference =
                             (SwitchPreference) findPreference(GlobalSettings.KEY_KIOSK_MODE);
                     switchPreference.setChecked(false);
@@ -200,6 +212,7 @@ public class SettingsActivity extends BaseActivity {
             } else if (!newKioskModeEnabled && isTaskLocked) {
                 ApplicationLocker.unlockApplication(getActivity());
             }
+            updateKioskModeSummary();
         }
     }
 }
