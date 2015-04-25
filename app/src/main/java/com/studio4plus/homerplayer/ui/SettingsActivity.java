@@ -42,7 +42,7 @@ public class SettingsActivity extends BaseActivity {
             updateJumpBackSummary(sharedPreferences);
 
             if (Build.VERSION.SDK_INT < 21) {
-                Preference kioskModePreference = findPreference("kiosk_mode_preference");
+                Preference kioskModePreference = findPreference(GlobalSettings.KEY_KIOSK_MODE);
                 kioskModePreference.setEnabled(false);
                 kioskModePreference.setSummary(R.string.pref_kiosk_mode_summary_old_version);
             }

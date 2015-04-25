@@ -63,8 +63,6 @@ public class ApplicationLocker {
     }
 
     private static void lockScreen(Activity activity) {
-        DevicePolicyManager dpm =
-                (DevicePolicyManager) activity.getSystemService(Context.DEVICE_POLICY_SERVICE);
         activity.startLockTask();
         setTaskLocked(activity, true);
     }
