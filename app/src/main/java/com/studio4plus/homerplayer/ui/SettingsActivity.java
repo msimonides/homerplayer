@@ -2,6 +2,7 @@ package com.studio4plus.homerplayer.ui;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,9 +14,17 @@ import android.preference.SwitchPreference;
 
 import com.studio4plus.homerplayer.BuildConfig;
 import com.studio4plus.homerplayer.GlobalSettings;
+import com.studio4plus.homerplayer.HomerPlayerDeviceAdmin;
 import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.events.DeviceAdminChangeEvent;
+
+import de.greenrobot.event.EventBus;
 
 public class SettingsActivity extends BaseActivity {
+
+    // Pseudo preferences that don't change any preference values directly.
+    private static final String KEY_UNREGISTER_DEVICE_OWNER = "unregister_device_owner_preference";
+    private static final String KEY_VERSION = "version_preference";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +57,22 @@ public class SettingsActivity extends BaseActivity {
             }
 
             updateVersionSummary();
+
+            Preference preference = findPreference(KEY_UNREGISTER_DEVICE_OWNER);
+
+            if (Build.VERSION.SDK_INT >= 21) {
+                preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                        @Override
+                        public boolean onPreferenceClick(Preference preference) {
+                            askDisableDeviceOwner();
+                            return true;
+                        }
+                    });
+
+                updateUnregisterDeviceOwner(HomerPlayerDeviceAdmin.isDeviceOwner(getActivity()));
+            } else {
+                getPreferenceScreen().removePreference(preference);
+            }
         }
 
         @Override
@@ -56,6 +81,7 @@ public class SettingsActivity extends BaseActivity {
             SharedPreferences sharedPreferences =
                     PreferenceManager.getDefaultSharedPreferences(getActivity());
             sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+            EventBus.getDefault().register(this);
         }
 
         @Override
@@ -64,6 +90,7 @@ public class SettingsActivity extends BaseActivity {
             SharedPreferences sharedPreferences =
                     PreferenceManager.getDefaultSharedPreferences(getActivity());
             sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+            EventBus.getDefault().unregister(this);
         }
 
         @Override
@@ -79,6 +106,11 @@ public class SettingsActivity extends BaseActivity {
                     updateScreenOrientationSummary(sharedPreferences);
                     break;
             }
+        }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public void onEvent(DeviceAdminChangeEvent deviceAdminChangeEvent) {
+            updateUnregisterDeviceOwner(deviceAdminChangeEvent.isEnabled);
         }
 
         private void updateScreenOrientationSummary(SharedPreferences sharedPreferences) {
@@ -104,9 +136,42 @@ public class SettingsActivity extends BaseActivity {
             }
         }
 
+        private void updateUnregisterDeviceOwner(boolean isEnabled) {
+            Preference preference = findPreference(KEY_UNREGISTER_DEVICE_OWNER);
+            preference.setEnabled(isEnabled);
+            preference.setSummary(getString(isEnabled
+                    ? R.string.pref_unregister_device_owner_summary_on
+                    : R.string.pref_unregister_device_owner_summary_off));
+        }
+
         private void updateVersionSummary() {
-            Preference preference = findPreference("version_preference");
+            Preference preference = findPreference(KEY_VERSION);
             preference.setSummary(BuildConfig.VERSION_NAME);
+        }
+
+        private void askDisableDeviceOwner() {
+            DialogInterface.OnClickListener disableDeviceOwnerListener =
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            disableDeviceOwner();
+                        }
+                    };
+
+            AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                    .setMessage(getResources().getString(
+                            R.string.settings_unregister_device_owner_warning))
+                    .setPositiveButton(android.R.string.yes, disableDeviceOwnerListener)
+                    .setNegativeButton(android.R.string.no, null)
+                    .create();
+            dialog.show();
+        }
+
+        private void disableDeviceOwner() {
+            SwitchPreference kioskModePreference =
+                    (SwitchPreference) findPreference(GlobalSettings.KEY_KIOSK_MODE);
+            kioskModePreference.setChecked(false);
+            HomerPlayerDeviceAdmin.clearDeviceOwner(getActivity());
         }
 
         @SuppressLint("CommitPrefEdits")

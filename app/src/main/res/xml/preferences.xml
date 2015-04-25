@@ -19,6 +19,9 @@
         android:summaryOff="@string/pref_kiosk_mode_summary_off"
         android:defaultValue="false"/>
     <Preference
+        android:key="unregister_device_owner_preference"
+        android:title="@string/pref_unregister_device_owner_title"/>
+    <Preference
         android:key="version_preference"
         android:title="@string/pref_version_title"/>
 </PreferenceScreen>

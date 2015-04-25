@@ -3,15 +3,19 @@
     <string name="noBooksMessage">Na urządzeniu nie ma żadnych audiobooków.</string>
     <string name="playback_service_notification">Odtwarzanie audiobooka</string>
     <string name="settings_title">Ustawienia</string>
+    <string name="settings_device_owner_required_alert">Aplikacja musi być ustawiona jako "device owner". TODO: dodać linka do strony z instukcją.</string>
+    <string name="settings_unregister_device_owner_warning">Ta akcja wyłączy tryb kiosku nie może być łatwo cofnięta.\nWykonać?</string>
     <string name="pref_kiosk_mode_summary_off">Wyłączone</string>
     <string name="pref_kiosk_mode_summary_old_version">Wymagany Android 5.0 lub nowszy</string>
     <string name="pref_kiosk_mode_summary_on">Włączone</string>
     <string name="pref_kiosk_mode_title">Zablokuj wyjście z aplikacji (tryb kiosku)</string>
-    <string name="settings_device_owner_required_alert">Aplikacja musibyć ustawiona jako "device owner" w systemie. TODO: dodać linka do strony z instukcją.</string>
     <string name="pref_jump_back_title">Cofnij przy wznawianiu odtwarzania</string>
     <string name="pref_jump_back_entry_disabled">Wyłączone</string>
     <string name="pref_jump_back_summary">Cofnij o %d sekund</string>
     <string name="playback_in_progress">Odtwarzanie</string>
     <string name="pref_screen_orientation">Orientacja ekranu</string>
+    <string name="pref_unregister_device_owner_title">Wyłącz uprawnienia wymagane przez tryb kiosku</string>
+    <string name="pref_unregister_device_owner_summary_off">Nie posiada uprawnień "device owner"</string>
+    <string name="pref_unregister_device_owner_summary_on">Posiada uprawnienia</string>
     <string name="pref_version_title">Wersja</string>
 </resources>
