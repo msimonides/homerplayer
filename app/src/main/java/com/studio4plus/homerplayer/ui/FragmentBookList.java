@@ -75,7 +75,7 @@ public class FragmentBookList extends Fragment {
 
     @SuppressWarnings("UnusedDeclaration")
     public void onEvent(AudioBooksChangedEvent event) {
-        bookAdapter = new BookListPagerAdapter(getFragmentManager(), audioBookManager);
+        bookAdapter = new BookListPagerAdapter(getChildFragmentManager(), audioBookManager);
         bookPager.setAdapter(bookAdapter);
         updateViewPosition();
     }
