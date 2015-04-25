@@ -6,9 +6,9 @@
     <string name="device_admin_description" translatable="false">Homer Player</string>
     <string name="settings_title">Settings</string>
     <string name="settings_device_owner_required_alert">The application must be set a "device owner". TODO: provide a link to an instruction website.</string>
-    <string name="pref_kiosk_mode_title">Single Application Mode</string>
-    <string name="pref_kiosk_mode_summary_off">Never exit Homer Player</string>
-    <string name="pref_kiosk_mode_summary_on">Locked</string>
+    <string name="pref_kiosk_mode_title">Prevent from exiting the application (kiosk mode)</string>
+    <string name="pref_kiosk_mode_summary_off">Disabled</string>
+    <string name="pref_kiosk_mode_summary_on">Enabled</string>
     <string name="pref_kiosk_mode_summary_old_version">Android 5.0 or newer required</string>
     <string name="pref_jump_back_default_value" translatable="false">5</string>
     <string name="pref_jump_back_entry_disabled">Disabled</string>
