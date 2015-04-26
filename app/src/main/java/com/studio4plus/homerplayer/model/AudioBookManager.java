@@ -2,7 +2,7 @@ package com.studio4plus.homerplayer.model;
 
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
 import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
-import com.studio4plus.homerplayer.events.MediaScannerTriggeredEvent;
+import com.studio4plus.homerplayer.events.MediaStoreUpdateEvent;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class AudioBookManager {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void onEvent(MediaScannerTriggeredEvent ignored) {
+    public void onEvent(MediaStoreUpdateEvent ignored) {
         scanFiles();
     }
 
