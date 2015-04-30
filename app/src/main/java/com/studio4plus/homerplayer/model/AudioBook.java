@@ -30,7 +30,7 @@ public class AudioBook {
     }
 
     public String getTitle() {
-        return fileSet.directoryName;
+        return directoryToTitle(fileSet.directoryName);
     }
 
     public String getId() {
@@ -80,6 +80,10 @@ public class AudioBook {
         }
 
         return hasMoreFiles;
+    }
+
+    private static String directoryToTitle(String directory) {
+        return directory.replace('_', ' ');
     }
 
     private void notifyPositionObserver() {
