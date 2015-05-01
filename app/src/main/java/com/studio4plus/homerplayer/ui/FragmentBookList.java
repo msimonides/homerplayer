@@ -38,7 +38,7 @@ public class FragmentBookList extends Fragment {
         View view = inflater.inflate(R.layout.fragment_book_list, container, false);
         HomerPlayerApplication.getComponent(view.getContext()).inject(this);
 
-        bookAdapter = new BookListPagerAdapter(getFragmentManager(), audioBookManager);
+        bookAdapter = new BookListPagerAdapter(getChildFragmentManager(), audioBookManager);
         bookPager = (ViewPager) view.findViewById(R.id.bookListPager);
         bookPager.setAdapter(bookAdapter);
         bookPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {

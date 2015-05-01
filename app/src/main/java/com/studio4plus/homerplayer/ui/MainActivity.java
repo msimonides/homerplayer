@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.MotionEvent;
 import android.view.View;
@@ -46,22 +48,20 @@ public class MainActivity extends BaseActivity {
     @Inject public AudioBookManager audioBookManager;
 
     enum Page {
-        BOOK_LIST(new FragmentBookList()),
-        PLAYBACK(new FragmentPlayback());
+        BOOK_LIST() {
+            @Override
+            public Fragment createFragment() {
+                return new FragmentBookList();
+            }
+        },
+        PLAYBACK() {
+            @Override
+            public Fragment createFragment() {
+                return new FragmentPlayback();
+            }
+        };
 
-        public final Fragment fragment;
-
-        Page(Fragment fragment) {
-            this.fragment = fragment;
-        }
-
-        public static Fragment[] getAllFragments() {
-            Page[] values = values();
-            Fragment[] fragments = new Fragment[values.length];
-            for (int i = 0; i < values.length; ++i)
-                fragments[i] = getByPosition(i).fragment;
-            return fragments;
-        }
+        public abstract Fragment createFragment();
 
         public static Page getByPosition(int position) {
             return values()[position];
@@ -101,8 +101,7 @@ public class MainActivity extends BaseActivity {
         });
 
         actionViewPager = (VerticalViewPager) findViewById(R.id.actionPager);
-        actionViewPager.setAdapter(
-                new ActionPagerAdapter(getSupportFragmentManager(), Page.getAllFragments()));
+        actionViewPager.setAdapter(new ActionPagerAdapter(getSupportFragmentManager()));
         actionViewPager.setOnPageChangeListener(new PlayStopTrigger(audioBookManager));
 
         TextView noBooksPath = (TextView) findViewById(R.id.noBooksPath);
@@ -175,6 +174,7 @@ public class MainActivity extends BaseActivity {
 
     protected void onActivityResult(
             int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == TTS_CHECK_CODE) {
             if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
                 // success, create the TTS instance
@@ -255,6 +255,23 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             playbackService = null;
+        }
+    }
+
+    public static class ActionPagerAdapter extends FragmentPagerAdapter {
+
+        public ActionPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return Page.getByPosition(position).createFragment();
+        }
+
+        @Override
+        public int getCount() {
+            return Page.values().length;
         }
     }
 }
