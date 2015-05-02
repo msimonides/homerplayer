@@ -26,6 +26,7 @@ public class FaceDownDetector implements SampleGatherer.Listener {
     private final SampleGatherer sampleGatherer;
     private final Handler mainThreadHandler;
     private final Listener listener;
+    private boolean enabled = false;
 
     private final Runnable sampleGatheringStarter = new Runnable() {
         @Override
@@ -48,12 +49,14 @@ public class FaceDownDetector implements SampleGatherer.Listener {
     }
 
     public void enable() {
+        enabled = true;
         startGatheringSample();
     }
 
     public void disable() {
         sensorManager.unregisterListener(sampleGatherer, accelerometer);
         mainThreadHandler.removeCallbacks(sampleGatheringStarter);
+        enabled = false;
     }
 
     @Override
@@ -79,7 +82,8 @@ public class FaceDownDetector implements SampleGatherer.Listener {
                 listener.onDeviceFaceDown();
         }
 
-        mainThreadHandler.postDelayed(sampleGatheringStarter, SAMPLE_INTERVAL_MS);
+        if (enabled)
+            mainThreadHandler.postDelayed(sampleGatheringStarter, SAMPLE_INTERVAL_MS);
     }
 
     private void startGatheringSample() {
