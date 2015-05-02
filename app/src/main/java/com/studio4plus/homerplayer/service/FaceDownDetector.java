@@ -19,7 +19,7 @@ public class FaceDownDetector implements SampleGatherer.Listener {
 
     // TODO: eventually we'll want to have a calibration mechanism for these paramaters
     private static final float MAX_STILL_DELTA_ACCELERATION = 0.6f; // m/s^2
-    private static final float MAX_SQR_DEVIATION = 1.5f;
+    private static final float MAX_SQR_DEVIATION = 4f;
 
     private final SensorManager sensorManager;
     private final Sensor accelerometer;
