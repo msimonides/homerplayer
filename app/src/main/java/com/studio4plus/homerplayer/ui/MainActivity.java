@@ -11,8 +11,7 @@ import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -21,22 +20,19 @@ import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppedEvent;
+import com.studio4plus.homerplayer.model.AudioBook;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.service.PlaybackService;
 import com.studio4plus.homerplayer.widget.MultiTapInterceptor;
 
-import java.util.Arrays;
-
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
-import fr.castorflex.android.verticalviewpager.VerticalViewPager;
 
 public class MainActivity extends BaseActivity {
 
     private static final int TTS_CHECK_CODE = 1;
 
-    private VerticalViewPager actionViewPager;
     private Speaker speaker;
 
     private final PlaybackServiceConnection playbackServiceConnection =
@@ -62,14 +58,6 @@ public class MainActivity extends BaseActivity {
         };
 
         public abstract Fragment createFragment();
-
-        public static Page getByPosition(int position) {
-            return values()[position];
-        }
-
-        public static int getPosition(Page page) {
-            return Arrays.asList(values()).indexOf(page);
-        }
     }
 
     @Override
@@ -100,10 +88,6 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        actionViewPager = (VerticalViewPager) findViewById(R.id.actionPager);
-        actionViewPager.setAdapter(new ActionPagerAdapter(getSupportFragmentManager()));
-        actionViewPager.setOnPageChangeListener(new PlayStopTrigger(audioBookManager));
-
         TextView noBooksPath = (TextView) findViewById(R.id.noBooksPath);
         noBooksPath.setText(audioBookManager.getAudioBooksDirectory().getAbsolutePath());
 
@@ -116,9 +100,9 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onStart() {
         if (playbackService != null && playbackService.isInPlaybackMode()) {
-            actionViewPager.setCurrentItem(Page.getPosition(Page.PLAYBACK), false);
+            showPage(Page.PLAYBACK, true);
         } else {
-            actionViewPager.setCurrentItem(Page.getPosition(Page.BOOK_LIST), false);
+            showPage(Page.BOOK_LIST, true);
             registerScreenOnReceiver();
         }
 
@@ -151,7 +135,38 @@ public class MainActivity extends BaseActivity {
 
     @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
     public void onEvent(PlaybackStoppedEvent ignored) {
-        actionViewPager.setCurrentItem(Page.getPosition(Page.BOOK_LIST), true);
+        showPage(Page.BOOK_LIST);
+    }
+
+    public void startPlayback(String bookId) {
+        AudioBook book = audioBookManager.getById(bookId);
+        if (playbackService != null && book != null) {
+            playbackService.startPlayback(book);
+            stopSpeaking();
+
+            showPage(Page.PLAYBACK);
+        }
+    }
+
+    public void stopPlayback() {
+        if (playbackService != null)
+            playbackService.stopPlayback();
+
+        showPage(Page.BOOK_LIST);
+    }
+
+    private void showPage(Page page) {
+        showPage(page, false);
+    }
+
+    private void showPage(Page page, boolean allowStateLoss) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.mainContainer, page.createFragment());
+        if (allowStateLoss)
+            transaction.commitAllowingStateLoss();
+        else
+            transaction.commit();
     }
 
     private void speakCurrentTitle() {
@@ -219,59 +234,18 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    private class PlayStopTrigger extends ViewPager.SimpleOnPageChangeListener {
-
-        private final AudioBookManager audioBookManager;
-
-        private PlayStopTrigger(AudioBookManager audioBookManager) {
-            this.audioBookManager = audioBookManager;
-        }
-
-        @Override
-        public void onPageSelected(int position) {
-            if (Page.getByPosition(position) == Page.PLAYBACK) {
-                if (playbackService != null && audioBookManager.getCurrentBook() != null) {
-                    playbackService.startPlayback(audioBookManager.getCurrentBook());
-                    stopSpeaking();
-
-                }
-            } else {
-                if (playbackService != null) {
-                    playbackService.stopPlayback();
-                }
-            }
-        }
-    }
-
     private class PlaybackServiceConnection implements ServiceConnection {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             playbackService = ((PlaybackService.ServiceBinder) service).getService();
             if (playbackService.isInPlaybackMode())
-                actionViewPager.setCurrentItem(Page.getPosition(Page.PLAYBACK), false);
+                showPage(Page.PLAYBACK);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             playbackService = null;
-        }
-    }
-
-    public static class ActionPagerAdapter extends FragmentPagerAdapter {
-
-        public ActionPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return Page.getByPosition(position).createFragment();
-        }
-
-        @Override
-        public int getCount() {
-            return Page.values().length;
         }
     }
 }

@@ -40,10 +40,5 @@
                 android:textSize="@dimen/noBooksPathTextSize"/>
         </LinearLayout>
 
-        <fr.castorflex.android.verticalviewpager.VerticalViewPager
-            android:id="@+id/actionPager"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"/>
-
     </com.studio4plus.homerplayer.widget.MultiTapInterceptor>
 </FrameLayout>

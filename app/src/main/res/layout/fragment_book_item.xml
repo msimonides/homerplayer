@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/bookListItemPadding">
 
@@ -10,6 +10,19 @@
         android:layout_height="match_parent"
         android:textSize="@dimen/bookListTextSize"
         android:singleLine="false"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:layout_above="@+id/startButton"/>
 
-</FrameLayout>
+    <Button
+        android:id="@+id/startButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/bookListTextSize"
+        android:background="#008856"
+        android:text="Start"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:paddingLeft="60dp"
+        android:paddingRight="60dp"/>
+
+</RelativeLayout>

@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.studio4plus.homerplayer.R;
@@ -29,12 +30,21 @@ public class FragmentBookItem extends Fragment {
         View view = inflater.inflate(R.layout.fragment_book_item, container, false);
 
         Bundle args = getArguments();
-        String bookId = args.getString(ARG_BOOK_ID);
+        final String bookId = args.getString(ARG_BOOK_ID);
         if (bookId != null) {
             TextView textView = (TextView) view.findViewById(R.id.title);
             textView.setText(args.getString(ARG_BOOK_TITLE));
             textView.setTextColor(args.getInt(ARG_BOOK_TEXT_COLOR));
             view.setBackgroundColor(args.getInt(ARG_BOOK_BACKGROUND_COLOR));
+
+            Button startButton = (Button) view.findViewById(R.id.startButton);
+            startButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    mainActivity.startPlayback(bookId);
+                }
+            });
         }
 
         return view;
