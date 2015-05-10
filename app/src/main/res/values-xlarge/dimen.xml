@@ -5,4 +5,5 @@
     <dimen name="noBooksPathTextSize">40sp</dimen>
     <dimen name="horizontalScreenMargin">160dp</dimen>
     <dimen name="verticalScreenMargin">140dp</dimen>
+    <dimen name="buttonPaddingHoriz">80dp</dimen>
 </resources>

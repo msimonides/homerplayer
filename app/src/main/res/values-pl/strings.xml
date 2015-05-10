@@ -18,4 +18,6 @@
     <string name="pref_unregister_device_owner_summary_off">Nie posiada uprawnień "device owner"</string>
     <string name="pref_unregister_device_owner_summary_on">Posiada uprawnienia</string>
     <string name="pref_version_title">Wersja</string>
+    <string name="button_start">Start</string>
+    <string name="button_stop">Stop</string>
 </resources>

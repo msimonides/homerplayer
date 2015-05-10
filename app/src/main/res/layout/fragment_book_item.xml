@@ -15,14 +15,10 @@
 
     <Button
         android:id="@+id/startButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/bookListTextSize"
-        android:background="#008856"
-        android:text="Start"
+        style="@style/buttonStartStop"
+        android:text="@string/button_start"
+        android:background="@drawable/button_start"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:paddingLeft="60dp"
-        android:paddingRight="60dp"/>
+        android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>

@@ -22,4 +22,6 @@
     <string name="pref_unregister_device_owner_summary_on">Privilege granted</string>
     <string name="pref_version_title">Version</string>
     <string name="playback_in_progress">Playback in progress</string>
+    <string name="button_start">Start</string>
+    <string name="button_stop">Stop</string>
 </resources>
