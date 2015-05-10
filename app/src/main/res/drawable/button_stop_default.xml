@@ -3,6 +3,6 @@
     android:shape="rectangle">
     <corners android:radius="@dimen/buttonCornerRadius"/>
 
-    <solid android:color="#ffbb2200"/>
+    <solid android:color="@color/buttonStopBackground"/>
     <stroke android:width="@dimen/buttonStrokeWidth" android:color="#60000000"/>
 </shape>

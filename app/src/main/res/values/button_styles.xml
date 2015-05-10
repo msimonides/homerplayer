@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="buttonStart" parent="buttonStartStop">
+        <item name="android:background">@drawable/button_start</item>
+    </style>
+
+    <style name="buttonStop" parent="buttonStartStop">
+        <item name="android:background">@drawable/button_stop</item>
+    </style>
+
+</resources>

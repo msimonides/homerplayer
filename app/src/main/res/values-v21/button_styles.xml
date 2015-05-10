@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="buttonStart" parent="buttonStartStop">
+        <item name="android:backgroundTint">@color/buttonStartBackground</item>
+        <item name="android:backgroundTintMode">multiply</item>
+    </style>
+
+    <style name="buttonStop" parent="buttonStartStop">
+        <item name="android:backgroundTint">@color/buttonStopBackground</item>
+        <item name="android:backgroundTintMode">multiply</item>
+    </style>
+
+</resources>

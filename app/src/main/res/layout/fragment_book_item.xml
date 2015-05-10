@@ -15,9 +15,8 @@
 
     <Button
         android:id="@+id/startButton"
-        style="@style/buttonStartStop"
+        style="@style/buttonStart"
         android:text="@string/button_start"
-        android:background="@drawable/button_start"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"/>
 
