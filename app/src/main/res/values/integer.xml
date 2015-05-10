@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="flip_animation_time_ms">500</integer>
+    <integer name="flip_animation_time_half_ms">250</integer>
+</resources>

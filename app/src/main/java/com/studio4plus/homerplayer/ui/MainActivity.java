@@ -159,11 +159,13 @@ public class MainActivity extends BaseActivity {
         showPage(page, false);
     }
 
-    private void showPage(Page page, boolean allowStateLoss) {
+    private void showPage(Page page, boolean onStart) {
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
+        if (!onStart)
+            transaction.setCustomAnimations(R.animator.flip_right_in, R.animator.flip_right_out);
         transaction.replace(R.id.mainContainer, page.createFragment());
-        if (allowStateLoss)
+        if (onStart)
             transaction.commitAllowingStateLoss();
         else
             transaction.commit();
