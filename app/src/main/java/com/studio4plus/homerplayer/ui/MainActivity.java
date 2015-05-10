@@ -14,10 +14,10 @@ import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
 
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
 import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppedEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
@@ -44,6 +44,13 @@ public class MainActivity extends BaseActivity {
     @Inject public AudioBookManager audioBookManager;
 
     enum Page {
+        NO_BOOKS() {
+            @Override
+            public Fragment createFragment() {
+                return new FragmentNoBooks();
+            }
+        },
+
         BOOK_LIST() {
             @Override
             public Fragment createFragment() {
@@ -88,9 +95,6 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        TextView noBooksPath = (TextView) findViewById(R.id.noBooksPath);
-        noBooksPath.setText(audioBookManager.getAudioBooksDirectory().getAbsolutePath());
-
         Intent serviceIntent = new Intent(this, PlaybackService.class);
         startService(serviceIntent);
         bindService(serviceIntent, playbackServiceConnection, Context.BIND_AUTO_CREATE);
@@ -99,7 +103,9 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onStart() {
-        if (playbackService != null && playbackService.isInPlaybackMode()) {
+        if (audioBookManager.getAudioBooks().isEmpty()) {
+            showPage(Page.NO_BOOKS, true);
+        } else if (playbackService != null && playbackService.isInPlaybackMode()) {
             showPage(Page.PLAYBACK, true);
         } else {
             showPage(Page.BOOK_LIST, true);
@@ -136,6 +142,15 @@ public class MainActivity extends BaseActivity {
     @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
     public void onEvent(PlaybackStoppedEvent ignored) {
         showPage(Page.BOOK_LIST);
+    }
+
+    @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
+    public void onEvent(AudioBooksChangedEvent event) {
+        if (audioBookManager.getAudioBooks().isEmpty()) {
+            showPage(Page.NO_BOOKS);
+        } else {
+            showPage(Page.BOOK_LIST);
+        }
     }
 
     public void startPlayback(String bookId) {

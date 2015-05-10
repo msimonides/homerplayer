@@ -18,27 +18,5 @@
         android:layout_marginRight="@dimen/horizontalScreenMargin"
         android:layout_marginBottom="@dimen/verticalScreenMargin">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="@dimen/bookListItemPadding">
-
-            <TextView
-                android:id="@+id/noBooksText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="@string/noBooksMessage"
-                android:textSize="@dimen/bookListTextSize"/>
-
-            <TextView
-                android:id="@+id/noBooksPath"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/noBooksPathTextSize"/>
-        </LinearLayout>
-
     </com.studio4plus.homerplayer.widget.MultiTapInterceptor>
 </FrameLayout>
