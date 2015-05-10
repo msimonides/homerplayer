@@ -18,7 +18,8 @@ public class HomerPlayerApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Crittercism.initialize(getApplicationContext(), "553ffaa87365f84f7d3d7009");
+        if (!BuildConfig.DEBUG)
+            Crittercism.initialize(getApplicationContext(), "553ffaa87365f84f7d3d7009");
 
         component = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
