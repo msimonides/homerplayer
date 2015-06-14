@@ -3,6 +3,7 @@ package com.studio4plus.homerplayer.widget;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -27,9 +28,6 @@ public class MultiTapInterceptor extends FrameLayout {
     private long lastTouchDownNanoTime;
     private float lastTouchDownX;
     private float lastTouchDownY;
-    private long lastTapNanoTime;
-    private float lastTapX;
-    private float lastTapY;
     private int consecutiveTapCount;
 
     private int maxTapSlop;
@@ -76,43 +74,53 @@ public class MultiTapInterceptor extends FrameLayout {
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         final int action = ev.getAction() & MotionEvent.ACTION_MASK;
 
+        if (action == MotionEvent.ACTION_DOWN && ev.getPointerCount() == 1) {
+            final float x = ev.getX();
+            final float y = ev.getY();
+            final long nanoTime = System.nanoTime();
+
+            if (consecutiveTapCount == 0 ||
+                    nanoTime - lastTouchDownNanoTime < maxDoubleTapNanoTime &&
+                    Math.abs(x - lastTouchDownX) < maxMultiTapSlop &&
+                    Math.abs(y - lastTouchDownY) < maxMultiTapSlop) {
+                lastTouchDownNanoTime = nanoTime;
+                lastTouchDownX = x;
+                lastTouchDownY = y;
+                ++consecutiveTapCount;
+
+                if (consecutiveTapCount == TRIGGER_TAP_COUNT)
+                    return true;
+            } else {
+                consecutiveTapCount = 0;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean onTouchEvent(@NonNull MotionEvent ev) {
+        final int action = ev.getAction() & MotionEvent.ACTION_MASK;
+
         switch(action) {
             case MotionEvent.ACTION_DOWN:
-                if (ev.getPointerCount() == 1) {
-                    lastTouchDownNanoTime = System.nanoTime();
-                    lastTouchDownX =  ev.getX();
-                    lastTouchDownY = ev.getY();
-
-                    if (lastTouchDownNanoTime - lastTapNanoTime > maxDoubleTapNanoTime ||
-                            Math.abs(lastTouchDownX - lastTapX) > maxMultiTapSlop ||
-                            Math.abs(lastTouchDownY - lastTapY) > maxMultiTapSlop) {
-                        consecutiveTapCount = 0;
-                    }
-                    break;
+                if (consecutiveTapCount == TRIGGER_TAP_COUNT) {
+                    consecutiveTapCount = 0;
+                    return true;
                 }
-            case MotionEvent.ACTION_UP:
-                if (System.nanoTime() - lastTouchDownNanoTime < maxTapNanoTime) {
-                    final float x = ev.getX();
-                    final float y = ev.getY();
-                    if (Math.abs(lastTouchDownX - x) < maxTapSlop &&
-                            Math.abs(lastTouchDownY - y) < maxTapSlop) {
-
-                        lastTapX = x;
-                        lastTapY = y;
-                        lastTapNanoTime = System.nanoTime();
-
-                        ++consecutiveTapCount;
-                        if (consecutiveTapCount == TRIGGER_TAP_COUNT) {
-                            consecutiveTapCount = 0;
-                            if (listener != null)
-                                listener.onMultiTap(this);
-                        }
-                    } else {
-                        consecutiveTapCount = 0;
-                    }
-                }
-                lastTouchDownNanoTime = 0;
                 break;
+            case MotionEvent.ACTION_UP:
+               if (System.nanoTime() - lastTouchDownNanoTime < maxTapNanoTime) {
+                   final float x = ev.getX();
+                    final float y = ev.getY();
+                   if (Math.abs(lastTouchDownX - x) < maxTapSlop &&
+                        Math.abs(lastTouchDownY - y) < maxTapSlop) {
+                        if (listener != null) {
+                            listener.onMultiTap(this);
+                            return true;
+                        }
+                    }
+               }
         }
         return false;
     }
