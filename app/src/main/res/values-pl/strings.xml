@@ -20,4 +20,5 @@
     <string name="pref_version_title">Wersja</string>
     <string name="button_start">Start</string>
     <string name="button_stop">Stop</string>
+    <string name="multi_tap_prompt">Jeszcze %d</string>
 </resources>

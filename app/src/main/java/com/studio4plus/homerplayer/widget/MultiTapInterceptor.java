@@ -9,6 +9,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.FrameLayout;
+import android.widget.Toast;
+
+import com.studio4plus.homerplayer.R;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * A FrameLayout that can recognise a multiple tap (as in double tap, but with more taps).
@@ -33,7 +38,8 @@ public class MultiTapInterceptor extends FrameLayout {
     private int maxTapSlop;
     private int maxMultiTapSlop;
     private long maxTapNanoTime;
-    private long maxDoubleTapNanoTime;
+    private long maxConsecutiveTapNanoTime;
+    private Toast lastToast;
 
     public MultiTapInterceptor(Context context) {
         super(context);
@@ -58,12 +64,12 @@ public class MultiTapInterceptor extends FrameLayout {
     }
 
     private void init(Context context) {
-        final int MS_TO_NANO_TIME = 1000000;
         ViewConfiguration configuration = ViewConfiguration.get(context);
         maxTapSlop = configuration.getScaledTouchSlop();
-        maxMultiTapSlop = configuration.getScaledDoubleTapSlop() * 2;
-        maxTapNanoTime = ViewConfiguration.getJumpTapTimeout() * MS_TO_NANO_TIME;
-        maxDoubleTapNanoTime = ViewConfiguration.getDoubleTapTimeout() * MS_TO_NANO_TIME;
+        maxMultiTapSlop = configuration.getScaledDoubleTapSlop();
+        maxTapNanoTime = TimeUnit.MILLISECONDS.toNanos(ViewConfiguration.getJumpTapTimeout());
+        maxConsecutiveTapNanoTime =
+                3 * TimeUnit.MILLISECONDS.toNanos(ViewConfiguration.getDoubleTapTimeout());
     }
 
     public void setOnMultitapListener(Listener listener) {
@@ -80,7 +86,7 @@ public class MultiTapInterceptor extends FrameLayout {
             final long nanoTime = System.nanoTime();
 
             if (consecutiveTapCount == 0 ||
-                    nanoTime - lastTouchDownNanoTime < maxDoubleTapNanoTime &&
+                    nanoTime - lastTouchDownNanoTime < maxConsecutiveTapNanoTime &&
                     Math.abs(x - lastTouchDownX) < maxMultiTapSlop &&
                     Math.abs(y - lastTouchDownY) < maxMultiTapSlop) {
                 lastTouchDownNanoTime = nanoTime;
@@ -90,7 +96,10 @@ public class MultiTapInterceptor extends FrameLayout {
 
                 if (consecutiveTapCount == TRIGGER_TAP_COUNT)
                     return true;
+
+                displayPrompt(consecutiveTapCount);
             } else {
+                hidePrompt();
                 consecutiveTapCount = 0;
             }
         }
@@ -117,11 +126,29 @@ public class MultiTapInterceptor extends FrameLayout {
                         Math.abs(lastTouchDownY - y) < maxTapSlop) {
                         if (listener != null) {
                             listener.onMultiTap(this);
+                            hidePrompt();
                             return true;
                         }
                     }
                }
         }
         return false;
+    }
+
+    private void displayPrompt(int tapNumber) {
+        if (tapNumber >= 2) {
+            String message = String.format(
+                    getResources().getString(R.string.multi_tap_prompt), TRIGGER_TAP_COUNT - tapNumber);
+            hidePrompt();
+            lastToast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
+            lastToast.show();
+        }
+    }
+
+    private void hidePrompt() {
+        if (lastToast != null) {
+            lastToast.cancel();
+            lastToast = null;
+        }
     }
 }

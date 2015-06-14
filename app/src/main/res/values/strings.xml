@@ -24,4 +24,5 @@
     <string name="playback_in_progress">Playback in progress</string>
     <string name="button_start">Start</string>
     <string name="button_stop">Stop</string>
+    <string name="multi_tap_prompt">%d more to go</string>
 </resources>
