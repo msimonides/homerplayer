@@ -1,0 +1,166 @@
+body,p {
+	font-family: 'Open Sans', sans-serif;
+	font-size: 14pt;
+}
+
+hr {
+	border: 0;
+}
+
+h1,h2 {
+	font-weight: 600;
+}
+
+h2 {
+	margin-top: 1em;
+	line-height: 140%;
+}
+
+strong {
+	font-weight: 600;
+}
+
+.content a:not(.btn):visited {
+	color: purple;
+}
+
+.content a:not(.btn),
+footer a {
+	text-decoration: underline;
+}
+
+.content img.center-block {
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+.page-title-header {
+	width: 100%;
+	background: no-repeat center center;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	background-size: cover;
+	-o-background-size: cover;
+	margin-top: 50px;  /* navbar height in Bootstrap */
+	margin-bottom: 3em;
+}
+
+.page-heading {
+	padding: 4em 2em;
+}
+
+.heading {
+	text-align: center;
+	color: #fff;
+}
+
+.heading h1 {
+	margin: 0em;
+	font-weight: 800;
+	font-size: 350%;
+}
+
+.heading .subheading {
+	font-size: 200%;
+	font-weight: 400;
+}
+
+.heading hr {
+	margin: 1em auto;
+	width: 5em;
+	height: 0.2em;
+	background: #fff;
+}
+
+
+img.qrcode {
+	margin-top: 1em;
+	max-width: 30%;
+}
+
+hr.footer {
+	height: 1px;
+	background: #ccc;
+}
+
+#index-page-video {
+	margin-bottom: 2em;
+}
+
+a.framed-link {
+	display: block;
+	border: solid 4pt #000000;
+	border-radius: 10pt;
+	padding: 1em 2em;
+	font-size: 100%;
+	font-weight: bold;
+}
+
+a.framed-link img {
+	margin-bottom: 1em;
+}
+
+a.framed-link:hover {
+	background-color: #cccccc;
+}
+
+.navbar-brand {
+	padding-top: 9px;
+	padding-bottom: 9px;
+}
+
+.tab-content-framed {
+	border: 1px solid #ddd;
+	border-top: 0px;
+	padding: 10px 14px;
+	padding-bottom: 0px;
+	margin-bottom: 10px;
+}
+
+footer ul.social li {
+	margin: 0px;
+	padding-right: 0px;
+	padding-left: 10px;
+}
+
+footer ul.social a {
+	color: #999;
+}
+
+footer ul.social a:hover {
+	color: #666;
+}
+
+footer {
+	padding-bottom: 2em;
+}
+
+@media only screen and (min-width: 768px) {
+	.page-heading {
+		padding: 6em 2em;
+	}
+}
+
+@media only screen and (min-width: 992px) {
+	.container {
+		width: 900px;
+	}
+	.page-heading {
+		padding: 8em 2em;
+	}
+	img.qrcode {
+		max-width: 20%;
+	}
+}
+
+@media only screen and (min-width: 1200px) {
+	.container {
+		width: 900px;
+	}
+	.page-heading {
+		padding: 10em 2em;
+	}
+	img.qrcode {
+		max-width: 20%;
+	}
+}

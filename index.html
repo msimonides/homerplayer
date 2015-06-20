@@ -1,0 +1,37 @@
+---
+layout: empty
+title: "Homer Player"
+heading: "Homer Player"
+description: "An audio book player for the elderly and visually impaired"
+extra_css:
+ - index.css
+ - lightview.css
+extra_js:
+ - lightview.js
+---
+
+<div class="container-fluid vcenter-parent">
+  <div class="vcenter-content">
+    <div class="title heading">
+      <img src="img/icon-i-128.png">
+      <h1>{{ page.title }}</h1>
+      <hr>
+      <h2>{{ page.description }}</h2>
+    </div>
+  
+    <div class="play-button">
+      <a href="https://www.youtube.com/embed/871GJTovYtQ?vq=large&autoplay=1&autohide=1&border=0&egm=0&showinfo=0"
+          class="lightview" data-lightview-type="iframe"
+          data-lightview-options="width: 853, height: 480, viewport: 'scale'">
+        <i class="fa fa-play-circle fa-5x"></i>
+      </a>
+    </div>
+  
+    <div class="buttons">
+      <ul>
+        {% assign navigation = '/project-goal.html,/install-test.html,/install-dedicated.html' | split:',' %}
+        {% include nav-items.html navigation=navigation %}
+      </ul>
+    </div>
+  </div>
+</div>

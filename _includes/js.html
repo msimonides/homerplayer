@@ -1,0 +1,7 @@
+<!-- Bootstrap Core JavaScript -->
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="{{ "/js/bootstrap.min.js " | prepend: site.baseurl }}"></script>
+
+{% for js in page.extra_js %}
+<script src="{{ "/js/" | prepend: site.baseurl }}{{ js }}"></script>
+{% endfor %}

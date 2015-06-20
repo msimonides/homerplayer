@@ -1,0 +1,21 @@
+---
+layout: default
+---
+{% include navbar.html %}
+
+<header class="page-title-header" style="background-image: url('{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}')">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="page-heading heading">
+        <h1>{{ page.heading }}</h1>
+        {% if page.description %}
+        <hr>
+        <span class="subheading">{{ page.description }}</span>
+        {% endif %}
+    </div>
+  </div>
+</header>
+
+<div class="container content">
+  {{ content }}
+</div>

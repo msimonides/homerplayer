@@ -1,0 +1,10 @@
+{% for nav_url in navigation %}
+  {% assign node_array = site.pages | where:'url',nav_url %}
+  {% assign node = node_array[0] %}
+  {% if page.url == node.url %}
+    {% assign class = "active" %}
+  {% else %}
+    {% assign class = nil %}
+  {% endif %}
+  <li class="{{ class }}"><a href="{{ node.url | prepend: site.baseurl }}">{{ node.title }}</a>
+{% endfor %}
