@@ -5,3 +5,9 @@
 {% for js in page.extra_js %}
 <script src="{{ "/js/" | prepend: site.baseurl }}{{ js }}"></script>
 {% endfor %}
+
+{% if page.extra_js_block %}
+<script>
+{{ page.extra_js_block }}
+</script>
+{% endif %}
