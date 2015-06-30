@@ -1,26 +1,23 @@
-html {
+html,body {
 	height: 100%;
+}
+
+.vcenter-parent {
+	height: 100%;
+	width: 100%;
+	display: table;
 	background-color: #555;
-	background: url(../img/index-bg.jpg) no-repeat center center fixed;
+	background: url(../img/index-bg.jpg) no-repeat center center;
 	-moz-background-size: cover;
 	-webkit-background-size: cover;
 	-o-background-size: cover;
 	background-size: cover;
 }
 
-body {
-	height: 100%;
-	background-color: transparent;
-}
-
-.vcenter-parent {
-	height: 90%;
-	display: table;
-}
-
 .vcenter-content {
 	display: table-cell;
 	vertical-align: middle;
+	padding-bottom: 7%;
 }
 
 .play-button {

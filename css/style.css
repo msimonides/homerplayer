@@ -24,6 +24,10 @@ strong {
 	color: purple;
 }
 
+blockquote {
+	overflow-x: auto;
+}
+
 .content a:not(.btn),
 footer a {
 	text-decoration: underline;
@@ -57,11 +61,11 @@ footer a {
 .heading h1 {
 	margin: 0em;
 	font-weight: 800;
-	font-size: 350%;
+	font-size: 200%;
 }
 
 .heading .subheading {
-	font-size: 200%;
+	font-size: 140%;
 	font-weight: 400;
 }
 
@@ -76,11 +80,6 @@ footer a {
 img.qrcode {
 	margin-top: 1em;
 	max-width: 30%;
-}
-
-hr.footer {
-	height: 1px;
-	background: #ccc;
 }
 
 #index-page-video {
@@ -135,9 +134,28 @@ footer {
 	padding-bottom: 2em;
 }
 
+footer .row div {
+	vertical-align: bottom;
+}
+
+footer hr {
+	height: 1px;
+	background: #ccc;
+	margin-bottom: 0.5em;
+}
+
+
 @media only screen and (min-width: 768px) {
 	.page-heading {
 		padding: 6em 2em;
+	}
+
+	.text-left-sm {
+		text-align: left;
+	}
+
+	.text-right-sm {
+		text-align: right;
 	}
 }
 
@@ -147,6 +165,12 @@ footer {
 	}
 	.page-heading {
 		padding: 8em 2em;
+	}
+	.heading h1 {
+		font-size: 350%;
+	}
+	.heading .subheading {
+		font-size: 180%;
 	}
 	img.qrcode {
 		max-width: 20%;
