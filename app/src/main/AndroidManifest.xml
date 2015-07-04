@@ -9,7 +9,7 @@
         android:name=".HomerPlayerApplication">
 
         <activity
-            android:label="HomerPlayer"
+            android:label="@string/app_name"
             android:name=".ui.MainActivity"
             android:launchMode="singleTask"
             android:clearTaskOnLaunch="true">
