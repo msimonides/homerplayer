@@ -5,8 +5,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.provider.MediaStore;
 
-import com.crittercism.app.Crittercism;
-
 public class HomerPlayerApplication extends Application {
 
     private static final String AUDIOBOOKS_DIRECTORY = "AudioBooks";
@@ -17,9 +15,6 @@ public class HomerPlayerApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        if (!BuildConfig.DEBUG)
-            Crittercism.initialize(getApplicationContext(), "553ffaa87365f84f7d3d7009");
 
         component = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
