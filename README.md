@@ -3,7 +3,9 @@ Homer Player
 
 An audio book player for the elderly and visually impaired.
 
-[See a video.](https://www.youtube.com/watch?v=871GJTovYtQ)
+[Go to the project website](http://msimonides.github.io/homerplayer/)
+or
+[watch the video](https://www.youtube.com/watch?v=yWK8flQ91WU).
 
 Project Goal
 ------------
