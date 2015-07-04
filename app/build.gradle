@@ -19,7 +19,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 def getVersionName = { ->
     def stdout = new ByteArrayOutputStream()
     exec {
-        commandLine 'git', 'describe', '--tags'
+        commandLine 'git', 'describe'
         standardOutput = stdout
     }
     return stdout.toString().trim()
