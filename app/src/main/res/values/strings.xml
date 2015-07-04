@@ -5,7 +5,7 @@
     <string name="device_admin_label" translatable="false">Homer Player</string>
     <string name="device_admin_description" translatable="false">Homer Player</string>
     <string name="settings_title">Settings</string>
-    <string name="settings_device_owner_required_alert">The application must be a "device owner". TODO: provide a link to an instruction website.</string>
+    <string name="settings_device_owner_required_alert">The application must be a "device owner". See http://msimonides.github.io/install-dedicated.html</string>
     <string name="settings_unregister_device_owner_warning">This action will disable the kiosk mode and cannot be easily undone.\nProceed?</string>
     <string name="pref_kiosk_mode_title">Prevent from exiting the application (kiosk mode)</string>
     <string name="pref_kiosk_mode_summary_off">Disabled</string>
