@@ -36,11 +36,6 @@ html,body {
 	color: #aaa;
 }
 
-.play-button .fa-inverse {
-	color: #000;
-	padding-left: 0.2em;
-}
-
 .buttons ul {
 	margin: 0em auto;
 	padding: 0;
