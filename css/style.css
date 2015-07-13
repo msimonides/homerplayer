@@ -16,6 +16,13 @@ h2 {
 	line-height: 140%;
 }
 
+h3 {
+	margin-bottom: 0px;
+	line-height: 1.42857143; /* from Bootstrap CSS body */
+	font-size: 100%;
+	font-weight: 600;
+}
+
 strong {
 	font-weight: 600;
 }
