@@ -8,4 +8,5 @@
     <dimen name="buttonCornerRadius">3dp</dimen>
     <dimen name="buttonStrokeWidth">1dp</dimen>
     <dimen name="buttonPaddingHoriz">40dp</dimen>
+    <dimen name="batteryIndicatorPaddingHoriz">10dp</dimen>
 </resources>
