@@ -3,6 +3,7 @@ package com.studio4plus.homerplayer.ui;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -224,7 +226,11 @@ public class MainActivity extends BaseActivity {
     private void startTts() {
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-        startActivityForResult(checkIntent, TTS_CHECK_CODE);
+        try {
+            startActivityForResult(checkIntent, TTS_CHECK_CODE);
+        } catch (ActivityNotFoundException e) {
+            Log.w("MainActivity", "Text-to-Speech not available");
+        }
     }
 
     private void stopTts() {
