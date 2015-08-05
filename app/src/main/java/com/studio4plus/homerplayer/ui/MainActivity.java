@@ -16,9 +16,11 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.battery.BatteryStatusProvider;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
 import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppedEvent;
@@ -42,8 +44,10 @@ public class MainActivity extends BaseActivity {
     private PlaybackService playbackService;
     private boolean isPlaybackServiceBound;
     private BroadcastReceiver screenOnReceiver;
+    private BatteryStatusIndicator batteryStatusIndicator;
 
     @Inject public AudioBookManager audioBookManager;
+    @Inject public BatteryStatusProvider batteryStatusProvider;
 
     enum Page {
         NO_BOOKS() {
@@ -78,6 +82,9 @@ public class MainActivity extends BaseActivity {
 
         startTts();
         ApplicationLocker.onActivityCreated(this);
+
+        batteryStatusIndicator = new BatteryStatusIndicator(
+                (ImageView) findViewById(R.id.batteryStatusIndicator), EventBus.getDefault());
 
         MultiTapInterceptor multiTapInterceptor =
                 (MultiTapInterceptor) findViewById(R.id.mainContainer);
@@ -115,15 +122,24 @@ public class MainActivity extends BaseActivity {
         }
 
         EventBus.getDefault().register(this);
-
+        batteryStatusProvider.start();
         super.onStart();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        batteryStatusProvider.stop();
         EventBus.getDefault().unregister(this);
         unregisterScreenOnReceiver();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        // Start animations.
+        if (hasFocus)
+            batteryStatusIndicator.startAnimations();
     }
 
     @Override
@@ -132,6 +148,7 @@ public class MainActivity extends BaseActivity {
             unbindService(playbackServiceConnection);
             isPlaybackServiceBound = false;
         }
+        batteryStatusIndicator.shutdown();
         stopTts();
         super.onDestroy();
     }

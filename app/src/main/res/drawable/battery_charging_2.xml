@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list android:oneshot="false" xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/battery_2" android:duration="@integer/battery_charging_animation_frame_time_ms"/>
+    <item android:drawable="@drawable/battery_3" android:duration="@integer/battery_charging_animation_frame_time_ms"/>
+</animation-list>

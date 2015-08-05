@@ -4,4 +4,5 @@
     <color name="buttonStartPressedBackground">#ff33aa33</color>
     <color name="buttonStopBackground">#ffbb2200</color>
     <color name="buttonStopPressedBackground">#ffdd5544</color>
+    <color name="transparent">#00000000</color>
 </resources>
