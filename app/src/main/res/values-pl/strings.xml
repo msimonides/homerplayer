@@ -3,7 +3,7 @@
     <string name="noBooksMessage">Na urządzeniu nie ma żadnych audiobooków.</string>
     <string name="playback_service_notification">Odtwarzanie audiobooka</string>
     <string name="settings_title">Ustawienia</string>
-    <string name="settings_device_owner_required_alert">Aplikacja musi być ustawiona jako "device owner". Szczegóły: http://msimonides.github.io/install-dedicated.html</string>
+    <string name="settings_device_owner_required_alert">Aplikacja musi być ustawiona jako "device owner". Szczegóły: http://goo.gl/46gevp</string>
     <string name="settings_unregister_device_owner_warning">Ta akcja wyłączy tryb kiosku nie może być łatwo cofnięta.\nWykonać?</string>
     <string name="pref_kiosk_mode_summary_off">Wyłączone</string>
     <string name="pref_kiosk_mode_summary_old_version">Wymagany Android 5.0 lub nowszy</string>
