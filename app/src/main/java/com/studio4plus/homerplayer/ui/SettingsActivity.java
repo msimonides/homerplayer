@@ -6,11 +6,13 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
+import android.view.WindowManager;
 
 import com.studio4plus.homerplayer.BuildConfig;
 import com.studio4plus.homerplayer.GlobalSettings;
@@ -26,6 +28,11 @@ public class SettingsActivity extends BaseActivity {
     private static final String KEY_UNREGISTER_DEVICE_OWNER = "unregister_device_owner_preference";
     private static final String KEY_VERSION = "version_preference";
 
+    private static final int BLOCK_TIME_MS = 500;
+
+    private Handler mainThreadHandler;
+    private Runnable unblockEventsTask;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +41,20 @@ public class SettingsActivity extends BaseActivity {
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingsFragment())
                 .commit();
+
+        mainThreadHandler = new Handler(getMainLooper());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        blockEventsOnStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        cancelBlockEventOnStart();
     }
 
     public static class SettingsFragment
@@ -214,5 +235,23 @@ public class SettingsActivity extends BaseActivity {
             }
             updateKioskModeSummary();
         }
+    }
+
+    private void blockEventsOnStart() {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        unblockEventsTask = new Runnable() {
+            @Override
+            public void run() {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                unblockEventsTask = null;
+            }
+        };
+        mainThreadHandler.postDelayed(unblockEventsTask, BLOCK_TIME_MS);
+    }
+
+    private void cancelBlockEventOnStart() {
+        if (unblockEventsTask != null)
+            mainThreadHandler.removeCallbacks(unblockEventsTask);
     }
 }
