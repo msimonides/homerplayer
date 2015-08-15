@@ -80,12 +80,12 @@ public class SettingsActivity extends BaseActivity {
             Preference preference = findPreference(KEY_UNREGISTER_DEVICE_OWNER);
             if (Build.VERSION.SDK_INT >= 21) {
                 preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                        @Override
-                        public boolean onPreferenceClick(Preference preference) {
-                            askDisableDeviceOwner();
-                            return true;
-                        }
-                    });
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        askDisableDeviceOwner();
+                        return true;
+                    }
+                });
 
                 updateUnregisterDeviceOwner(HomerPlayerDeviceAdmin.isDeviceOwner(getActivity()));
             } else {
@@ -115,7 +115,7 @@ public class SettingsActivity extends BaseActivity {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            switch(key) {
+            switch (key) {
                 case GlobalSettings.KEY_KIOSK_MODE:
                     onKioskModeSwitched(sharedPreferences);
                     break;
