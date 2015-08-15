@@ -92,6 +92,21 @@ public class MultiTapInterceptor extends FrameLayout {
                 lastTouchDownNanoTime = nanoTime;
                 lastTouchDownX = x;
                 lastTouchDownY = y;
+
+                if (consecutiveTapCount == TRIGGER_TAP_COUNT)
+                    return true;
+            } else {
+                hidePrompt();
+                consecutiveTapCount = 0;
+            }
+        } else if (action == MotionEvent.ACTION_UP && ev.getPointerCount() == 1) {
+            final float x = ev.getX();
+            final float y = ev.getY();
+            final long nanoTime = System.nanoTime();
+
+            if (Math.abs(x - lastTouchDownX) < maxTapSlop &&
+                    Math.abs(y - lastTouchDownY) < maxTapSlop &&
+                    nanoTime - lastTouchDownNanoTime < maxTapNanoTime) {
                 ++consecutiveTapCount;
 
                 if (consecutiveTapCount == TRIGGER_TAP_COUNT)
@@ -112,25 +127,46 @@ public class MultiTapInterceptor extends FrameLayout {
         final int action = ev.getAction() & MotionEvent.ACTION_MASK;
 
         switch(action) {
-            case MotionEvent.ACTION_DOWN:
-                if (consecutiveTapCount == TRIGGER_TAP_COUNT) {
+            case MotionEvent.ACTION_DOWN: {
+                final float x = ev.getX();
+                final float y = ev.getY();
+                final long nanoTime = System.nanoTime();
+
+                if (consecutiveTapCount == 0 ||
+                        nanoTime - lastTouchDownNanoTime < maxConsecutiveTapNanoTime &&
+                                Math.abs(x - lastTouchDownX) < maxMultiTapSlop &&
+                                Math.abs(y - lastTouchDownY) < maxMultiTapSlop) {
+                    lastTouchDownNanoTime = nanoTime;
+                    lastTouchDownX = x;
+                    lastTouchDownY = y;
+                } else {
+                    hidePrompt();
                     consecutiveTapCount = 0;
-                    return true;
                 }
-                break;
-            case MotionEvent.ACTION_UP:
-               if (System.nanoTime() - lastTouchDownNanoTime < maxTapNanoTime) {
-                   final float x = ev.getX();
-                    final float y = ev.getY();
-                   if (Math.abs(lastTouchDownX - x) < maxTapSlop &&
-                        Math.abs(lastTouchDownY - y) < maxTapSlop) {
+                return true;
+            }
+            case MotionEvent.ACTION_UP: {
+                final float x = ev.getX();
+                final float y = ev.getY();
+                final long nanoTime = System.nanoTime();
+
+                if (Math.abs(x - lastTouchDownX) < maxTapSlop &&
+                        Math.abs(y - lastTouchDownY) < maxTapSlop &&
+                        nanoTime - lastTouchDownNanoTime < maxTapNanoTime) {
+                    ++consecutiveTapCount;
+
+                    if (consecutiveTapCount < TRIGGER_TAP_COUNT) {
+                        displayPrompt(consecutiveTapCount);
+                    } else {
+                        consecutiveTapCount = 0;
                         if (listener != null) {
                             listener.onMultiTap(this);
                             hidePrompt();
                             return true;
                         }
                     }
-               }
+                }
+            }
         }
         return false;
     }
