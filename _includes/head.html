@@ -1,6 +1,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page.meta_title }}</title>
+  {% if page.meta_description %}
+  <meta name="description" content="{{ page.meta_description }}">
+  {% endif %}
 
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,800' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="{{ "/css/bootstrap.min.css" | prepend: site.baseurl }}">
