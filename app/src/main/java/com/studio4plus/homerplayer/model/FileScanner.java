@@ -16,14 +16,17 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 public class FileScanner {
 
-    private final String audioBooksDirectoryPath;
+    private final  String audioBooksDirectoryPath;
 
-    public FileScanner(String audioBooksDirectoryPath) {
+    @Inject
+    public FileScanner(@Named("AUDIOBOOKS_DIRECTORY") String audioBooksDirectoryPath) {
         this.audioBooksDirectoryPath = audioBooksDirectoryPath;
     }
-
 
     public File getAudioBooksDirectory() {
         File externalStorage = Environment.getExternalStorageDirectory();

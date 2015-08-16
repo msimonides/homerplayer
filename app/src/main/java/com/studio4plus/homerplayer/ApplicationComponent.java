@@ -1,6 +1,7 @@
 package com.studio4plus.homerplayer;
 
 import com.studio4plus.homerplayer.battery.BatteryStatusProvider;
+import com.studio4plus.homerplayer.model.FileScanner;
 import com.studio4plus.homerplayer.service.AudioBookPlayer;
 import com.studio4plus.homerplayer.service.AudioBookPlayerModule;
 import com.studio4plus.homerplayer.ui.BatteryStatusIndicator;
@@ -21,4 +22,5 @@ public interface ApplicationComponent {
     void inject(BatteryStatusProvider batteryStatusProvider);
     void inject(BatteryStatusIndicator batteryStatusIndicator);
     AudioBookPlayer getAudioBookPlayer();
+    FileScanner getFileScanner();
 }

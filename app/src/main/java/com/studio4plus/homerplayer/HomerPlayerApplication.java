@@ -2,10 +2,13 @@ package com.studio4plus.homerplayer;
 
 import android.app.Application;
 import android.content.Context;
+import android.media.MediaScannerConnection;
 import android.os.Handler;
 import android.provider.MediaStore;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
+
+import java.io.File;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -31,6 +34,8 @@ public class HomerPlayerApplication extends Application {
         mediaStoreUpdateObserver = new MediaStoreUpdateObserver(new Handler(getMainLooper()));
         getContentResolver().registerContentObserver(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, mediaStoreUpdateObserver);
+
+        createAudioBooksDirectory(component.getFileScanner().getAudioBooksDirectory());
     }
 
     @Override
@@ -42,5 +47,12 @@ public class HomerPlayerApplication extends Application {
 
     public static ApplicationComponent getComponent(Context context) {
         return ((HomerPlayerApplication) context.getApplicationContext()).component;
+    }
+
+    private void createAudioBooksDirectory(File path) {
+        if (!path.exists()) {
+            if (path.mkdirs())
+                MediaScannerConnection.scanFile(this, new String[] { path.getAbsolutePath() }, null, null);
+        }
     }
 }

@@ -2,6 +2,7 @@
     <string name="app_name" translatable="false">Homer Player</string>
     <string name="playback_service_notification">Audio Book Playing</string>
     <string name="noBooksMessage">There are no audio books on the device.</string>
+    <string name="noBooksDirectoryMessage">Copy audio books to folder &lt;b>/%s&lt;/b></string>
     <string name="device_admin_label" translatable="false">Homer Player</string>
     <string name="device_admin_description" translatable="false">Homer Player</string>
     <string name="settings_title">Settings</string>

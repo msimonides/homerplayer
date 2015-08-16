@@ -6,6 +6,7 @@ import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.model.FileScanner;
 import com.studio4plus.homerplayer.model.Storage;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -20,9 +21,9 @@ public class AudioBookManagerModule {
         this.audioBooksDirectoryName = audioBooksDirectoryName;
     }
 
-    @Provides @Singleton
-    FileScanner provideFileScanner() {
-        return new FileScanner(audioBooksDirectoryName);
+    @Provides @Named("AUDIOBOOKS_DIRECTORY")
+    String provideAudioBooksDirectoryName() {
+        return this.audioBooksDirectoryName;
     }
 
     @Provides @Singleton
