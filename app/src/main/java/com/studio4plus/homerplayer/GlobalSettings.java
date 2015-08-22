@@ -1,9 +1,12 @@
 package com.studio4plus.homerplayer;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.preference.PreferenceManager;
+import android.content.res.Resources;
+
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 public class GlobalSettings {
 
@@ -24,21 +27,27 @@ public class GlobalSettings {
     public static final String KEY_JUMP_BACK = "jump_back_preference";
     public static final String KEY_SCREEN_ORIENTATION = "screen_orientation_preference";
 
-    public static int getJumpBackPreferenceMs(Context context) {
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(context);
-        String valueString = sharedPreferences.getString(
-                KEY_JUMP_BACK, context.getString(R.string.pref_jump_back_default_value));
-        int valueS = Integer.parseInt(valueString);
-        return valueS * 1000;
+    private final Resources resources;
+    private final SharedPreferences sharedPreferences;
+
+    @Inject
+    public GlobalSettings(Resources resources, SharedPreferences sharedPreferences) {
+        this.resources = resources;
+        this.sharedPreferences = sharedPreferences;
     }
 
-    public static int getScreenOrientation(Context context) {
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(context);
+    public int getJumpBackPreferenceMs() {
+        String valueString = sharedPreferences.getString(
+                KEY_JUMP_BACK, resources.getString(R.string.pref_jump_back_default_value));
+        return (int) TimeUnit.SECONDS.toMillis(Integer.parseInt(valueString));
+    }
+
+    public int getScreenOrientation() {
         String stringValue = sharedPreferences.getString(
                 GlobalSettings.KEY_SCREEN_ORIENTATION,
-                context.getString(R.string.pref_screen_orientation_default_value));
+                resources.getString(R.string.pref_screen_orientation_default_value));
         return Orientation.valueOf(stringValue).value;
     }
+
+
 }

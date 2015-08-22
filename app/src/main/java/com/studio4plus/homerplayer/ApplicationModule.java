@@ -2,8 +2,9 @@ package com.studio4plus.homerplayer;
 
 import android.app.Application;
 import android.content.Context;
-
-import com.studio4plus.homerplayer.battery.BatteryStatusProvider;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.preference.PreferenceManager;
 
 import dagger.Module;
 import dagger.Provides;
@@ -21,6 +22,16 @@ public class ApplicationModule {
     @Provides
     Context provideContext() {
         return application;
+    }
+
+    @Provides
+    Resources provideResources(Context context) {
+        return context.getResources();
+    }
+
+    @Provides
+    SharedPreferences provideSharedPreferences(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     @Provides

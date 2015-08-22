@@ -2,20 +2,32 @@ package com.studio4plus.homerplayer.ui;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 
+import com.studio4plus.homerplayer.ApplicationComponent;
 import com.studio4plus.homerplayer.GlobalSettings;
+import com.studio4plus.homerplayer.HomerPlayerApplication;
+
+import javax.inject.Inject;
 
 public class BaseActivity
         extends Activity
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    @Inject public SharedPreferences sharedPreferences;
+    @Inject public GlobalSettings globalSettings;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        HomerPlayerApplication.getComponent(this).inject(this);
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
         updateOrientation();
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
@@ -34,6 +46,6 @@ public class BaseActivity
 
     private void updateOrientation() {
         //noinspection ResourceType
-        setRequestedOrientation(GlobalSettings.getScreenOrientation(this));
+        setRequestedOrientation(globalSettings.getScreenOrientation());
     }
 }

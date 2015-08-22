@@ -1,6 +1,5 @@
 package com.studio4plus.homerplayer.service;
 
-import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -9,7 +8,6 @@ import android.os.Looper;
 import android.os.Message;
 
 import com.studio4plus.homerplayer.GlobalSettings;
-import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.model.AudioBook;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.model.Position;
@@ -22,23 +20,23 @@ import javax.inject.Inject;
 public class AudioBookPlayer extends Handler {
 
     public interface Observer {
-        public void onPlaybackStopped();
+        void onPlaybackStopped();
     }
 
     private static final int MSG_CONTROL_FILE_COMPLETE = 1;
     private static final int MSG_CONTROL_STOPPED = 2;
 
-    private final Context context;
     private final Handler playbackThreadHandler;
     private final AudioBookManager audioBookManager;
+    private final GlobalSettings globalSettings;
 
     private Observer observer;
     private AudioBook audioBook;
 
     @Inject
-    public AudioBookPlayer(Context context, AudioBookManager audioBookManager) {
+    public AudioBookPlayer(GlobalSettings globalSettings, AudioBookManager audioBookManager) {
         super(Looper.getMainLooper());
-        this.context = context;
+        this.globalSettings = globalSettings;
         this.audioBookManager = audioBookManager;
         HandlerThread thread = new HandlerThread("Playback");
         thread.start();
@@ -54,7 +52,7 @@ public class AudioBookPlayer extends Handler {
     }
 
     public void startPlayback() {
-        startPlayback(GlobalSettings.getJumpBackPreferenceMs(context));
+        startPlayback(globalSettings.getJumpBackPreferenceMs());
     }
 
     public void stopPlayback() {
