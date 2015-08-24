@@ -1,2 +1,4 @@
 header-img: img/default-header.jpg
 baseurl: /homerplayer
+gems:
+ - jekyll-sitemap
