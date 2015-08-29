@@ -2,8 +2,6 @@ package com.studio4plus.homerplayer;
 
 import android.content.Context;
 
-import com.studio4plus.homerplayer.model.AudioBookManager;
-import com.studio4plus.homerplayer.model.FileScanner;
 import com.studio4plus.homerplayer.model.Storage;
 
 import javax.inject.Named;
@@ -29,10 +27,5 @@ public class AudioBookManagerModule {
     @Provides @Singleton
     Storage provideStorage(Context context) {
         return new Storage(context);
-    }
-
-    @Provides @Singleton
-    AudioBookManager provideAudioBookManager(FileScanner fileScanner, Storage storage) {
-        return new AudioBookManager(fileScanner, storage);
     }
 }

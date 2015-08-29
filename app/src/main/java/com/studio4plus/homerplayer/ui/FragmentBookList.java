@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
@@ -25,23 +26,26 @@ import de.greenrobot.event.EventBus;
 
 public class FragmentBookList extends Fragment {
 
+    private View view;
     private ViewPager bookPager;
     private BookListPagerAdapter bookAdapter;
 
     @Inject public AudioBookManager audioBookManager;
+    @Inject public GlobalSettings globalSettings;
+    @Inject public EventBus eventBus;
 
     @Override
     public View onCreateView(
             LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_book_list, container, false);
+        view = inflater.inflate(R.layout.fragment_book_list, container, false);
         HomerPlayerApplication.getComponent(view.getContext()).inject(this);
 
         bookAdapter = new BookListPagerAdapter(getChildFragmentManager(), audioBookManager);
         bookPager = (ViewPager) view.findViewById(R.id.bookListPager);
         bookPager.setAdapter(bookAdapter);
-        bookPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        bookPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             int currentViewIndex;
 
             @Override
@@ -62,15 +66,21 @@ public class FragmentBookList extends Fragment {
         });
 
         updateViewPosition();
-        EventBus.getDefault().register(this);
+        eventBus.register(this);
 
         return view;
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        showHintsIfNecessary();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
-        EventBus.getDefault().unregister(this);
+        eventBus.unregister(this);
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -81,13 +91,29 @@ public class FragmentBookList extends Fragment {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void OnEvent(CurrentBookChangedEvent event) {
+    public void onEvent(CurrentBookChangedEvent event) {
         updateViewPosition();
     }
 
     private void updateViewPosition() {
         int currentBookIndex = audioBookManager.getCurrentBookIndex();
         bookPager.setCurrentItem(bookAdapter.bookIndexToViewIndex(currentBookIndex), false);
+    }
+
+    private void showHintsIfNecessary() {
+        if (isResumed() && isVisible()) {
+            if (!globalSettings.browsingHintShown()) {
+                HintOverlay overlay = new HintOverlay(
+                        view, R.id.browseHintOverlayStub, R.string.hint_browsing, R.drawable.hint_horizontal_swipe);
+                overlay.show();
+                globalSettings.setBrowsingHintShown();
+            } else if (!globalSettings.settingsHintShown()) {
+                HintOverlay overlay = new HintOverlay(
+                        view, R.id.settingsHintOverlayStub, R.string.hint_settings, R.drawable.hint_horizontal_swipe);
+                overlay.show();
+                globalSettings.setSettingsHintShown();
+            }
+        }
     }
 
     private class BookListPagerAdapter extends FragmentStatePagerAdapter {

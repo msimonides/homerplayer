@@ -7,7 +7,9 @@ import android.content.res.Resources;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class GlobalSettings {
 
     private enum Orientation {
@@ -26,6 +28,11 @@ public class GlobalSettings {
     public static final String KEY_KIOSK_MODE = "kiosk_mode_preference";
     public static final String KEY_JUMP_BACK = "jump_back_preference";
     public static final String KEY_SCREEN_ORIENTATION = "screen_orientation_preference";
+
+    private static final String KEY_BROWSING_HINT_SHOWN = "hints.browsing_hint_shown";
+    private static final String KEY_SETTINGS_HINT_SHOWN = "hints.settings.hint_shown";
+    private static final String KEY_FLIPTOSTOP_HINT_SHOWN = "hints.fliptostop.hint_shown";
+    private static final String KEY_BOOKS_EVER_INSTALLED = "action_history.books_ever_installed";
 
     private final Resources resources;
     private final SharedPreferences sharedPreferences;
@@ -49,5 +56,35 @@ public class GlobalSettings {
         return Orientation.valueOf(stringValue).value;
     }
 
+    public boolean booksEverInstalled() {
+        return sharedPreferences.getBoolean(KEY_BOOKS_EVER_INSTALLED, false);
+    }
 
+    public void setBooksEverInstalled() {
+        sharedPreferences.edit().putBoolean(KEY_BOOKS_EVER_INSTALLED, true).apply();
+    }
+
+    public boolean browsingHintShown() {
+        return sharedPreferences.getBoolean(KEY_BROWSING_HINT_SHOWN, false);
+    }
+
+    public void setBrowsingHintShown() {
+        sharedPreferences.edit().putBoolean(KEY_BROWSING_HINT_SHOWN, true).apply();
+    }
+
+    public boolean settingsHintShown() {
+        return sharedPreferences.getBoolean(KEY_SETTINGS_HINT_SHOWN, false);
+    }
+
+    public void setSettingsHintShown() {
+        sharedPreferences.edit().putBoolean(KEY_SETTINGS_HINT_SHOWN, true).apply();
+    }
+
+    public boolean flipToStopHintShown() {
+        return sharedPreferences.getBoolean(KEY_FLIPTOSTOP_HINT_SHOWN, false);
+    }
+
+    public void setFlipToStopHintShown() {
+        sharedPreferences.edit().putBoolean(KEY_FLIPTOSTOP_HINT_SHOWN, true).apply();
+    }
 }

@@ -21,7 +21,7 @@ import javax.inject.Named;
 
 public class FileScanner {
 
-    private final  String audioBooksDirectoryPath;
+    private final String audioBooksDirectoryPath;
 
     @Inject
     public FileScanner(@Named("AUDIOBOOKS_DIRECTORY") String audioBooksDirectoryPath) {
@@ -81,7 +81,6 @@ public class FileScanner {
             throw new RuntimeException("MD5 not available");
         }
     }
-
 
     private File[] getAllAudioFiles(File directory) {
         List<File> files = new ArrayList<>();

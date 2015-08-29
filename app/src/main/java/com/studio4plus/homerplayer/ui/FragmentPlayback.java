@@ -8,16 +8,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.studio4plus.homerplayer.GlobalSettings;
+import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 
+import javax.inject.Inject;
+
 public class FragmentPlayback extends Fragment {
+
+    private View view;
+
+    @Inject public GlobalSettings globalSettings;
 
     @Override
     public View onCreateView(
             LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_playback, container, false);
+        view = inflater.inflate(R.layout.fragment_playback, container, false);
+        HomerPlayerApplication.getComponent(view.getContext()).inject(this);
 
         Button stopButton = (Button) view.findViewById(R.id.stopButton);
         stopButton.setOnClickListener(new View.OnClickListener() {
@@ -29,5 +38,23 @@ public class FragmentPlayback extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        showHintIfNecessary();
+    }
+
+    private void showHintIfNecessary() {
+        if (isResumed() && isVisible()) {
+            if (!globalSettings.flipToStopHintShown()) {
+                // TODO: replace empty with the real graphic.
+                HintOverlay overlay = new HintOverlay(
+                        view, R.id.flipToStopHintOverlayStub, R.string.hint_flip_to_stop, R.drawable.empty);
+                overlay.show();
+                globalSettings.setFlipToStopHintShown();
+            }
+        }
     }
 }

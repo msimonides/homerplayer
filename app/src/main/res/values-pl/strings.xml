@@ -3,6 +3,9 @@
     <string name="noBooksMessage">Na urządzeniu nie ma żadnych audiobooków.</string>
     <string name="noBooksDirectoryMessage">Wgraj audiobooki do folderu &lt;b>/%s&lt;/b></string>
     <string name="playback_service_notification">Odtwarzanie audiobooka</string>
+    <string name="hint_browsing">Przeciągnij\naby przeglądać książki</string>
+    <string name="hint_settings">Ustawienia:\ntapnij 5 razy</string>
+    <string name="hint_flip_to_stop">Odłóż ekranem do dołu aby zatrzymać</string>
     <string name="settings_title">Ustawienia</string>
     <string name="settings_device_owner_required_alert">Aplikacja musi być ustawiona jako "device owner". Szczegóły: http://goo.gl/46gevp</string>
     <string name="settings_unregister_device_owner_warning">Ta akcja wyłączy tryb kiosku nie może być łatwo cofnięta.\nWykonać?</string>

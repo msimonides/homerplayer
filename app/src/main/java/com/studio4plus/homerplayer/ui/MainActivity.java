@@ -183,10 +183,12 @@ public class MainActivity extends BaseActivity {
     }
 
     public void stopPlayback() {
-        if (playbackService != null)
+        if (playbackService != null) {
             playbackService.stopPlayback();
-
-        showPage(Page.BOOK_LIST);
+            // Page is changed in response to PlaybackStoppedEvent.
+        } else {
+            showPage(Page.BOOK_LIST);
+        }
     }
 
     private void showPage(Page page) {

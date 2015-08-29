@@ -10,8 +10,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import de.greenrobot.event.EventBus;
 
+@Singleton
 public class AudioBookManager {
 
     private static final AudioBooksChangedEvent AUDIO_BOOKS_CHANGED_EVENT =
@@ -22,11 +26,12 @@ public class AudioBookManager {
     private final Storage storage;
     private AudioBook currentBook;
 
-    public AudioBookManager(FileScanner fileScanner, Storage storage) {
+    @Inject
+    public AudioBookManager(EventBus eventBus, FileScanner fileScanner, Storage storage) {
         this.fileScanner = fileScanner;
         this.storage = storage;
         scanFiles();
-        EventBus.getDefault().register(this);
+        eventBus.register(this);
     }
 
     @SuppressWarnings("UnusedDeclaration")

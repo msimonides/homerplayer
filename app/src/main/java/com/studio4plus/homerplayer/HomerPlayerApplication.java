@@ -36,7 +36,7 @@ public class HomerPlayerApplication extends Application {
         getContentResolver().registerContentObserver(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, mediaStoreUpdateObserver);
 
-        createAudioBooksDirectory(component.getFileScanner().getAudioBooksDirectory());
+        createAudioBooksDirectory(component.getAudioBookManager().getAudioBooksDirectory());
     }
 
     @Override

@@ -1,25 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#008856"
-    android:padding="@dimen/bookListItemPadding">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:text="@string/playback_in_progress"
-        android:textColor="#ffffff"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textSize="@dimen/bookListTextSize"
-        android:singleLine="false"
-        android:gravity="center"
-        android:layout_above="@+id/stopButton"/>
+        android:background="#008856"
+        android:padding="@dimen/bookListItemPadding">
 
-    <Button
-        android:id="@+id/stopButton"
-        style="@style/buttonStop"
-        android:text="@string/button_stop"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"/>
+        <TextView
+            android:text="@string/playback_in_progress"
+            android:textColor="#ffffff"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="@dimen/bookListTextSize"
+            android:singleLine="false"
+            android:gravity="center"
+            android:layout_above="@+id/stopButton"/>
 
-</RelativeLayout>
+        <Button
+            android:id="@+id/stopButton"
+            style="@style/buttonStop"
+            android:text="@string/button_stop"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"/>
+
+    </RelativeLayout>
+
+    <ViewStub
+        android:id="@+id/flipToStopHintOverlayStub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:layout="@layout/hint_horizontal_image" />
+
+</FrameLayout>
