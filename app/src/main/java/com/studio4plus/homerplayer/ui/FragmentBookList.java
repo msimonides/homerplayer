@@ -96,8 +96,9 @@ public class FragmentBookList extends Fragment {
     }
 
     private void updateViewPosition() {
-        int currentBookIndex = audioBookManager.getCurrentBookIndex();
-        bookPager.setCurrentItem(bookAdapter.bookIndexToViewIndex(currentBookIndex), false);
+        int newBookIndex = audioBookManager.getCurrentBookIndex();
+        if (newBookIndex != bookAdapter.getBookIndex(bookPager.getCurrentItem()))
+            bookPager.setCurrentItem(bookAdapter.bookIndexToViewIndex(newBookIndex), true);
     }
 
     private void showHintsIfNecessary() {
@@ -127,14 +128,17 @@ public class FragmentBookList extends Fragment {
             this.audioBooks = audioBookManager.getAudioBooks();
         }
 
-        @Override
-        public Fragment getItem(int viewIndex) {
+        public int getBookIndex(int viewIndex) {
             int bookIndex = viewIndex - OFFSET;
             if (bookIndex < 0)
-                bookIndex = audioBooks.size() + bookIndex;
+                return audioBooks.size() + bookIndex;
             else
-                bookIndex = bookIndex % audioBooks.size();
+                return bookIndex % audioBooks.size();
+        }
 
+        @Override
+        public Fragment getItem(int viewIndex) {
+            int bookIndex = getBookIndex(viewIndex);
             return FragmentBookItem.newInstance(audioBooks.get(bookIndex));
         }
 
