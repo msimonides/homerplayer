@@ -7,15 +7,20 @@ import android.preference.PreferenceManager;
 
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
+import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 
 import javax.inject.Inject;
 
-public class BaseActivity
+import de.greenrobot.event.EventBus;
+
+public abstract class BaseActivity
         extends Activity
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Inject public SharedPreferences sharedPreferences;
     @Inject public GlobalSettings globalSettings;
+    @Inject public AnalyticsTracker analyticsTracker;
+    @Inject public EventBus eventBus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +33,7 @@ public class BaseActivity
         super.onStart();
         updateOrientation();
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        analyticsTracker.sendScreenHit(getScreenName());
     }
 
     @Override
@@ -42,6 +48,8 @@ public class BaseActivity
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         updateOrientation();
     }
+
+    protected abstract String getScreenName();
 
     private void updateOrientation() {
         //noinspection ResourceType

@@ -32,7 +32,9 @@ public class GlobalSettings {
     private static final String KEY_BROWSING_HINT_SHOWN = "hints.browsing_hint_shown";
     private static final String KEY_SETTINGS_HINT_SHOWN = "hints.settings.hint_shown";
     private static final String KEY_FLIPTOSTOP_HINT_SHOWN = "hints.fliptostop.hint_shown";
+
     private static final String KEY_BOOKS_EVER_INSTALLED = "action_history.books_ever_installed";
+    private static final String KEY_SETTINGS_EVER_ENTERED = "action_history.settings_ever_entered";
 
     private final Resources resources;
     private final SharedPreferences sharedPreferences;
@@ -62,6 +64,14 @@ public class GlobalSettings {
 
     public void setBooksEverInstalled() {
         sharedPreferences.edit().putBoolean(KEY_BOOKS_EVER_INSTALLED, true).apply();
+    }
+
+    public boolean settingsEverEntered() {
+        return sharedPreferences.getBoolean(KEY_SETTINGS_EVER_ENTERED, false);
+    }
+
+    public void setSettingsEverEntered() {
+        sharedPreferences.edit().putBoolean(KEY_SETTINGS_EVER_ENTERED, true).apply();
     }
 
     public boolean browsingHintShown() {

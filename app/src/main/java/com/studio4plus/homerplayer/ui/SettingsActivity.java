@@ -19,6 +19,7 @@ import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerDeviceAdmin;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.events.DeviceAdminChangeEvent;
+import com.studio4plus.homerplayer.events.SettingsEnteredEvent;
 
 import de.greenrobot.event.EventBus;
 
@@ -49,12 +50,18 @@ public class SettingsActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
         blockEventsOnStart();
+        eventBus.post(new SettingsEnteredEvent());
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         cancelBlockEventOnStart();
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Settings";
     }
 
     public static class SettingsFragment

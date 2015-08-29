@@ -18,9 +18,6 @@ import de.greenrobot.event.EventBus;
 @Singleton
 public class AudioBookManager {
 
-    private static final AudioBooksChangedEvent AUDIO_BOOKS_CHANGED_EVENT =
-            new AudioBooksChangedEvent();
-
     private final List<AudioBook> audioBooks = new ArrayList<>();
     private final FileScanner fileScanner;
     private final Storage storage;
@@ -129,7 +126,7 @@ public class AudioBookManager {
         }
 
         if (audioBooksChanged)
-            EventBus.getDefault().post(AUDIO_BOOKS_CHANGED_EVENT);
+            EventBus.getDefault().post(new AudioBooksChangedEvent(currentBook != null));
     }
 
     private void assignColoursToNewBooks() {

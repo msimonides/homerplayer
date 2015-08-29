@@ -135,6 +135,11 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    protected String getScreenName() {
+        return "Main";
+    }
+
+    @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         // Start animations.

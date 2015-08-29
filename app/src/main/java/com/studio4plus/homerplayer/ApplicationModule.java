@@ -6,6 +6,11 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
+
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import de.greenrobot.event.EventBus;
@@ -38,5 +43,15 @@ public class ApplicationModule {
     EventBus provideEventBus() {
         // TODO: provide the EventBus to all classes via Dagger and then switch to a private instance.
         return EventBus.getDefault();
+    }
+
+    @Provides @Singleton
+    GoogleAnalytics provideGoogleAnalytics(Context applicationContext) {
+        return GoogleAnalytics.getInstance(applicationContext);
+    }
+
+    @Provides @Singleton
+    Tracker provideGoogleAnalyticsTracker(GoogleAnalytics googleAnalytics) {
+        return googleAnalytics.newTracker(R.xml.global_tracker);
     }
 }
