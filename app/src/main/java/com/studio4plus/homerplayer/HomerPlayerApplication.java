@@ -31,6 +31,8 @@ public class HomerPlayerApplication extends Application {
                 .applicationModule(new ApplicationModule(this))
                 .audioBookManagerModule(new AudioBookManagerModule(AUDIOBOOKS_DIRECTORY))
                 .build();
+        // Force creation of the AnalyticsTracker early.
+        component.getAnalyticsTracker();
 
         mediaStoreUpdateObserver = new MediaStoreUpdateObserver(new Handler(getMainLooper()));
         getContentResolver().registerContentObserver(

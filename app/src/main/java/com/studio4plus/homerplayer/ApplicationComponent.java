@@ -1,5 +1,6 @@
 package com.studio4plus.homerplayer;
 
+import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.battery.BatteryStatusProvider;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.service.AudioBookPlayer;
@@ -25,6 +26,7 @@ public interface ApplicationComponent {
     void inject(FragmentPlayback fragment);
     void inject(BatteryStatusProvider batteryStatusProvider);
     void inject(BatteryStatusIndicator batteryStatusIndicator);
+    AnalyticsTracker getAnalyticsTracker();
     AudioBookPlayer getAudioBookPlayer();
     AudioBookManager getAudioBookManager();
 }
