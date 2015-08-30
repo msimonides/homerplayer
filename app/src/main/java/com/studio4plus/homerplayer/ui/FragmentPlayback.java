@@ -49,9 +49,8 @@ public class FragmentPlayback extends Fragment {
     private void showHintIfNecessary() {
         if (isResumed() && isVisible()) {
             if (!globalSettings.flipToStopHintShown()) {
-                // TODO: replace empty with the real graphic.
                 HintOverlay overlay = new HintOverlay(
-                        view, R.id.flipToStopHintOverlayStub, R.string.hint_flip_to_stop, R.drawable.empty);
+                        view, R.id.flipToStopHintOverlayStub, R.string.hint_flip_to_stop, R.drawable.hint_flip_to_stop);
                 overlay.show();
                 globalSettings.setFlipToStopHintShown();
             }

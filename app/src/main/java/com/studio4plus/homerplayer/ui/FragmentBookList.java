@@ -110,7 +110,7 @@ public class FragmentBookList extends Fragment {
                 globalSettings.setBrowsingHintShown();
             } else if (!globalSettings.settingsHintShown()) {
                 HintOverlay overlay = new HintOverlay(
-                        view, R.id.settingsHintOverlayStub, R.string.hint_settings, R.drawable.hint_horizontal_swipe);
+                        view, R.id.settingsHintOverlayStub, R.string.hint_settings, R.drawable.hint_tap);
                 overlay.show();
                 globalSettings.setSettingsHintShown();
             }
