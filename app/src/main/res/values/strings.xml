@@ -7,7 +7,7 @@
     <string name="device_admin_description" translatable="false">Homer Player</string>
     <string name="hint_browsing">Swipe\nto browse titles</string>
     <string name="hint_settings">Tap 5x\nfor settings</string>
-    <string name="hint_flip_to_stop"></string>
+    <string name="hint_flip_to_stop">Put the device with screen down to stop</string>
     <string name="settings_title">Settings</string>
     <string name="settings_device_owner_required_alert">The application must be a "device owner". See http://goo.gl/46gevp</string>
     <string name="settings_unregister_device_owner_warning">This action will disable the kiosk mode and cannot be easily undone.\nProceed?</string>
