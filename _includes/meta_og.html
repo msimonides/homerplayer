@@ -2,9 +2,11 @@
 	<meta property="og:title" content="{{ include.meta_og.title }}">
 	<meta property="og:description" content="{{ include.meta_og.description }}">
 	<meta property="og:site_name" content="Homer Player">
-	<meta property="og:url" content="{{ site.github.url }}/{{ page.url }}">
+	<meta property="og:url" content="{{ site.github.url }}{{ page.url }}">
 {% if include.meta_og.type %}
 	<meta property="og:type" content="{{ include.meta_og.type }}">
+{% else %}
+	<meta property="og:type" content="website">
 {% endif %}
 {% if include.meta_og.image %}
 	<meta property="og:image" content="{{ include.meta_og.image.url }}">
