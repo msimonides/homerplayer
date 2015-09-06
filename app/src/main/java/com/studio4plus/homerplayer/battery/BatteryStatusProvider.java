@@ -68,11 +68,11 @@ public class BatteryStatusProvider extends BroadcastReceiver {
     }
 
     private static ChargeLevel fromPercentage(float percentage) {
-        if (percentage < 0.25f)
+        if (percentage < 0.2f)
             return ChargeLevel.CRITICAL;
-        else if (percentage < 0.5f)
+        else if (percentage < 0.333f)
             return ChargeLevel.LEVEL_1;
-        else if (percentage < 0.75f)
+        else if (percentage < 0.666f)
             return ChargeLevel.LEVEL_2;
         else if (percentage < 1.0f)
             return ChargeLevel.LEVEL_3;
