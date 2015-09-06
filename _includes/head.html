@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="{{ "/css/" | prepend: site.baseurl }}{{ css }}">
   {% endfor %}
 
+  {% include meta_og.html meta_og=page.meta_og %}
+
   <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
   <![endif]-->
