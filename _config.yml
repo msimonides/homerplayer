@@ -17,4 +17,5 @@ defaults:
           path: "/img/default-share.jpg"
           width: 1200
           height: 628
-        video_url: "http://www.youtube.com/watch?v=RfLkoLtxzng"
+        video_url: "http://www.youtube.com/v/RfLkoLtxzng"
+        video_url_secure: "https://www.youtube.com/v/RfLkoLtxzng"
