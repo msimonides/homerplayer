@@ -11,6 +11,7 @@ defaults:
       meta_og:
         path: "/"
         type: "website"
+        app_id: "453566141512100"
         title: "An audiobook player for seniors"
         description: "A free app that converts an Android tablet into an audiobook player designed for the elderly and visually impaired."
         image:
