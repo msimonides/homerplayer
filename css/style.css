@@ -53,7 +53,6 @@ footer a {
 	background-size: cover;
 	-o-background-size: cover;
 	margin-top: 50px;  /* navbar height in Bootstrap */
-	margin-bottom: 3em;
 }
 
 .page-heading {
@@ -83,6 +82,10 @@ footer a {
 	background: #fff;
 }
 
+.content-below-header {
+	margin-bottom: 2.5em;
+	text-align: right;
+}
 
 img.qrcode {
 	margin-top: 1em;
