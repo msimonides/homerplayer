@@ -17,7 +17,7 @@ html,body {
 .vcenter-content {
 	display: table-cell;
 	vertical-align: middle;
-	padding-bottom: 7%;
+	padding-bottom: 6%;
 }
 
 .play-button {
@@ -65,6 +65,7 @@ html,body {
 	text-decoration: none;
 }
 
-.social {
+.social-row {
+	margin-top: 1em;
 	text-align: center;
 }
