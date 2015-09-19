@@ -17,6 +17,7 @@ public class AnalyticsTracker {
     private static final int HAD_BOOKS_DIMENSION = 2;
     private static final String ONCE_OR_MORE = "At least once";
     private static final String NEVER = "Never";
+    private static final String SAMPLE_BOOKS_ONLY = "Samples only";
 
     private final Tracker tracker;
     private final GoogleAnalytics googleAnalytics;
@@ -42,8 +43,7 @@ public class AnalyticsTracker {
 
     @SuppressWarnings("unused")
     public void onEvent(AudioBooksChangedEvent event) {
-        if (event.hasBooks)
-            globalSettings.setBooksEverInstalled();
+        globalSettings.setBooksEverInstalled(event.contentType);
     }
 
     @SuppressWarnings("unused")
@@ -56,6 +56,15 @@ public class AnalyticsTracker {
     }
 
     private String installedBooksDimensionValue() {
-        return globalSettings.booksEverInstalled() ? ONCE_OR_MORE : NEVER;
+        switch(globalSettings.booksEverInstalled()) {
+            case EMPTY:
+                return NEVER;
+            case SAMPLES_ONLY:
+                return SAMPLE_BOOKS_ONLY;
+            case USER_CONTENT:
+                return ONCE_OR_MORE;
+            default:
+                return "unknown value";
+        }
     }
 }

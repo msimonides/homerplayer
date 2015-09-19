@@ -93,6 +93,7 @@ public class AudioBookManager {
         if (booksToRemove.contains(currentBook))
             currentBook = null;
         audioBooksChanged = audioBooks.removeAll(booksToRemove);
+        LibraryContentType contentType = LibraryContentType.EMPTY;
 
         if (fileSets != null) {
             for (FileSet fileSet : fileSets) {
@@ -103,6 +104,10 @@ public class AudioBookManager {
                     audioBooks.add(audioBook);
                     audioBooksChanged = true;
                 }
+                LibraryContentType newContentType = fileSet.isDemoSample
+                        ? LibraryContentType.SAMPLES_ONLY : LibraryContentType.USER_CONTENT;
+                if (newContentType.supersedes(contentType))
+                    contentType = newContentType;
             }
         }
 
@@ -126,7 +131,7 @@ public class AudioBookManager {
         }
 
         if (audioBooksChanged)
-            EventBus.getDefault().post(new AudioBooksChangedEvent(currentBook != null));
+            EventBus.getDefault().post(new AudioBooksChangedEvent(contentType));
     }
 
     private void assignColoursToNewBooks() {

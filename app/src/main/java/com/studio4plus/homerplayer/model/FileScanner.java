@@ -21,6 +21,8 @@ import javax.inject.Named;
 
 public class FileScanner {
 
+    private static final String SAMPLE_BOOK_FILE_NAME = ".sample";
+
     private final String audioBooksDirectoryPath;
 
     @Inject
@@ -71,7 +73,9 @@ public class FileScanner {
             }
             String id = Base64.encodeToString(digest.digest(), Base64.NO_PADDING | Base64.NO_WRAP);
             if (filePaths.length > 0) {
-                return new FileSet(id, bookDirectory.getName(), Arrays.asList(filePaths));
+                File sampleIndicator = new File(bookDirectory, SAMPLE_BOOK_FILE_NAME);
+                boolean isDemoSample = sampleIndicator.exists();
+                return new FileSet(id, bookDirectory.getName(), Arrays.asList(filePaths), isDemoSample);
             } else {
                 return null;
             }

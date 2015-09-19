@@ -4,6 +4,8 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 
+import com.studio4plus.homerplayer.model.LibraryContentType;
+
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -58,12 +60,26 @@ public class GlobalSettings {
         return Orientation.valueOf(stringValue).value;
     }
 
-    public boolean booksEverInstalled() {
-        return sharedPreferences.getBoolean(KEY_BOOKS_EVER_INSTALLED, false);
+    public LibraryContentType booksEverInstalled() {
+        try {
+            String value = sharedPreferences.getString(KEY_BOOKS_EVER_INSTALLED, null);
+            if (value != null)
+                return LibraryContentType.valueOf(value);
+            else
+                return LibraryContentType.EMPTY;
+        } catch (ClassCastException e) {
+            boolean everInstalled = sharedPreferences.getBoolean(KEY_BOOKS_EVER_INSTALLED, false);
+            LibraryContentType contentType =
+                    everInstalled ? LibraryContentType.USER_CONTENT : LibraryContentType.EMPTY;
+            setBooksEverInstalled(contentType);
+            return contentType;
+        }
     }
 
-    public void setBooksEverInstalled() {
-        sharedPreferences.edit().putBoolean(KEY_BOOKS_EVER_INSTALLED, true).apply();
+    public void setBooksEverInstalled(LibraryContentType contentType) {
+        LibraryContentType oldContentType = booksEverInstalled();
+        if (contentType.supersedes(oldContentType))
+            sharedPreferences.edit().putString(KEY_BOOKS_EVER_INSTALLED, contentType.name()).apply();
     }
 
     public boolean settingsEverEntered() {

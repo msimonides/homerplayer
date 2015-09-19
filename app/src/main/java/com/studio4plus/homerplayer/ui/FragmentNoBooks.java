@@ -29,7 +29,7 @@ public class FragmentNoBooks extends Fragment {
 
         TextView noBooksPath = (TextView) view.findViewById(R.id.noBooksPath);
         String directoryMessage =
-                getString(R.string.noBooksDirectoryMessage, audioBooksDirectoryName);
+                getString(R.string.copyBooksInstructionMessage, audioBooksDirectoryName);
         noBooksPath.setText(Html.fromHtml(directoryMessage));
 
         return view;
