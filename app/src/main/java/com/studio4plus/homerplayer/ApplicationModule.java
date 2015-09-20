@@ -9,6 +9,8 @@ import android.preference.PreferenceManager;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
+import java.util.Locale;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -32,6 +34,11 @@ public class ApplicationModule {
     @Provides
     Resources provideResources(Context context) {
         return context.getResources();
+    }
+
+    @Provides
+    Locale provideCurrentLocale(Resources resources) {
+        return resources.getConfiguration().locale;
     }
 
     @Provides

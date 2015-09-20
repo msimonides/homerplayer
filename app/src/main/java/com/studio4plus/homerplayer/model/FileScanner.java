@@ -21,7 +21,7 @@ import javax.inject.Named;
 
 public class FileScanner {
 
-    private static final String SAMPLE_BOOK_FILE_NAME = ".sample";
+    static final String SAMPLE_BOOK_FILE_NAME = ".sample";
 
     private final String audioBooksDirectoryPath;
 
