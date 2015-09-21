@@ -7,10 +7,10 @@ import java.util.List;
 public class AudioBook {
 
     public interface PositionObserver {
-        public void onAudioBookPositionChanged(AudioBook audioBook);
+        void onAudioBookPositionChanged(AudioBook audioBook);
     }
 
-    private FileSet fileSet;
+    private final FileSet fileSet;
     private ColourScheme colourScheme;
     private Position lastPosition;
 
@@ -39,6 +39,10 @@ public class AudioBook {
 
     public Position getLastPosition() {
         return lastPosition;
+    }
+
+    public boolean isDemoSample() {
+        return fileSet.isDemoSample;
     }
 
     /**

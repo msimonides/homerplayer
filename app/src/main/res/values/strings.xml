@@ -2,7 +2,7 @@
     <string name="app_name" translatable="false">Homer Player</string>
     <string name="playback_service_notification">Audio Book Playing</string>
     <string name="noBooksMessage">There are no audio books on the device.</string>
-    <string name="noBooksDirectoryMessage">Copy audio books to folder &lt;b>/%s&lt;/b></string>
+    <string name="copyBooksInstructionMessage">Copy audio books to folder &lt;b>/%s&lt;/b></string>
     <string name="device_admin_label" translatable="false">Homer Player</string>
     <string name="device_admin_description" translatable="false">Homer Player</string>
     <string name="hint_browsing">Swipe\nto browse titles</string>
@@ -29,4 +29,9 @@
     <string name="button_start">Start</string>
     <string name="button_stop">Stop</string>
     <string name="multi_tap_prompt">%d more to go</string>
+    <string name="noBooksOrMessage">or</string>
+    <string name="noBooksDownloadSamplesButton">Download book samples</string>
+    <string name="samplesDownloadErrorTitle">Error</string>
+    <string name="samplesDownloadErrorMessage">Download and installation failed.</string>
+    <string name="samplesDownloadProgressTitle">Downloading...</string>
 </resources>

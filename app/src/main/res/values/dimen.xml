@@ -2,7 +2,7 @@
 <resources>
     <dimen name="bookListTextSize">30sp</dimen>
     <dimen name="bookListItemPadding">30dp</dimen>
-    <dimen name="noBooksPathTextSize">15sp</dimen>
+    <dimen name="copyBooksInstructionTextSize">15sp</dimen>
     <dimen name="hintTextSize">30sp</dimen>
     <dimen name="horizontalScreenMargin">60dp</dimen>
     <dimen name="verticalScreenMargin">40dp</dimen>

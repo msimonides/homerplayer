@@ -7,18 +7,24 @@
     android:padding="@dimen/bookListItemPadding">
 
     <TextView
-        android:id="@+id/noBooksText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="@string/noBooksMessage"
-        android:textSize="@dimen/bookListTextSize"/>
-
-    <TextView
         android:id="@+id/noBooksPath"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:textSize="@dimen/noBooksPathTextSize"/>
+        android:textSize="@dimen/copyBooksInstructionTextSize"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/copyBooksInstructionTextSize"
+        android:layout_marginTop="@dimen/copyBooksInstructionTextSize"
+        android:layout_marginBottom="@dimen/copyBooksInstructionTextSize"
+        android:text="@string/noBooksOrMessage"/>
+
+    <Button
+        android:id="@+id/downloadSamplesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/copyBooksInstructionTextSize"
+        android:text="@string/noBooksDownloadSamplesButton"/>
 
 </LinearLayout>

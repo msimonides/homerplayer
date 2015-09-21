@@ -139,7 +139,7 @@ public class FragmentBookList extends Fragment {
         @Override
         public Fragment getItem(int viewIndex) {
             int bookIndex = getBookIndex(viewIndex);
-            return FragmentBookItem.newInstance(audioBooks.get(bookIndex));
+            return FragmentBookItem.newInstance(audioBooks.get(bookIndex).getId());
         }
 
         @Override

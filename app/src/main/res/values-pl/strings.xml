@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="noBooksMessage">Na urządzeniu nie ma żadnych audiobooków.</string>
-    <string name="noBooksDirectoryMessage">Wgraj audiobooki do folderu &lt;b>/%s&lt;/b></string>
+    <string name="copyBooksInstructionMessage">Wgraj audiobooki do folderu &lt;b>/%s&lt;/b></string>
     <string name="playback_service_notification">Odtwarzanie audiobooka</string>
     <string name="hint_browsing">Przeciągnij\naby przeglądać książki</string>
     <string name="hint_settings">Ustawienia:\ntapnij 5 razy</string>
@@ -25,4 +25,9 @@
     <string name="button_start">Start</string>
     <string name="button_stop">Stop</string>
     <string name="multi_tap_prompt">Jeszcze %d</string>
+    <string name="noBooksDownloadSamplesButton">Pobierz przykładowe ksiązki</string>
+    <string name="noBooksOrMessage">lub</string>
+    <string name="samplesDownloadErrorMessage">Nie udało się pobrać i zainstalować przykładowych audiobooków.</string>
+    <string name="samplesDownloadErrorTitle">Błąd</string>
+    <string name="samplesDownloadProgressTitle">Pobieranie...</string>
 </resources>
