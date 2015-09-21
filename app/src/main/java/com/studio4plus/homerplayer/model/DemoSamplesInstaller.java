@@ -4,13 +4,12 @@ import android.content.Context;
 import android.media.MediaScannerConnection;
 
 import com.crashlytics.android.Crashlytics;
+import com.github.saturngod.Decompress;
 import com.google.common.io.Files;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.zeroturnaround.zip.ZipException;
-import org.zeroturnaround.zip.ZipUtil;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -35,17 +34,12 @@ public class DemoSamplesInstaller {
 
     public boolean installBooksFromZip(File zipFile) {
         File tempFolder = Files.createTempDir();
-        try {
-            ZipUtil.unpack(zipFile, tempFolder);
-            boolean anythingInstalled = installBooks((tempFolder));
-            deleteFolderWithFiles(tempFolder);
+        Decompress decompress = new Decompress(zipFile.getAbsolutePath(), tempFolder.getAbsolutePath());
+        decompress.unzip();
+        boolean anythingInstalled = installBooks((tempFolder));
+        deleteFolderWithFiles(tempFolder);
 
-            return anythingInstalled;
-        } catch (ZipException zipException) {
-            zipException.printStackTrace();
-            Crashlytics.logException(zipException);
-            return false;
-        }
+        return anythingInstalled;
     }
 
     private boolean installBooks(File sourceDirectory) {

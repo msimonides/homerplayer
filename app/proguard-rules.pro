@@ -21,4 +21,8 @@
     public void onEvent*(**);
 }
 
+# Guava
+-dontwarn sun.misc.Unsafe
+
+
 -keepattributes SourceFile, LineNumberTable
