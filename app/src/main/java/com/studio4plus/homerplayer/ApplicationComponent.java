@@ -3,6 +3,7 @@ package com.studio4plus.homerplayer;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.battery.BatteryStatusProvider;
 import com.studio4plus.homerplayer.model.AudioBookManager;
+import com.studio4plus.homerplayer.model.DemoSamplesInstaller;
 import com.studio4plus.homerplayer.service.AudioBookPlayer;
 import com.studio4plus.homerplayer.service.AudioBookPlayerModule;
 import com.studio4plus.homerplayer.ui.BaseActivity;
@@ -31,4 +32,5 @@ public interface ApplicationComponent {
     AnalyticsTracker getAnalyticsTracker();
     AudioBookPlayer getAudioBookPlayer();
     AudioBookManager getAudioBookManager();
+    DemoSamplesInstaller createDemoSamplesInstaller();
 }
