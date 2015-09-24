@@ -126,6 +126,12 @@ a.framed-link:hover {
 	margin-bottom: 10px;
 }
 
+.social-row iframe {
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+	vertical-align: bottom;
+}
+
 ul.social li {
 	margin: 0px;
 	padding-right: 0px;
