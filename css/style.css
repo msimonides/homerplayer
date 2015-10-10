@@ -48,6 +48,7 @@ footer a {
 .page-title-header {
 	width: 100%;
 	background: no-repeat center center;
+	background-color: #444;
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	background-size: cover;
@@ -202,5 +203,11 @@ footer hr {
 	}
 	img.qrcode {
 		max-width: 20%;
+	}
+}
+
+@media only screen and (min-width: 1500px) {
+	.page-heading {
+		padding: 12em 3em;
 	}
 }
