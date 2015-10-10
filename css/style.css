@@ -206,8 +206,8 @@ footer hr {
 	}
 }
 
-@media only screen and (min-width: 1500px) {
+@media only screen and (min-width: 1500px) and (min-height: 1000px) {
 	.page-heading {
-		padding: 12em 3em;
+		padding: 12em 2em;
 	}
 }
