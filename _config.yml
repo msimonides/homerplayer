@@ -15,7 +15,7 @@ defaults:
         title: "An audiobook player for seniors"
         description: "A free app that converts an Android tablet into an audiobook player designed for the elderly and visually impaired."
         image:
-          path: "/img/default-share.jpg"
+          path: "/img/default-share-2.jpg"
           width: 1200
           height: 628
         video_url: "http://www.youtube.com/v/RfLkoLtxzng"
