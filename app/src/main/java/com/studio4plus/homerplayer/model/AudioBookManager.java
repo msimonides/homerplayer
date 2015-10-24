@@ -1,5 +1,7 @@
 package com.studio4plus.homerplayer.model;
 
+import android.support.annotation.MainThread;
+
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
 import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
 import com.studio4plus.homerplayer.events.MediaStoreUpdateEvent;
@@ -24,6 +26,7 @@ public class AudioBookManager {
     private AudioBook currentBook;
 
     @Inject
+    @MainThread
     public AudioBookManager(EventBus eventBus, FileScanner fileScanner, Storage storage) {
         this.fileScanner = fileScanner;
         this.storage = storage;
@@ -32,14 +35,17 @@ public class AudioBookManager {
     }
 
     @SuppressWarnings("UnusedDeclaration")
+    @MainThread
     public void onEvent(MediaStoreUpdateEvent ignored) {
         scanFiles();
     }
 
+    @MainThread
     public List<AudioBook> getAudioBooks() {
         return audioBooks;
     }
 
+    @MainThread
     public void setCurrentBook(String bookId) {
         AudioBook newBook = getById(bookId);
         if (newBook != currentBook) {
@@ -48,14 +54,17 @@ public class AudioBookManager {
         }
     }
 
+    @MainThread
     public AudioBook getCurrentBook() {
         return currentBook;
     }
 
+    @MainThread
     public int getCurrentBookIndex() {
         return audioBooks.indexOf(currentBook);
     }
 
+    @MainThread
     public AudioBook getById(String id) {
         for (AudioBook book : audioBooks)
             if (book.getId().equals(id))
@@ -63,14 +72,17 @@ public class AudioBookManager {
         return null;
     }
 
+    @MainThread
     public File getAbsolutePath(AudioBook book) {
         return new File(fileScanner.getAudioBooksDirectory(), book.getDirectoryName());
     }
 
+    @MainThread
     public File getAudioBooksDirectory() {
         return fileScanner.getAudioBooksDirectory();
     }
 
+    @MainThread
     public void scanFiles() {
         boolean audioBooksChanged;
         List<FileSet> fileSets = fileScanner.scanAudioBooksDirectory();
@@ -134,6 +146,7 @@ public class AudioBookManager {
             EventBus.getDefault().post(new AudioBooksChangedEvent(contentType));
     }
 
+    @MainThread
     private void assignColoursToNewBooks() {
         final int MAX_NEIGHBOUR_DISTANCE = 2;
 
@@ -153,6 +166,7 @@ public class AudioBookManager {
         }
     }
 
+    @MainThread
     private List<ColourScheme> getColoursInRange(int startIndex, int endIndex) {
         List<ColourScheme> colours = new ArrayList<>();
         for (int i = startIndex; i <= endIndex; ++i) {

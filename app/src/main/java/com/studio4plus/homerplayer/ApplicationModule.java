@@ -1,15 +1,16 @@
 package com.studio4plus.homerplayer;
 
 import android.app.Application;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
-import java.net.URL;
 import java.util.Locale;
 
 import javax.inject.Named;
@@ -23,9 +24,9 @@ import de.greenrobot.event.EventBus;
 public class ApplicationModule {
 
     private final Application application;
-    private final URL samplesDownloadUrl;
+    private final Uri samplesDownloadUrl;
 
-    public ApplicationModule(Application application, URL samplesDownloadUrl) {
+    public ApplicationModule(Application application, Uri samplesDownloadUrl) {
         this.application = application;
         this.samplesDownloadUrl = samplesDownloadUrl;
     }
@@ -50,8 +51,13 @@ public class ApplicationModule {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
+    @Provides
+    DownloadManager provideDownloadManager(Context context) {
+        return (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+    }
+
     @Provides @Singleton @Named("SAMPLES_DOWNLOAD_URL")
-    URL provideSamplesUrl() {
+    Uri provideSamplesUrl() {
         return samplesDownloadUrl;
     }
 

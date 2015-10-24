@@ -56,6 +56,13 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".downloads.DownloadReceiver"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
+            </intent-filter>
+        </receiver>
+
         <receiver android:name="com.google.android.gms.analytics.AnalyticsReceiver"
             android:enabled="true">
             <intent-filter>

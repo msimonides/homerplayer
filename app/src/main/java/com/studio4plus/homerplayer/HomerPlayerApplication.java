@@ -2,17 +2,15 @@ package com.studio4plus.homerplayer;
 
 import android.app.Application;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Handler;
 import android.provider.MediaStore;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
-import com.studio4plus.homerplayer.model.DemoSamplesInstaller;
 import com.studio4plus.homerplayer.util.MediaScannerUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -33,7 +31,7 @@ public class HomerPlayerApplication extends Application {
         Fabric.with(this, new Crashlytics.Builder().core(core).build());
 
         component = DaggerApplicationComponent.builder()
-                .applicationModule(new ApplicationModule(this, toURL(DEMO_SAMPLES_URL)))
+                .applicationModule(new ApplicationModule(this, Uri.parse(DEMO_SAMPLES_URL)))
                 .audioBookManagerModule(new AudioBookManagerModule(AUDIOBOOKS_DIRECTORY))
                 .build();
         // Force creation of the AnalyticsTracker early.
@@ -44,10 +42,6 @@ public class HomerPlayerApplication extends Application {
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, mediaStoreUpdateObserver);
 
         createAudioBooksDirectory(component.getAudioBookManager().getAudioBooksDirectory());
-
-        File installSource = new File("/storage/emulated/0/samples.zip");
-        new DemoSamplesInstaller(
-                this, getResources().getConfiguration().locale, component.getAudioBookManager()).installBooksFromZip(installSource);
     }
 
     @Override
@@ -76,16 +70,6 @@ public class HomerPlayerApplication extends Application {
                     // Just ignore.
                 }
             }
-        }
-    }
-
-    private static URL toURL(String url) {
-        try {
-            return new URL(url);
-        } catch (MalformedURLException e) {
-            // Should never happen, the URL is hardcoded and must be valid :)
-            throw new IllegalArgumentException("Invalid URL: " + url);
-
         }
     }
 }

@@ -29,5 +29,6 @@
     <string name="noBooksOrMessage">lub</string>
     <string name="samplesDownloadErrorMessage">Nie udało się pobrać i zainstalować przykładowych audiobooków.</string>
     <string name="samplesDownloadErrorTitle">Błąd</string>
-    <string name="samplesDownloadProgressTitle">Pobieranie...</string>
+    <string name="samplesDownloadProgressTitle">Pobieranie…</string>
+    <string name="samplesDownloadNotificationTitle">Przykładowe audiobooki dla Homer Playera</string>
 </resources>

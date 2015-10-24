@@ -2,6 +2,8 @@ package com.studio4plus.homerplayer.model;
 
 import android.content.Context;
 import android.media.MediaScannerConnection;
+import android.support.annotation.MainThread;
+import android.support.annotation.WorkerThread;
 
 import com.crashlytics.android.Crashlytics;
 import com.github.saturngod.Decompress;
@@ -26,12 +28,14 @@ public class DemoSamplesInstaller {
     private final Context context;
 
     @Inject
+    @MainThread
     public DemoSamplesInstaller(Context context, Locale locale, AudioBookManager audioBookManager) {
         this.context = context;
         this.audioBooksDirectory = audioBookManager.getAudioBooksDirectory();
         this.locale = locale;
     }
 
+    @WorkerThread
     public boolean installBooksFromZip(File zipFile) {
         File tempFolder = Files.createTempDir();
         Decompress decompress = new Decompress(zipFile.getAbsolutePath(), tempFolder.getAbsolutePath());
@@ -42,6 +46,7 @@ public class DemoSamplesInstaller {
         return anythingInstalled;
     }
 
+    @WorkerThread
     private boolean installBooks(File sourceDirectory) {
         boolean anythingInstalled = false;
 
@@ -55,6 +60,7 @@ public class DemoSamplesInstaller {
         return anythingInstalled;
     }
 
+    @WorkerThread
     private boolean installSingleBook(File sourceBookDirectory, File audioBooksDirectory) {
         File titlesFile = new File(sourceBookDirectory, TITLES_FILE_NAME);
         String localizedTitle = readLocalizedTitle(titlesFile, locale);
@@ -100,6 +106,7 @@ public class DemoSamplesInstaller {
         }
     }
 
+    @WorkerThread
     private String readLocalizedTitle(File file, Locale locale) {
         try {
             String titlesString = Files.toString(file, Charset.forName(TITLES_FILE_CHARSET));

@@ -33,5 +33,6 @@
     <string name="noBooksDownloadSamplesButton">Download book samples</string>
     <string name="samplesDownloadErrorTitle">Error</string>
     <string name="samplesDownloadErrorMessage">Download and installation failed.</string>
-    <string name="samplesDownloadProgressTitle">Downloading...</string>
+    <string name="samplesDownloadProgressTitle">Downloading…</string>
+    <string name="samplesDownloadNotificationTitle">Audiobook samples for Homer Player</string>
 </resources>
