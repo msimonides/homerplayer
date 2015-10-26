@@ -5,7 +5,7 @@ import com.studio4plus.homerplayer.battery.BatteryStatusProvider;
 import com.studio4plus.homerplayer.downloads.SamplesDownloadController;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.model.DemoSamplesInstaller;
-import com.studio4plus.homerplayer.service.AudioBookPlayer;
+import com.studio4plus.homerplayer.service.AudioBookExoPlayer;
 import com.studio4plus.homerplayer.service.AudioBookPlayerModule;
 import com.studio4plus.homerplayer.ui.BaseActivity;
 import com.studio4plus.homerplayer.ui.BatteryStatusIndicator;
@@ -33,7 +33,7 @@ public interface ApplicationComponent {
     void inject(BatteryStatusProvider batteryStatusProvider);
     void inject(BatteryStatusIndicator batteryStatusIndicator);
     AnalyticsTracker getAnalyticsTracker();
-    AudioBookPlayer getAudioBookPlayer();
+    AudioBookExoPlayer getAudioBookPlayer();
     AudioBookManager getAudioBookManager();
     DemoSamplesInstaller createDemoSamplesInstaller();
     SamplesDownloadController getSamplesDownloadController();

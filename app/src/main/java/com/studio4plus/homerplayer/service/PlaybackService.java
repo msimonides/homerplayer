@@ -22,12 +22,12 @@ import de.greenrobot.event.EventBus;
 
 public class PlaybackService
         extends Service
-        implements AudioBookPlayer.Observer, FaceDownDetector.Listener {
+        implements AudioBookExoPlayer.Observer, FaceDownDetector.Listener {
 
     private static final int NOTIFICATION = R.string.playback_service_notification;
     private static final PlaybackStoppedEvent PLAYBACK_STOPPED_EVENT = new PlaybackStoppedEvent();
 
-    private AudioBookPlayer player;
+    private AudioBookExoPlayer player;
     private FaceDownDetector faceDownDetector;
 
     @Override

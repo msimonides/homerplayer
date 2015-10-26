@@ -24,5 +24,10 @@
 # Guava
 -dontwarn sun.misc.Unsafe
 
+# ExoPlayer, keep everything for now
+-keep class com.google.android.exoplayer.**
+-keep class com.google.android.exoplayer.** {
+    *;
+}
 
 -keepattributes SourceFile, LineNumberTable
