@@ -10,7 +10,7 @@ extra_js:
  - faq.js
 ---
 
-<ol class="faq-toc">
+<ol id="toc" class="faq-toc anchor-target">
 {% for faq_section in site.data.faq %}
 {% assign outer_index = forloop.index %}
 <li><span class="toc_section">{{ faq_section.section }}</span>
@@ -29,7 +29,8 @@ extra_js:
 
 {% for faq_section in site.data.faq %}
 {% assign outer_index = forloop.index %}
-<h2>{{ faq_section.section }}</h2>
+<h2 id="{{ faq_section.section | strip_html | downcase | remove: ' ' }}">
+{{ faq_section.section }}</h2>
 <dl class="faq">
 {% for question in faq_section.questions %}
 {% capture label  %}faq-{{ outer_index }}-{{ forloop.index }}{% endcapture %}
@@ -39,7 +40,7 @@ extra_js:
 <dd>
 {{ question.answer }}
 
-<p><a href="#top">Go to top</a></p>
+<p><a href="#toc">Go to top</a></p>
 </dd>
 {% endfor %}
 </dl>
