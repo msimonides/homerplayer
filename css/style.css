@@ -56,6 +56,13 @@ footer a {
 	margin-top: 50px;  /* navbar height in Bootstrap */
 }
 
+.anchor-target:before {
+	display: block;
+	content: "";
+	height: 100px;  /* navbar height in Bootstrap + 50 */
+	margin-top: -100px;
+}
+
 .page-heading {
 	padding: 4em 2em;
 }

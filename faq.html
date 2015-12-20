@@ -1,0 +1,44 @@
+---
+layout: page
+meta_title: "Homer Player: Frequently Asked Questions"
+title: "FAQ"
+heading: "Frequently Asked Questions"
+meta_description: "Find the answers to most common questions about the Homer Player audiobook player."
+extra_css:
+ - faq.css
+---
+
+<ol class="faq-toc">
+{% for faq_section in site.data.faq %}
+{% assign outer_index = forloop.index %}
+<li><span class="toc_section">{{ faq_section.section }}</span>
+<ol>
+{% for question in faq_section.questions %}
+{% capture label  %}faq_{{ outer_index }}.{{ forloop.index }}{% endcapture %}
+<li><a href="#{{ label }}">{{ question.question }}</a></li>
+{% endfor %}
+</ol>
+</li>
+{% endfor %}
+</ol>
+
+<p>Your question is not on the list?
+<a href="mailto:marcin@studio4plus.com" onclick="gaLinkClick('email_faq');">E-mail me!</a></p>
+
+{% for faq_section in site.data.faq %}
+{% assign outer_index = forloop.index %}
+<h2>{{ faq_section.section }}</h2>
+<dl class="faq">
+{% for question in faq_section.questions %}
+{% capture label  %}faq_{{ outer_index }}.{{ forloop.index }}{% endcapture %}
+<dt id="{{ label }}" class="anchor-target">
+{{ outer_index }}.{{ forloop.index }} {{ question.question }}
+</dt>
+<dd>
+{{ question.answer }}
+
+<p><a href="#top">Go to top</a></p>
+</dd>
+{% endfor %}
+</dl>
+{% endfor %}

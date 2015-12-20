@@ -1,0 +1,77 @@
+- section: General questions
+  questions:
+    - question: Is it necessary to purchase an Android tablet to try the app?
+      answer: >
+        <p>
+        No, you can install the application on any smartphone or tablet with Android
+        4.2 or newer. You can also ask a friend who has an Android phone to install it so
+        you can test it. The app can then be removed in a matter of seconds (like any
+        other app).
+        </p>
+        <p>
+        If there is absolutely no way for you to have access to an Android device you
+        can install an app player on your PC or Mac, for example <a
+        href="http://www.bluestacks.com">Bluestacks</a>.
+        </p>
+    
+    - question: Is it necessary for the user to have WiFi or Internet connection after installing the app?
+      answer: >
+        <p>
+        No. Internet connection is not necessary for running the application. The
+        books are transferred from a computer over a USB cable so the device
+        works more or less like any portable audio player.
+        </p>
+        <p>
+        In fact I encourage disabling WiFi when "building" a dedicated player so that
+        it lasts longer on a single battery charge.
+        </p>
+    
+    - question: Can I use books from Audible?
+      answer: >
+        <p>
+        Unfortunately no. Audible doesn't allow downloading regular MP3 files and
+        Homer Player doesn't have Audible support.
+        </p>
+    
+    - question: I would like to make a Homer Player tablet but will I be able to do this with a Mac?
+      answer: >
+        <p>Yes, you can use a Mac or a PC with Windows or Linux.</p>
+
+    - question: How do I rewind the book to replay a fragment I have missed?
+      answer: >
+        <p>
+        This functionality hasn't been implemented yet. I will work on
+        rewind/fast-forward soon since this feature is often requested.
+        </p>
+
+    - question: How can I start a book from the beginning? While I was testing the book advanced 10 minutes and now I want it to play from start when I give the tablet to my uncle.
+      answer: >
+        <p>There is no function to rewind a book to the beginnig.</p>
+        <p>
+        However, there is a workaround: you can clear application data. This
+        will reset progress for all books and all the configuration you made in the
+        Settings screen.
+        </p>
+        <ol>
+        <li>Go to system settings on your tablet or phone.
+        <li>Open "Applications".
+        <li>Find "Homer Player" and tap it to open.
+        <li>Select "Clear data". 
+        </ol>
+        <p>This is something that needs improvement and it's on my TODO list.</p>
+
+- section: Installation on a dedicated device
+  questions:
+    - question: "When executing the <tt>adb shell</tt> command (step 8 of the instruction) I get the following error: <tt>device not found</tt>"
+      answer: >
+        <p>
+        If you get this error on a Windows computer then it's probably a problem with a
+        driver for your tablet. <a
+        href="http://www.makeuseof.com/tag/android-wont-connect-windows-adb-fix-it-three-steps/">Installing a universal ADB driver should help.</a>
+        </p>
+    - question: "When executing the <tt>adb shell</tt> command (step 8 of the instruction) I get the following error: <tt>java.lang.IllegalStateException: Trying to set device owner but device is already provisioned.</tt>"
+      answer: >
+        <p>
+        This means that there are some accounts still configured on the device.
+        Make sure you have performed step "5. Remove all accounts" correctly.
+        </p>

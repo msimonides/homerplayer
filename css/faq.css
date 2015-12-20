@@ -1,0 +1,23 @@
+ol.faq-toc {
+	list-style-position: inside;
+	padding-left: 0px;
+}
+
+ol.faq-toc ol {
+	list-style-position: outside;
+}
+
+.faq {
+	margin: 0;
+	padding-bottom: 0.5em;
+}
+
+.faq dt {
+	font-weight: 600;
+	margin-top: 1.5em;
+	margin-bottom: 0.5em;
+}
+
+.toc_section {
+	font-weight: 600;
+}
