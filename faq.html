@@ -6,6 +6,8 @@ heading: "Frequently Asked Questions"
 meta_description: "Find the answers to most common questions about the Homer Player audiobook player."
 extra_css:
  - faq.css
+extra_js:
+ - faq.js
 ---
 
 <ol class="faq-toc">
@@ -14,8 +16,8 @@ extra_css:
 <li><span class="toc_section">{{ faq_section.section }}</span>
 <ol>
 {% for question in faq_section.questions %}
-{% capture label  %}faq_{{ outer_index }}.{{ forloop.index }}{% endcapture %}
-<li><a href="#{{ label }}">{{ question.question }}</a></li>
+{% capture label  %}faq-{{ outer_index }}-{{ forloop.index }}{% endcapture %}
+<li><a href="#{{ label }}" data-target="{{ label }}">{{ question.question }}</a></li>
 {% endfor %}
 </ol>
 </li>
@@ -30,7 +32,7 @@ extra_css:
 <h2>{{ faq_section.section }}</h2>
 <dl class="faq">
 {% for question in faq_section.questions %}
-{% capture label  %}faq_{{ outer_index }}.{{ forloop.index }}{% endcapture %}
+{% capture label  %}faq-{{ outer_index }}-{{ forloop.index }}{% endcapture %}
 <dt id="{{ label }}" class="anchor-target">
 {{ outer_index }}.{{ forloop.index }} {{ question.question }}
 </dt>

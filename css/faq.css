@@ -21,3 +21,14 @@ ol.faq-toc ol {
 .toc_section {
 	font-weight: 600;
 }
+
+.faq * {
+	transition: background 3s ease-in;
+	background-color: inherit;
+}
+
+.faq .highlight {
+	transition: background 0.5s ease-out;
+	background-color: #ffffaa;
+}
+
