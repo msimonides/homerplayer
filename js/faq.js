@@ -1,15 +1,21 @@
-$('.faq-toc a').click(highlightEvent);
+$('.faq-toc a').click(highlightOnEvent);
+$('.faq a.self').click(highlightOnEvent);
 
-function highlightEvent(event) {
-	highlight(event.target.dataset.target);
+function highlightOnEvent(event) {
+	var targetHref = this.getAttribute('href');
+	var targetId = targetHref.substr(targetHref.indexOf('#') + 1);
+	highlight(targetId);
 }
 
 function highlight(id) {
-	var element = $('#' + id + " + dd");
-	element.addClass('highlight');
+	var answer = $('#' + id + " + dd");
+	answer.addClass('highlight');
 	setTimeout(function() {
-		element.removeClass('highlight');
+		answer.removeClass('highlight');
 	}, 500);
+
+	$('dt.selected').removeClass('selected');
+	$('#' + id).addClass('selected');
 }
 
 $(document).ready(function() {

@@ -16,8 +16,8 @@ extra_js:
 <li><span class="toc_section">{{ faq_section.section }}</span>
 <ol>
 {% for question in faq_section.questions %}
-{% capture label  %}faq-{{ outer_index }}-{{ forloop.index }}{% endcapture %}
-<li><a href="#{{ label }}" data-target="{{ label }}">{{ question.question }}</a></li>
+{% capture label  %}{{ question.question | slugify }}{% endcapture %}
+<li><a href="#{{ label }}">{{ question.question }}</a></li>
 {% endfor %}
 </ol>
 </li>
@@ -29,13 +29,14 @@ extra_js:
 
 {% for faq_section in site.data.faq %}
 {% assign outer_index = forloop.index %}
-<h2 id="{{ faq_section.section | strip_html | downcase | remove: ' ' }}">
+<h2 id="{{ faq_section.section | slugify }}">
 {{ faq_section.section }}</h2>
 <dl class="faq">
 {% for question in faq_section.questions %}
-{% capture label  %}faq-{{ outer_index }}-{{ forloop.index }}{% endcapture %}
+{% capture label  %}{{ question.question | slugify }}{% endcapture %}
 <dt id="{{ label }}" class="anchor-target">
 {{ outer_index }}.{{ forloop.index }} {{ question.question }}
+<a href="#{{ label }}" class="self" title="Link"><i class="fa fa-link"></i></a>
 </dt>
 <dd>
 {{ question.answer }}
