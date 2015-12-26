@@ -26,13 +26,6 @@
         it lasts longer on a single battery charge.
         </p>
     
-    - question: Can I use books from Audible?
-      answer: >
-        <p>
-        Unfortunately no. Audible doesn't allow downloading regular MP3 files and
-        Homer Player doesn't have Audible support.
-        </p>
-    
     - question: I would like to make a Homer Player tablet but will I be able to do this with a Mac?
       answer: >
         <p>Yes, you can use a Mac or a PC with Windows or Linux.</p>
@@ -59,6 +52,54 @@
         <li>Select "Clear data". 
         </ol>
         <p>This is something that needs improvement and it's on my TODO list.</p>
+
+- section: Audiobooks compatibility
+  questions:
+    - question: What audiobook formats are supported?
+      answer: >
+        <p>
+        Homer Player supports DRM-free MP3 files.<br>
+        Each book may comprise of a number of files that are played in alphabetical
+        order. The files may also be nested in subdirectories (useful when copying
+        books that come on multiple CDs).
+        </p>
+        <p>
+        This means that most audiobooks thay you <strong>buy</strong> will
+        work fine.<br>
+        However, subscription and rental services that only work with their
+        dedicated application are unlikely to work.
+        </p>
+
+    - question: Where do I get books to listen to with Homer Player?
+      answer: >
+        <p>
+        There should be a number of sources available to you:</p>
+        <ul>
+        <li>Shops: you can buy books in MP3 for download or on CDs from many
+            internet stores like
+            <a href="http://audiobookstore.com">audiobookstore.com</a> 
+            (you probably know the best shops in your country).<br>
+            Look for DRM-free MP3 downloads.</li>
+        <li>Libraries: it's often possible to borrow audiobooks at the local
+            library.</li>
+        <li>Free classics: there are many services and non-profit projects that
+            provide free audiobooks (mostly classics).<br>
+            Here are a few that provide books in English:
+            <ul>
+            <li><a href="http://freeclassicaudiobooks.com/">FreeClassicAudioBooks.com</a>
+            <li><a href="https://librivox.org/">LibriVox</a>
+            <li><a href="http://etc.usf.edu/lit2go/">Lit2Go</a>
+                (go to each chapter to download an MP3 file).
+            </ul>
+        </ul>
+
+    - question: Can I use audiobooks from Audible?
+      answer: >
+        <p>
+        Unfortunately subscription services like Audible are not supported and they
+        don't provide MP3 files for download.
+        </p>
+        <p>See the previous question on some tips where to get books.</b>
 
 - section: Installation on a dedicated device
   questions:
