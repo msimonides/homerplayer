@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.ApplicationComponent;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
@@ -105,14 +107,20 @@ public class FragmentNoBooks extends Fragment {
 
     private void showDownloadAndInstallationProgress() {
         if (progressDialog == null) {
-            progressDialog = createProgressDialog(samplesDownloadController.getDownloadProgress());
+            DownloadStatus downloadProgress = samplesDownloadController.getDownloadProgress();
+            Preconditions.checkNotNull(downloadProgress);
+            progressDialog = createProgressDialog(downloadProgress);
             progressDialog.show();
         }
 
         progressUpdater = new TaskRepeater(new Runnable() {
             @Override
             public void run() {
-                updateProgress(samplesDownloadController.getDownloadProgress());
+                DownloadStatus downloadProgress = samplesDownloadController.getDownloadProgress();
+                // The updater should be stopped before the download is removed.
+                // Therefore downloadProgress should always be available.
+                Preconditions.checkNotNull(downloadProgress);
+                updateProgress(downloadProgress);
             }
         }, mainHandler, 500);
         progressUpdater.start();
@@ -127,7 +135,7 @@ public class FragmentNoBooks extends Fragment {
         }
     }
 
-    private void updateProgress(DownloadStatus downloadStatus) {
+    private void updateProgress(@NonNull DownloadStatus downloadStatus) {
         // TODO: if the download is paused, tell the user to enable data transfer.
         if (downloadStatus.totalBytes == -1
                 || downloadStatus.transferredBytes == downloadStatus.totalBytes) {
@@ -141,7 +149,7 @@ public class FragmentNoBooks extends Fragment {
         progressDialog.setProgress(downloadStatus.transferredBytes / 1024);
     }
 
-    private ProgressDialog createProgressDialog(DownloadStatus downloadStatus) {
+    private ProgressDialog createProgressDialog(@NonNull DownloadStatus downloadStatus) {
         final ProgressDialog progressDialog = new ProgressDialog(view.getContext());
 
         int maxKB = 0;

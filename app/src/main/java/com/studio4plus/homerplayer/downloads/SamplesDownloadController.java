@@ -7,6 +7,8 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.MainThread;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
@@ -131,7 +133,7 @@ public class SamplesDownloadController {
     }
 
     @MainThread
-    public DownloadStatus getDownloadProgress() {
+    public @Nullable DownloadStatus getDownloadProgress() {
         long downloadId = getCurrentDownloadId();
         Preconditions.checkState(downloadId != -1);
 
@@ -160,14 +162,14 @@ public class SamplesDownloadController {
 
     private static class InstallTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final DemoSamplesInstaller installer;
-        private final File samplesZipFile;
-        private final Callback<Boolean> callback;
+        private final @NonNull DemoSamplesInstaller installer;
+        private final @NonNull File samplesZipFile;
+        private final @NonNull Callback<Boolean> callback;
 
         private InstallTask(
-                DemoSamplesInstaller installer,
-                File samplesZipFile,
-                Callback<Boolean> finishedCallback) {
+                @NonNull DemoSamplesInstaller installer,
+                @NonNull File samplesZipFile,
+                @NonNull Callback<Boolean> finishedCallback) {
             this.installer = installer;
             this.samplesZipFile = samplesZipFile;
             this.callback = finishedCallback;

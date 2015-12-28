@@ -2,12 +2,14 @@ package com.studio4plus.homerplayer.downloads;
 
 import android.app.DownloadManager;
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 
 import java.io.File;
 
 public class DownloadQueries {
 
-    public static File queryLocalFile(DownloadManager downloadManager, long downloadId) {
+    public static @Nullable File queryLocalFile(
+            DownloadManager downloadManager, long downloadId) {
         Cursor cursor = getDownloadRowById(downloadManager, downloadId);
 
         if (cursor != null) {
@@ -20,7 +22,8 @@ public class DownloadQueries {
         }
     }
 
-    public static DownloadStatus getDownloadStatus(DownloadManager downloadManager, long downloadId) {
+    public static @Nullable DownloadStatus getDownloadStatus(
+            DownloadManager downloadManager, long downloadId) {
         Cursor cursor = getDownloadRowById(downloadManager, downloadId);
         if (cursor != null) {
             int statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
@@ -38,7 +41,8 @@ public class DownloadQueries {
         }
     }
 
-    private static Cursor getDownloadRowById(DownloadManager downloadManager, long downloadId) {
+    private static @Nullable Cursor getDownloadRowById(
+            DownloadManager downloadManager, long downloadId) {
         DownloadManager.Query query = new DownloadManager.Query();
         query.setFilterById(downloadId);
         Cursor cursor = downloadManager.query(query);
