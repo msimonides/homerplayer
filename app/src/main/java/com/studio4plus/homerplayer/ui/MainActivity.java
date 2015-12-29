@@ -256,7 +256,11 @@ public class MainActivity extends BaseActivity {
                 Intent installIntent = new Intent();
                 installIntent.setAction(
                         TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-                startActivity(installIntent);
+                try {
+                    startActivity(installIntent);
+                } catch (ActivityNotFoundException e) {
+                    Log.w("MainActivity", "No activity to handle Text-to-Speech data installation.");
+                }
             }
         }
     }
