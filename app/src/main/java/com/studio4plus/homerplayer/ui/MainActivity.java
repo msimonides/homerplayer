@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PersistableBundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -45,6 +46,7 @@ public class MainActivity extends BaseActivity {
     private boolean isPlaybackServiceBound;
     private BroadcastReceiver screenOnReceiver;
     private BatteryStatusIndicator batteryStatusIndicator;
+    private boolean isRunning;
 
     @Inject public AudioBookManager audioBookManager;
     @Inject public BatteryStatusProvider batteryStatusProvider;
@@ -124,10 +126,22 @@ public class MainActivity extends BaseActivity {
         EventBus.getDefault().register(this);
         batteryStatusProvider.start();
         super.onStart();
+        isRunning = true;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        // Do nothing, this activity takes state from the PlayerService and the AudioBookManager.
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        // Do nothing, this activity takes state from the PlayerService and the AudioBookManager.
     }
 
     @Override
     protected void onStop() {
+        isRunning = false;
         super.onStop();
         batteryStatusProvider.stop();
         EventBus.getDefault().unregister(this);
@@ -165,15 +179,18 @@ public class MainActivity extends BaseActivity {
 
     @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
     public void onEvent(PlaybackStoppedEvent ignored) {
-        showPage(Page.BOOK_LIST);
+        if (isRunning)
+            showPage(Page.BOOK_LIST);
     }
 
     @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
     public void onEvent(AudioBooksChangedEvent event) {
-        if (audioBookManager.getAudioBooks().isEmpty()) {
-            showPage(Page.NO_BOOKS);
-        } else {
-            showPage(Page.BOOK_LIST);
+        if (isRunning) {
+            if (audioBookManager.getAudioBooks().isEmpty()) {
+                showPage(Page.NO_BOOKS);
+            } else {
+                showPage(Page.BOOK_LIST);
+            }
         }
     }
 
@@ -200,16 +217,13 @@ public class MainActivity extends BaseActivity {
         showPage(page, false);
     }
 
-    private void showPage(Page page, boolean onStart) {
+    private void showPage(Page page, boolean suppressAnimation) {
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        if (!onStart)
+        if (!suppressAnimation)
             transaction.setCustomAnimations(R.animator.flip_right_in, R.animator.flip_right_out);
         transaction.replace(R.id.mainContainer, page.createFragment());
-        if (onStart)
-            transaction.commitAllowingStateLoss();
-        else
-            transaction.commit();
+        transaction.commit();
     }
 
     private void speakCurrentTitle() {
@@ -287,7 +301,7 @@ public class MainActivity extends BaseActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             playbackService = ((PlaybackService.ServiceBinder) service).getService();
             if (playbackService.isInPlaybackMode())
-                showPage(Page.PLAYBACK);
+                showPage(Page.PLAYBACK, true);
         }
 
         @Override
