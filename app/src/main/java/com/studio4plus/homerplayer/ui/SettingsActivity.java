@@ -2,7 +2,6 @@ package com.studio4plus.homerplayer.ui;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,13 +12,18 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.studio4plus.homerplayer.BuildConfig;
 import com.studio4plus.homerplayer.GlobalSettings;
+import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.HomerPlayerDeviceAdmin;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.events.DeviceAdminChangeEvent;
 import com.studio4plus.homerplayer.events.SettingsEnteredEvent;
+import com.studio4plus.homerplayer.model.AudioBookManager;
+
+import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
@@ -27,6 +31,7 @@ public class SettingsActivity extends BaseActivity {
 
     // Pseudo preferences that don't change any preference values directly.
     private static final String KEY_UNREGISTER_DEVICE_OWNER = "unregister_device_owner_preference";
+    private static final String KEY_RESET_ALL_BOOK_PROGRESS = "reset_all_book_progress_preference";
     private static final String KEY_VERSION = "version_preference";
 
     private static final int BLOCK_TIME_MS = 500;
@@ -67,9 +72,13 @@ public class SettingsActivity extends BaseActivity {
     public static class SettingsFragment
             extends PreferenceFragment
             implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+        @Inject public AudioBookManager audioBookManager;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            HomerPlayerApplication.getComponent(getActivity()).inject(this);
 
             addPreferencesFromResource(R.xml.preferences);
 
@@ -84,20 +93,34 @@ public class SettingsActivity extends BaseActivity {
             }
             updateKioskModeSummary();
 
-            Preference preference = findPreference(KEY_UNREGISTER_DEVICE_OWNER);
+            ConfirmDialogPreference preferenceUnregisterDeviceOwner =
+                    (ConfirmDialogPreference) findPreference(KEY_UNREGISTER_DEVICE_OWNER);
             if (Build.VERSION.SDK_INT >= 21) {
-                preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        askDisableDeviceOwner();
-                        return true;
-                    }
-                });
+                preferenceUnregisterDeviceOwner.setOnConfirmListener(
+                        new ConfirmDialogPreference.OnConfirmListener() {
+                            @Override
+                            public void onConfirmed() {
+                                disableDeviceOwner();
+                            }
+                        });
 
                 updateUnregisterDeviceOwner(HomerPlayerDeviceAdmin.isDeviceOwner(getActivity()));
             } else {
-                getPreferenceScreen().removePreference(preference);
+                getPreferenceScreen().removePreference(preferenceUnregisterDeviceOwner);
             }
+
+            ConfirmDialogPreference preferenceResetProgress =
+                    (ConfirmDialogPreference) findPreference(KEY_RESET_ALL_BOOK_PROGRESS);
+            preferenceResetProgress.setOnConfirmListener(new ConfirmDialogPreference.OnConfirmListener() {
+                @Override
+                public void onConfirmed() {
+                    audioBookManager.resetAllBookProgress();
+                    Toast.makeText(
+                            getActivity(),
+                            R.string.pref_reset_all_book_progress_done,
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
 
             updateVersionSummary();
         }
@@ -188,24 +211,6 @@ public class SettingsActivity extends BaseActivity {
         private void updateVersionSummary() {
             Preference preference = findPreference(KEY_VERSION);
             preference.setSummary(BuildConfig.VERSION_NAME);
-        }
-
-        private void askDisableDeviceOwner() {
-            DialogInterface.OnClickListener disableDeviceOwnerListener =
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            disableDeviceOwner();
-                        }
-                    };
-
-            AlertDialog dialog = new AlertDialog.Builder(getActivity())
-                    .setMessage(getResources().getString(
-                            R.string.settings_unregister_device_owner_warning))
-                    .setPositiveButton(android.R.string.yes, disableDeviceOwnerListener)
-                    .setNegativeButton(android.R.string.no, null)
-                    .create();
-            dialog.show();
         }
 
         private void disableDeviceOwner() {

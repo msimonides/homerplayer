@@ -147,6 +147,13 @@ public class AudioBookManager {
     }
 
     @MainThread
+    public void resetAllBookProgress() {
+        for (AudioBook book : audioBooks) {
+            book.resetPosition();
+        }
+    }
+
+    @MainThread
     private void assignColoursToNewBooks() {
         final int MAX_NEIGHBOUR_DISTANCE = 2;
 

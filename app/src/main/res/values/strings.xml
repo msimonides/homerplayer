@@ -10,7 +10,6 @@
     <string name="hint_flip_to_stop">Put the device with screen down to stop</string>
     <string name="settings_title">Settings</string>
     <string name="settings_device_owner_required_alert">The application must be a "device owner". See http://goo.gl/46gevp</string>
-    <string name="settings_unregister_device_owner_warning">This action will disable the kiosk mode and cannot be easily undone.\nProceed?</string>
     <string name="pref_kiosk_mode_title">Prevent from exiting the application (kiosk mode)</string>
     <string name="pref_kiosk_mode_summary_off">Disabled</string>
     <string name="pref_kiosk_mode_summary_on">Enabled</string>
@@ -21,9 +20,13 @@
     <string name="pref_jump_back_summary">Jump %d seconds back</string>
     <string name="pref_screen_orientation">Screen orientation</string>
     <string name="pref_screen_orientation_default_value" translatable="false">LANDSCAPE_LOCKED</string>
-    <string name="pref_unregister_device_owner_title">Drop the privilege required for kiosk mode</string>
+    <string name="pref_unregister_device_owner">Drop the privilege required for kiosk mode</string>
+    <string name="pref_unregister_device_owner_dialog_message">This action will disable the kiosk mode and cannot be easily undone.\nProceed?</string>
     <string name="pref_unregister_device_owner_summary_off">Not a "device owner"</string>
     <string name="pref_unregister_device_owner_summary_on">Privilege granted</string>
+    <string name="pref_reset_all_book_progress">Rewind all books to the beginning…</string>
+    <string name="pref_reset_all_book_progress_dialog_title">Reset listening progress on all books?</string>
+    <string name="pref_reset_all_book_progress_done">Book progress reset</string>
     <string name="pref_version_title">Version</string>
     <string name="playback_in_progress">Playback in progress</string>
     <string name="button_start">Start</string>

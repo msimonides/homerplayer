@@ -14,6 +14,7 @@ import com.studio4plus.homerplayer.ui.FragmentBookList;
 import com.studio4plus.homerplayer.ui.FragmentNoBooks;
 import com.studio4plus.homerplayer.ui.FragmentPlayback;
 import com.studio4plus.homerplayer.ui.MainActivity;
+import com.studio4plus.homerplayer.ui.SettingsActivity;
 
 import javax.inject.Singleton;
 
@@ -28,6 +29,7 @@ public interface ApplicationComponent {
     void inject(FragmentBookList fragment);
     void inject(FragmentNoBooks fragment);
     void inject(FragmentPlayback fragment);
+    void inject(SettingsActivity.SettingsFragment fragment);
     void inject(BatteryStatusProvider batteryStatusProvider);
     void inject(BatteryStatusIndicator batteryStatusIndicator);
     AnalyticsTracker getAnalyticsTracker();
