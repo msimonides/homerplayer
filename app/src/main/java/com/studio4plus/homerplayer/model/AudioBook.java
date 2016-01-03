@@ -2,6 +2,7 @@ package com.studio4plus.homerplayer.model;
 
 import com.studio4plus.homerplayer.util.DebugUtil;
 
+import java.io.File;
 import java.util.List;
 
 public class AudioBook {
@@ -25,8 +26,8 @@ public class AudioBook {
         this.positionObserver = positionObserver;
     }
 
-    public String getDirectoryName() {
-        return fileSet.directoryName;
+    public File getAbsoluteDirectory() {
+        return fileSet.absolutePath;
     }
 
     public String getTitle() {

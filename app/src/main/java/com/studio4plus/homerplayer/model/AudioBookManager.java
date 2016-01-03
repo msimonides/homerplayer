@@ -73,13 +73,8 @@ public class AudioBookManager {
     }
 
     @MainThread
-    public File getAbsolutePath(AudioBook book) {
-        return new File(fileScanner.getAudioBooksDirectory(), book.getDirectoryName());
-    }
-
-    @MainThread
-    public File getAudioBooksDirectory() {
-        return fileScanner.getAudioBooksDirectory();
+    public File getDefaultAudioBooksDirectory() {
+        return fileScanner.getDefaultAudioBooksDirectory();
     }
 
     @MainThread
