@@ -37,6 +37,9 @@ android {
         versionCode 7
         versionName getVersionName()
     }
+    lintOptions {
+        textReport true
+    }
     buildTypes {
         debug {
             ext.enableCrashlytics = false
