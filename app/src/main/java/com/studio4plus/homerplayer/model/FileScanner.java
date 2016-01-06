@@ -1,9 +1,11 @@
 package com.studio4plus.homerplayer.model;
 
+import android.content.Context;
 import android.os.Environment;
 import android.util.Base64;
 
 import com.studio4plus.homerplayer.util.DirectoryFilter;
+import com.studio4plus.homerplayer.util.FilesystemUtil;
 import com.studio4plus.homerplayer.util.OrFilter;
 
 import java.io.File;
@@ -24,32 +26,44 @@ public class FileScanner {
     static final String SAMPLE_BOOK_FILE_NAME = ".sample";
 
     private final String audioBooksDirectoryPath;
+    private final Context context;
 
     @Inject
-    public FileScanner(@Named("AUDIOBOOKS_DIRECTORY") String audioBooksDirectoryPath) {
+    public FileScanner(
+            @Named("AUDIOBOOKS_DIRECTORY") String audioBooksDirectoryPath,
+            Context context) {
         this.audioBooksDirectoryPath = audioBooksDirectoryPath;
+        this.context = context;
     }
 
-    public File getAudioBooksDirectory() {
+    public List<FileSet> scanAudioBooksDirectories() {
+        List<FileSet> fileSets = new ArrayList<>();
+        for (File rootDir : FilesystemUtil.listRootDirs(context)) {
+            File audioBooksDir = new File(rootDir, audioBooksDirectoryPath);
+            scanAndAppendBooks(audioBooksDir, fileSets);
+        }
+        return fileSets;
+    }
+
+    /**
+     * Provide the default directory for audio books.
+     *
+     * The directory is in the devices external storage. Other than that there is nothing
+     * special about it (e.g. it may be on an removable storage).
+     */
+    public File getDefaultAudioBooksDirectory() {
         File externalStorage = Environment.getExternalStorageDirectory();
         return new File(externalStorage, audioBooksDirectoryPath);
     }
 
-    public List<FileSet> scanAudioBooksDirectory() {
-        List<FileSet> fileSets = new ArrayList<>();
-        if (isExternalStorageReadable()) {
-            File audioBooksDir = getAudioBooksDirectory();
-            if (audioBooksDir.exists() && audioBooksDir.isDirectory() && audioBooksDir.canRead()) {
-                File[] audioBookDirs = audioBooksDir.listFiles(new DirectoryFilter());
-                for (File directory : audioBookDirs) {
-                    FileSet fileSet = createFileSet(directory);
-                    if (fileSet != null)
-                        fileSets.add(fileSet);
-                }
+    private void scanAndAppendBooks(File audioBooksDir, List<FileSet> fileSets) {
+        if (audioBooksDir.exists() && audioBooksDir.isDirectory() && audioBooksDir.canRead()) {
+            File[] audioBookDirs = audioBooksDir.listFiles(new DirectoryFilter());
+            for (File directory : audioBookDirs) {
+                FileSet fileSet = createFileSet(directory);
+                if (fileSet != null)
+                    fileSets.add(fileSet);
             }
-            return fileSets;
-        } else {
-            return null;
         }
     }
 
@@ -75,7 +89,7 @@ public class FileScanner {
             if (filePaths.length > 0) {
                 File sampleIndicator = new File(bookDirectory, SAMPLE_BOOK_FILE_NAME);
                 boolean isDemoSample = sampleIndicator.exists();
-                return new FileSet(id, bookDirectory.getName(), Arrays.asList(filePaths), isDemoSample);
+                return new FileSet(id, bookDirectory, Arrays.asList(filePaths), isDemoSample);
             } else {
                 return null;
             }
@@ -118,16 +132,9 @@ public class FileScanner {
         }
     }
 
-    private boolean isExternalStorageReadable() {
-        String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
-    }
-
     private static boolean isAudioFile(File file) {
         String fileName = file.getName();
         // TODO: allow other formats
         return fileName.toLowerCase().endsWith(".mp3");
     }
-
 }

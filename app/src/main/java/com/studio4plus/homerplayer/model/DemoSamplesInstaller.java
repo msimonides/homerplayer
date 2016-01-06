@@ -31,7 +31,7 @@ public class DemoSamplesInstaller {
     @MainThread
     public DemoSamplesInstaller(Context context, Locale locale, AudioBookManager audioBookManager) {
         this.context = context;
-        this.audioBooksDirectory = audioBookManager.getAudioBooksDirectory();
+        this.audioBooksDirectory = audioBookManager.getDefaultAudioBooksDirectory();
         this.locale = locale;
     }
 

@@ -9,7 +9,6 @@ import android.os.Message;
 
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.model.AudioBook;
-import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.model.Position;
 
 import java.io.File;
@@ -27,17 +26,15 @@ public class AudioBookPlayer extends Handler {
     private static final int MSG_CONTROL_STOPPED = 2;
 
     private final Handler playbackThreadHandler;
-    private final AudioBookManager audioBookManager;
     private final GlobalSettings globalSettings;
 
     private Observer observer;
     private AudioBook audioBook;
 
     @Inject
-    public AudioBookPlayer(GlobalSettings globalSettings, AudioBookManager audioBookManager) {
+    public AudioBookPlayer(GlobalSettings globalSettings) {
         super(Looper.getMainLooper());
         this.globalSettings = globalSettings;
-        this.audioBookManager = audioBookManager;
         HandlerThread thread = new HandlerThread("Playback");
         thread.start();
         playbackThreadHandler = new PlaybackHandler(thread.getLooper(), this);
@@ -88,7 +85,7 @@ public class AudioBookPlayer extends Handler {
         Message message = playbackThreadHandler.obtainMessage(PlaybackHandler.MSG_PLAYBACK_START);
 
         Position position = audioBook.getLastPosition();
-        File bookDirectory = audioBookManager.getAbsolutePath(audioBook);
+        File bookDirectory = audioBook.getAbsoluteDirectory();
         File currentFile = new File(bookDirectory, position.filePath);
 
         int startPosition = Math.max(0, position.seekPosition - jumpBackOffset);
