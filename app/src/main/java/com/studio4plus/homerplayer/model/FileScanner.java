@@ -1,9 +1,11 @@
 package com.studio4plus.homerplayer.model;
 
+import android.content.Context;
 import android.os.Environment;
 import android.util.Base64;
 
 import com.studio4plus.homerplayer.util.DirectoryFilter;
+import com.studio4plus.homerplayer.util.FilesystemUtil;
 import com.studio4plus.homerplayer.util.OrFilter;
 
 import java.io.File;
@@ -24,21 +26,23 @@ public class FileScanner {
     static final String SAMPLE_BOOK_FILE_NAME = ".sample";
 
     private final String audioBooksDirectoryPath;
+    private final Context context;
 
     @Inject
-    public FileScanner(@Named("AUDIOBOOKS_DIRECTORY") String audioBooksDirectoryPath) {
+    public FileScanner(
+            @Named("AUDIOBOOKS_DIRECTORY") String audioBooksDirectoryPath,
+            Context context) {
         this.audioBooksDirectoryPath = audioBooksDirectoryPath;
+        this.context = context;
     }
 
-    public List<FileSet> scanAudioBooksDirectory() {
+    public List<FileSet> scanAudioBooksDirectories() {
         List<FileSet> fileSets = new ArrayList<>();
-        if (isExternalStorageReadable()) {
-            File audioBooksDir = getDefaultAudioBooksDirectory();
+        for (File rootDir : FilesystemUtil.listRootDirs(context)) {
+            File audioBooksDir = new File(rootDir, audioBooksDirectoryPath);
             scanAndAppendBooks(audioBooksDir, fileSets);
-            return fileSets;
-        } else {
-            return null;
         }
+        return fileSets;
     }
 
     /**
@@ -128,16 +132,9 @@ public class FileScanner {
         }
     }
 
-    private boolean isExternalStorageReadable() {
-        String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
-    }
-
     private static boolean isAudioFile(File file) {
         String fileName = file.getName();
         // TODO: allow other formats
         return fileName.toLowerCase().endsWith(".mp3");
     }
-
 }

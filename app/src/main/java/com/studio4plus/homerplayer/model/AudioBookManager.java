@@ -80,7 +80,7 @@ public class AudioBookManager {
     @MainThread
     public void scanFiles() {
         boolean audioBooksChanged;
-        List<FileSet> fileSets = fileScanner.scanAudioBooksDirectory();
+        List<FileSet> fileSets = fileScanner.scanAudioBooksDirectories();
 
         // This isn't very efficient but there shouldn't be more than a dozen audio books on the
         // device.
