@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="MissingTranslation">
+        <!-- Work around the incorrectly generated strings. -->
+        <ignore regexp="ga_trackingId"/>
+        <ignore regexp="gcm_defaultSenderId"/>
+    </issue>
+</lint>
