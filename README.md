@@ -1,4 +1,4 @@
-Homer Player
+Homer Player  [![Build Status](https://travis-ci.org/msimonides/homerplayer.svg?branch=master)](https://travis-ci.org/msimonides/homerplayer)
 ============
 
 An audio book player for the elderly and visually impaired.
