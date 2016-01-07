@@ -3,6 +3,7 @@ android:
   components:
     # The BuildTools version used by your project
     - build-tools-23.0.1
+    - platform-tools
 
     # The SDK version used to compile your project
     - android-23
