@@ -39,19 +39,26 @@
 
     - question: How can I start a book from the beginning? While I was testing the book advanced 10 minutes and now I want it to play from start when I give the tablet to my uncle.
       answer: >
-        <p>There is no function to rewind a book to the beginnig.</p>
-        <p>
-        However, there is a workaround: you can clear application data. This
-        will reset progress for all books and all the configuration you made in the
-        Settings screen.
-        </p>
+        <p>There is a function to reset progress on <strong>all</strong> audiobooks to the beginning.</p>
         <ol>
-        <li>Go to system settings on your tablet or phone.
-        <li>Open "Applications".
-        <li>Find "Homer Player" and tap it to open.
-        <li>Select "Clear data". 
+        <li>Start Homer Player.
+        <li>Tap the screen 5 times to open Settings.
+        <li>Choose "Rewind all books to the beginning…" and then confirm.
         </ol>
-        <p>This is something that needs improvement and it's on my TODO list.</p>
+
+    - question: Can I put the audiobook files on a microSD card in the device?
+      answer: >
+        <p>
+        Yes, the application scans all available storage types (both internal memory
+        andany available SD cards). When it finds a folder <code>AudioBooks</code> in
+        the top directory it adds all audiobooks to the list. This way books from an SD
+        card and the internal storage are both available to the user.
+        </p>
+        <p>
+        (This functionality is only available on Android 4.4 and newer. On older
+        Android versions audiobooks are read either from the internal storage or the SD
+        card.)
+        </p>
 
 - section: Audiobooks compatibility
   questions:
