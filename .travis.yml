@@ -27,4 +27,4 @@ android:
     - adb shell input keyevent 82 &
 
 script:
-  ./gradlew build check connectedAndroidTests -PdisablePreDex
+  ./gradlew build check connectedAndroidTest -PdisablePreDex
