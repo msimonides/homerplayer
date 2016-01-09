@@ -42,6 +42,7 @@ public class MainActivity extends BaseActivity {
 
     private final PlaybackServiceConnection playbackServiceConnection =
             new PlaybackServiceConnection();
+    private final EventListener eventListener = new EventListener();
     private PlaybackService playbackService;
     private boolean isPlaybackServiceBound;
     private BroadcastReceiver screenOnReceiver;
@@ -123,7 +124,7 @@ public class MainActivity extends BaseActivity {
             registerScreenOnReceiver();
         }
 
-        EventBus.getDefault().register(this);
+        EventBus.getDefault().register(eventListener);
         batteryStatusProvider.start();
         super.onStart();
         isRunning = true;
@@ -144,7 +145,7 @@ public class MainActivity extends BaseActivity {
         isRunning = false;
         super.onStop();
         batteryStatusProvider.stop();
-        EventBus.getDefault().unregister(this);
+        EventBus.getDefault().unregister(eventListener);
         unregisterScreenOnReceiver();
     }
 
@@ -170,28 +171,6 @@ public class MainActivity extends BaseActivity {
         batteryStatusIndicator.shutdown();
         stopTts();
         super.onDestroy();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEvent(CurrentBookChangedEvent event) {
-        speak(event.audioBook.getTitle());
-    }
-
-    @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
-    public void onEvent(PlaybackStoppedEvent ignored) {
-        if (isRunning)
-            showPage(Page.BOOK_LIST);
-    }
-
-    @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
-    public void onEvent(AudioBooksChangedEvent event) {
-        if (isRunning) {
-            if (audioBookManager.getAudioBooks().isEmpty()) {
-                showPage(Page.NO_BOOKS);
-            } else {
-                showPage(Page.BOOK_LIST);
-            }
-        }
     }
 
     public void startPlayback(String bookId) {
@@ -311,6 +290,39 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             playbackService = null;
+        }
+    }
+
+    /**
+     * A subclass for handling EventBus events.
+     *
+     * The MainActivity object cannot be registered with EventBus because it declares
+     * methods that are not available on some of the Android versions supported by the
+     * application (namely onSaveInstanceState with its ParcelableBundle argument that
+     * causes EventBus's reflection code to throw exceptions).
+     */
+    private class EventListener {
+
+        @SuppressWarnings("UnusedDeclaration")
+        public void onEvent(CurrentBookChangedEvent event) {
+            speak(event.audioBook.getTitle());
+        }
+
+        @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
+        public void onEvent(PlaybackStoppedEvent ignored) {
+            if (isRunning)
+                showPage(Page.BOOK_LIST);
+        }
+
+        @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
+        public void onEvent(AudioBooksChangedEvent event) {
+            if (isRunning) {
+                if (audioBookManager.getAudioBooks().isEmpty()) {
+                    showPage(Page.NO_BOOKS);
+                } else {
+                    showPage(Page.BOOK_LIST);
+                }
+            }
         }
     }
 }
