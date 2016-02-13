@@ -4,7 +4,9 @@ import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -68,6 +70,15 @@ public class FragmentNoBooks extends Fragment {
                 showDownloadAndInstallationProgress();
             }
         });
+
+        final Context context = view.getContext();
+        view.setOnTouchListener(new MultitapTouchListener(
+                context, new MultitapGestureDetectorListener.Listener() {
+            @Override
+            public void onMultiTap() {
+                startActivity(new Intent(context, SettingsActivity.class));
+            }
+        }));
 
         eventBus.register(this);
         return view;

@@ -28,7 +28,6 @@ import com.studio4plus.homerplayer.events.PlaybackStoppedEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.service.PlaybackService;
-import com.studio4plus.homerplayer.widget.MultiTapInterceptor;
 
 import javax.inject.Inject;
 
@@ -88,15 +87,6 @@ public class MainActivity extends BaseActivity {
 
         batteryStatusIndicator = new BatteryStatusIndicator(
                 (ImageView) findViewById(R.id.batteryStatusIndicator), EventBus.getDefault());
-
-        MultiTapInterceptor multiTapInterceptor =
-                (MultiTapInterceptor) findViewById(R.id.mainContainer);
-        multiTapInterceptor.setOnMultitapListener(new MultiTapInterceptor.Listener() {
-            @Override
-            public void onMultiTap(View view) {
-                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-            }
-        });
 
         View touchEventEater = findViewById(R.id.touchEventEater);
         touchEventEater.setOnTouchListener(new View.OnTouchListener() {

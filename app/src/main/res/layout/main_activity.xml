@@ -10,7 +10,7 @@
         android:layout_height="match_parent"/>
 
     <!-- TODO: make the margins configurable. -->
-    <com.studio4plus.homerplayer.widget.MultiTapInterceptor
+    <FrameLayout
         android:id="@+id/mainContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -18,7 +18,7 @@
         android:layout_marginRight="@dimen/horizontalScreenMargin"
         android:layout_marginBottom="@dimen/verticalScreenMargin">
 
-    </com.studio4plus.homerplayer.widget.MultiTapInterceptor>
+    </FrameLayout>
 
     <ImageView
         android:id="@+id/batteryStatusIndicator"

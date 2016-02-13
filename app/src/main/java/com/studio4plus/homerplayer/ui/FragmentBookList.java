@@ -2,6 +2,8 @@ package com.studio4plus.homerplayer.ui;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -64,6 +66,15 @@ public class FragmentBookList extends Fragment {
                 }
             }
         });
+
+        final Context context = view.getContext();
+        bookPager.setOnTouchListener(new MultitapTouchListener(
+                context, new MultitapGestureDetectorListener.Listener() {
+                    @Override
+                    public void onMultiTap() {
+                        startActivity(new Intent(context, SettingsActivity.class));
+                    }
+                }));
 
         updateViewPosition();
         eventBus.register(this);
