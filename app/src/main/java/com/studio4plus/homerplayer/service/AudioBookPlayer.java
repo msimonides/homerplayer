@@ -1,43 +1,45 @@
 package com.studio4plus.homerplayer.service;
 
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
+import android.net.Uri;
 
+import com.google.android.exoplayer.ExoPlaybackException;
+import com.google.android.exoplayer.ExoPlayer;
+import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
+import com.google.android.exoplayer.MediaCodecSelector;
+import com.google.android.exoplayer.SampleSource;
+import com.google.android.exoplayer.extractor.ExtractorSampleSource;
+import com.google.android.exoplayer.upstream.Allocator;
+import com.google.android.exoplayer.upstream.DataSource;
+import com.google.android.exoplayer.upstream.DefaultAllocator;
+import com.google.android.exoplayer.upstream.FileDataSource;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.model.AudioBook;
 import com.studio4plus.homerplayer.model.Position;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.inject.Inject;
 
-public class AudioBookPlayer extends Handler {
+public class AudioBookPlayer implements ExoPlayer.Listener {
+
+    private static final int BUFFER_SEGMENT_SIZE = 64 * 1024;
+    private static final int BUFFER_SEGMENT_COUNT = 128;
 
     public interface Observer {
         void onPlaybackStopped();
     }
 
-    private static final int MSG_CONTROL_FILE_COMPLETE = 1;
-    private static final int MSG_CONTROL_STOPPED = 2;
-
-    private final Handler playbackThreadHandler;
     private final GlobalSettings globalSettings;
+    private final Allocator exoAllocator;
 
-    private Observer observer;
     private AudioBook audioBook;
+    private Observer observer;
+    private ExoPlayer exoPlayer;
 
     @Inject
     public AudioBookPlayer(GlobalSettings globalSettings) {
-        super(Looper.getMainLooper());
         this.globalSettings = globalSettings;
-        HandlerThread thread = new HandlerThread("Playback");
-        thread.start();
-        playbackThreadHandler = new PlaybackHandler(thread.getLooper(), this);
+        this.exoAllocator = new DefaultAllocator(BUFFER_SEGMENT_SIZE);
     }
 
     public void setObserver(Observer observer) {
@@ -49,124 +51,79 @@ public class AudioBookPlayer extends Handler {
     }
 
     public void startPlayback() {
+        exoPlayer = createExoPlayer();
         startPlayback(globalSettings.getJumpBackPreferenceMs());
     }
 
     public void stopPlayback() {
-        Message message = playbackThreadHandler.obtainMessage(PlaybackHandler.MSG_PLAYBACK_STOP);
-        playbackThreadHandler.sendMessage(message);
+        exoPlayer.stop();
     }
 
     @Override
-    public void handleMessage(Message message) {
-        switch(message.what) {
-            case MSG_CONTROL_FILE_COMPLETE:
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        switch(playbackState) {
+            case ExoPlayer.STATE_ENDED:
                 boolean playMore = audioBook.advanceFile();
                 if (playMore) {
                     continuePlayback();
                 } else {
                     audioBook.resetPosition();
-                    observer.onPlaybackStopped();
+                    stopPlaybackAndReleasePlayer();
                 }
                 break;
-            case MSG_CONTROL_STOPPED: {
-                audioBook.updatePosition(message.arg1);
-                observer.onPlaybackStopped();
+            case ExoPlayer.STATE_IDLE:
+                stopPlaybackAndReleasePlayer();
                 break;
-            }
         }
+    }
+
+    @Override
+    public void onPlayWhenReadyCommitted() {
+    }
+
+    @Override
+    public void onPlayerError(ExoPlaybackException error) {
+        // The player transitions to the IDLE state after error, so the UI will
+        // automatically revert to stop position.
+        // Some kind of error reporting would be nice to have (e.g. unsupported format).
+    }
+
+    private void startPlayback(int jumpBackOffset) {
+        Position position = audioBook.getLastPosition();
+        File bookDirectory = audioBook.getAbsoluteDirectory();
+        File currentFile = new File(bookDirectory, position.filePath);
+
+        int startPositionMs = Math.max(0, position.seekPosition - jumpBackOffset);
+        preparePlayback(exoPlayer, currentFile, startPositionMs);
+    }
+
+    private void stopPlaybackAndReleasePlayer() {
+        audioBook.updatePosition((int) exoPlayer.getCurrentPosition());
+        exoPlayer.release();
+        exoPlayer = null;
+        observer.onPlaybackStopped();
     }
 
     private void continuePlayback() {
         startPlayback(0);
     }
 
-    private void startPlayback(int jumpBackOffset) {
-        Message message = playbackThreadHandler.obtainMessage(PlaybackHandler.MSG_PLAYBACK_START);
-
-        Position position = audioBook.getLastPosition();
-        File bookDirectory = audioBook.getAbsoluteDirectory();
-        File currentFile = new File(bookDirectory, position.filePath);
-
-        int startPosition = Math.max(0, position.seekPosition - jumpBackOffset);
-        message.obj = new PlaybackStartInfo(currentFile.getAbsolutePath(), startPosition);
-        playbackThreadHandler.sendMessage(message);
+    private ExoPlayer createExoPlayer() {
+        ExoPlayer exoPlayer = ExoPlayer.Factory.newInstance(1);
+        exoPlayer.setPlayWhenReady(true);
+        exoPlayer.addListener(this);
+        return exoPlayer;
     }
 
-    private static class PlaybackStartInfo {
-        public final String filePath;
-        public final int startPosition;
+    private void preparePlayback(ExoPlayer exoPlayer, File file, int startPositionMs) {
+        Uri fileUri = Uri.fromFile(file);
 
-        private PlaybackStartInfo(String filePath, int startPosition) {
-            this.filePath = filePath;
-            this.startPosition = startPosition;
-        }
-    }
-
-    private static class PlaybackHandler
-            extends Handler implements MediaPlayer.OnCompletionListener {
-
-        public static final int MSG_PLAYBACK_START = 1;
-        public static final int MSG_PLAYBACK_STOP = 2;
-
-        private final Handler controlHandler;
-        private MediaPlayer mediaPlayer;
-
-        private PlaybackHandler(Looper looper, Handler controlHandler) {
-            super(looper);
-            this.controlHandler = controlHandler;
-        }
-
-        @Override
-        public void handleMessage(Message message) {
-            switch(message.what) {
-                case MSG_PLAYBACK_START:
-                    PlaybackStartInfo playbackInfo = (PlaybackStartInfo) message.obj;
-                    startPlayback(playbackInfo.filePath, playbackInfo.startPosition);
-                    break;
-                case MSG_PLAYBACK_STOP:
-                    stopPlayback();
-                    break;
-            }
-        }
-
-        private void startPlayback(final String filePath, final int startPosition) {
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setOnCompletionListener(this);
-
-            try {
-                mediaPlayer.setDataSource(filePath);
-                mediaPlayer.prepare();
-                mediaPlayer.seekTo(startPosition);
-                mediaPlayer.start();
-            } catch (IOException e) {
-                // TODO: notify the UI and clean up.
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onCompletion(MediaPlayer mp) {
-            releaseMediaPlayer();
-
-            Message message = controlHandler.obtainMessage(MSG_CONTROL_FILE_COMPLETE);
-            controlHandler.sendMessage(message);
-        }
-
-        private void stopPlayback() {
-            if (mediaPlayer != null) {
-                mediaPlayer.stop();
-                Message message = controlHandler.obtainMessage(MSG_CONTROL_STOPPED);
-                message.arg1 = mediaPlayer.getCurrentPosition();
-                controlHandler.sendMessage(message);
-                releaseMediaPlayer();
-            }
-        }
-
-        private void releaseMediaPlayer() {
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
+        DataSource dataSource = new FileDataSource();
+        SampleSource source = new ExtractorSampleSource(
+                fileUri, dataSource, exoAllocator, BUFFER_SEGMENT_SIZE * BUFFER_SEGMENT_COUNT);
+        MediaCodecAudioTrackRenderer audioRenderer = new MediaCodecAudioTrackRenderer(
+                source, MediaCodecSelector.DEFAULT);
+        exoPlayer.seekTo(startPositionMs);
+        exoPlayer.prepare(audioRenderer);
     }
 }

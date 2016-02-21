@@ -7,7 +7,8 @@ import dagger.Provides;
 
 @Module
 public class AudioBookPlayerModule {
-    @Provides AudioBookPlayer provideAudioBookPlayer(GlobalSettings globalSettings) {
+    @Provides
+    AudioBookPlayer provideAudioBookPlayer(GlobalSettings globalSettings) {
         return new AudioBookPlayer(globalSettings);
     }
 }
