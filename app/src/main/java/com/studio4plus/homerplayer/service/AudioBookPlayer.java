@@ -20,7 +20,7 @@ import java.io.File;
 
 import javax.inject.Inject;
 
-public class AudioBookExoPlayer implements ExoPlayer.Listener {
+public class AudioBookPlayer implements ExoPlayer.Listener {
 
     private static final int BUFFER_SEGMENT_SIZE = 64 * 1024;
     private static final int BUFFER_SEGMENT_COUNT = 128;
@@ -37,7 +37,7 @@ public class AudioBookExoPlayer implements ExoPlayer.Listener {
     private ExoPlayer exoPlayer;
 
     @Inject
-    public AudioBookExoPlayer(GlobalSettings globalSettings) {
+    public AudioBookPlayer(GlobalSettings globalSettings) {
         this.globalSettings = globalSettings;
         this.exoAllocator = new DefaultAllocator(BUFFER_SEGMENT_SIZE);
     }
