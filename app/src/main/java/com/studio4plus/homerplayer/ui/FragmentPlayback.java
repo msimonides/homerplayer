@@ -11,14 +11,19 @@ import android.widget.Button;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.events.PlaybackStoppingEvent;
 
 import javax.inject.Inject;
+
+import de.greenrobot.event.EventBus;
 
 public class FragmentPlayback extends Fragment {
 
     private View view;
+    private Button stopButton;
 
     @Inject public GlobalSettings globalSettings;
+    @Inject public EventBus eventBus;
 
     @Override
     public View onCreateView(
@@ -28,7 +33,7 @@ public class FragmentPlayback extends Fragment {
         view = inflater.inflate(R.layout.fragment_playback, container, false);
         HomerPlayerApplication.getComponent(view.getContext()).inject(this);
 
-        Button stopButton = (Button) view.findViewById(R.id.stopButton);
+        stopButton = (Button) view.findViewById(R.id.stopButton);
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,6 +49,24 @@ public class FragmentPlayback extends Fragment {
     public void onResume() {
         super.onResume();
         showHintIfNecessary();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        eventBus.register(this);
+    }
+
+    @Override
+    public void onStop() {
+        eventBus.unregister(this);
+        super.onStop();
+    }
+
+    @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
+    public void onEvent(PlaybackStoppingEvent event) {
+        if (stopButton != null)
+            stopButton.setEnabled(false);
     }
 
     private void showHintIfNecessary() {

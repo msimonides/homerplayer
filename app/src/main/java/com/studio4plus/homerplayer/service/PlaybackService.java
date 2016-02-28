@@ -11,23 +11,34 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
+import com.google.common.base.Preconditions;
+import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.events.PlaybackStoppedEvent;
+import com.studio4plus.homerplayer.events.PlaybackStoppingEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
+import com.studio4plus.homerplayer.model.Position;
 import com.studio4plus.homerplayer.ui.MainActivity;
-import com.studio4plus.homerplayer.util.DebugUtil;
+
+import java.io.File;
+
+import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
 public class PlaybackService
-        extends Service
-        implements AudioBookPlayer.Observer, FaceDownDetector.Listener {
+        extends Service implements FaceDownDetector.Listener {
 
     private static final int NOTIFICATION = R.string.playback_service_notification;
+    private static final PlaybackStoppingEvent PLAYBACK_STOPPING_EVENT = new PlaybackStoppingEvent();
     private static final PlaybackStoppedEvent PLAYBACK_STOPPED_EVENT = new PlaybackStoppedEvent();
 
-    private AudioBookPlayer player;
+    @Inject public GlobalSettings globalSettings;
+    @Inject public EventBus eventBus;
+
+    private Player player;
+    private AudioBookPlayback playbackInProgress;
     private FaceDownDetector faceDownDetector;
 
     @Override
@@ -38,6 +49,8 @@ public class PlaybackService
     @Override
     public void onCreate() {
         super.onCreate();
+        HomerPlayerApplication.getComponent(getApplicationContext()).inject(this);
+        // TODO: use Dagger to create FaceDownDetector?
         SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (FaceDownDetector.hasSensors(sensorManager)) {
             faceDownDetector =
@@ -52,18 +65,17 @@ public class PlaybackService
     }
 
     public void startPlayback(AudioBook book) {
-        if (player != null)
-            player.stopPlayback();
+        Preconditions.checkState(playbackInProgress == null);
+        Preconditions.checkState(player == null);
 
-        player = HomerPlayerApplication.getComponent(getApplicationContext()).getAudioBookPlayer();
-        player.setObserver(this);
-        player.setAudioBook(book);
-        player.startPlayback();
+        player = HomerPlayerApplication.getComponent(getApplicationContext()).createAudioBookPlayer();
 
         if (faceDownDetector != null)
             faceDownDetector.enable();
 
         startForeground(NOTIFICATION, createNotification());
+        playbackInProgress = new AudioBookPlayback(
+                player, book, globalSettings.getJumpBackPreferenceMs());
     }
 
     public boolean isInPlaybackMode() {
@@ -71,27 +83,26 @@ public class PlaybackService
     }
 
     public void stopPlayback() {
-        if (player != null)
-            player.stopPlayback();
+        if (playbackInProgress != null) {
+            playbackInProgress.stop();
+            playbackInProgress = null;
+        }
 
         if (faceDownDetector != null)
             faceDownDetector.disable();
 
-        player = null;
-        stopForeground(true);
-    }
-
-    @Override
-    public void onPlaybackStopped() {
-        DebugUtil.verifyIsOnMainThread();
-        if (player != null)
-            stopPlayback();
-        EventBus.getDefault().post(PLAYBACK_STOPPED_EVENT);
+        eventBus.post(PLAYBACK_STOPPING_EVENT);
     }
 
     @Override
     public void onDeviceFaceDown() {
         stopPlayback();
+    }
+
+    private void onPlayerReleased() {
+        player = null;
+        stopForeground(true);
+        eventBus.post(PLAYBACK_STOPPED_EVENT);
     }
 
     private Notification createNotification() {
@@ -111,6 +122,60 @@ public class PlaybackService
     public class ServiceBinder extends Binder {
         public PlaybackService getService() {
             return PlaybackService.this;
+        }
+    }
+
+    private class AudioBookPlayback implements PlaybackController.Observer {
+
+        private final AudioBook audioBook;
+        private final PlaybackController controller;
+
+        private AudioBookPlayback(Player player, AudioBook audioBook, int jumpBackMs) {
+            this.audioBook = audioBook;
+
+            controller = player.createPlayback();
+            controller.setObserver(this);
+            Position position = audioBook.getLastPosition();
+            File currentFile = fileForPosition(audioBook, position);
+            int startPositionMs = Math.max(0, position.seekPosition - jumpBackMs);
+            controller.start(currentFile, startPositionMs);
+        }
+
+        public void stop() {
+            controller.stop();
+        }
+
+        @Override
+        public void onPlaybackStarted() {
+            // TODO: Notify UI (to start timer).
+        }
+
+        @Override
+        public void onDuration(File file, long durationMs) {
+            // TODO: save in audioBook if necessary.
+        }
+
+        @Override
+        public void onPlaybackEnded() {
+            boolean hasMoreToPlay = audioBook.advanceFile();
+            if (hasMoreToPlay) {
+                Position position = audioBook.getLastPosition();
+                File currentFile = fileForPosition(audioBook, position);
+                controller.start(currentFile, position.seekPosition);
+            } else {
+                PlaybackService.this.stopPlayback();
+            }
+        }
+
+        @Override
+        public void onPlayerReleased(int currentPositionMs) {
+            audioBook.updatePosition(currentPositionMs);
+            PlaybackService.this.onPlayerReleased();
+        }
+
+        private File fileForPosition(AudioBook audioBook, Position position) {
+            File bookDirectory = audioBook.getAbsoluteDirectory();
+            return new File(bookDirectory, position.filePath);
         }
     }
 }
