@@ -54,7 +54,7 @@ public class AudioBook {
         this.lastPosition = lastPosition;
     }
 
-    public void updatePosition(int seekPosition) {
+    public void updatePosition(long seekPosition) {
         DebugUtil.verifyIsOnMainThread();
         lastPosition = new Position(lastPosition.filePath, seekPosition);
         notifyPositionObserver();

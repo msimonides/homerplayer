@@ -8,10 +8,10 @@ public interface PlaybackController {
         void onPlaybackStarted();
         void onDuration(File file, long durationMs);
         void onPlaybackEnded();
-        void onPlayerReleased(int currentPositionMs);
+        void onPlayerReleased(long currentPositionMs);
     }
 
     void setObserver(Observer observer);
-    void start(File file, int positionPosition);
+    void start(File file, long positionPosition);
     void stop();
 }

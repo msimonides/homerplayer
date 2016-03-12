@@ -37,7 +37,7 @@ public class Storage implements AudioBook.PositionObserver {
                 JSONObject jsonObject = (JSONObject) new JSONTokener(bookData).nextValue();
                 JSONObject jsonPosition = jsonObject.getJSONObject(FIELD_POSITION);
                 String fileName = jsonPosition.getString(FIELD_POSITION_FILEPATH);
-                int seek = jsonPosition.getInt(FIELD_POSITION_SEEK);
+                long seek = jsonPosition.getLong(FIELD_POSITION_SEEK);
                 audioBook.setLastPosition(new Position(fileName, seek));
 
                 String colourSchemeName = jsonObject.optString(FIELD_COLOUR_SCHEME, null);

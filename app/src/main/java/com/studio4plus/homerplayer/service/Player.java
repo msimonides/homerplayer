@@ -29,7 +29,7 @@ public class Player {
         exoAllocator = new DefaultAllocator(BUFFER_SEGMENT_SIZE);
     }
 
-    private void prepareAudioFile(File file, int startPositionMs) {
+    private void prepareAudioFile(File file, long startPositionMs) {
         Uri fileUri = Uri.fromFile(file);
 
         DataSource dataSource = new FileDataSource();
@@ -61,7 +61,7 @@ public class Player {
         }
 
         @Override
-        public void start(File currentFile, int startPositionMs) {
+        public void start(File currentFile, long startPositionMs) {
             Preconditions.checkNotNull(observer);
             this.currentFile = currentFile;
             prepareAudioFile(currentFile, startPositionMs);

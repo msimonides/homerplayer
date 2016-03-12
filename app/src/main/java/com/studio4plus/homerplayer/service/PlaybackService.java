@@ -137,7 +137,7 @@ public class PlaybackService
             controller.setObserver(this);
             Position position = audioBook.getLastPosition();
             File currentFile = fileForPosition(audioBook, position);
-            int startPositionMs = Math.max(0, position.seekPosition - jumpBackMs);
+            long startPositionMs = Math.max(0, position.seekPosition - jumpBackMs);
             controller.start(currentFile, startPositionMs);
         }
 
@@ -168,7 +168,7 @@ public class PlaybackService
         }
 
         @Override
-        public void onPlayerReleased(int currentPositionMs) {
+        public void onPlayerReleased(long currentPositionMs) {
             audioBook.updatePosition(currentPositionMs);
             PlaybackService.this.onPlayerReleased();
         }
