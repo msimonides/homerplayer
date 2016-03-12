@@ -182,6 +182,11 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    public void requestElapsedTimeSyncEvent() {
+        if (playbackService != null)
+            playbackService.requestElapsedTimeSyncEvent();
+    }
+
     private void showPage(Page page) {
         showPage(page, false);
     }

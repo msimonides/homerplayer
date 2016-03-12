@@ -14,4 +14,5 @@ public interface PlaybackController {
     void setObserver(Observer observer);
     void start(File file, long positionPosition);
     void stop();
+    long getCurrentPosition();
 }
