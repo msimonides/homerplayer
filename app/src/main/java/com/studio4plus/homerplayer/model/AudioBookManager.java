@@ -107,7 +107,7 @@ public class AudioBookManager {
                 if (getById(fileSet.id) == null) {
                     AudioBook audioBook = new AudioBook(fileSet);
                     storage.readAudioBookState(audioBook);
-                    audioBook.setPositionObserver(storage);
+                    audioBook.setUpdateObserver(storage);
                     audioBooks.add(audioBook);
                     audioBooksChanged = true;
                 }

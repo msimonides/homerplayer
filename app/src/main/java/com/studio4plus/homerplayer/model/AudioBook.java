@@ -11,16 +11,16 @@ public class AudioBook {
 
     public final static long UNKNOWN_POSITION = -1;
 
-    public interface PositionObserver {
-        void onAudioBookPositionChanged(AudioBook audioBook);
+    public interface UpdateObserver {
+        void onAudioBookStateUpdated(AudioBook audioBook);
     }
 
     private final FileSet fileSet;
-    private final List<Long> fileDurations;
+    private List<Long> fileDurations;
     private ColourScheme colourScheme;
     private Position lastPosition;
 
-    private PositionObserver positionObserver;
+    private UpdateObserver updateObserver;
 
     public AudioBook(FileSet fileSet) {
         this.fileSet = fileSet;
@@ -28,8 +28,8 @@ public class AudioBook {
         this.fileDurations = new ArrayList<>(fileSet.filePaths.size());
     }
 
-    public void setPositionObserver(PositionObserver positionObserver) {
-        this.positionObserver = positionObserver;
+    public void setUpdateObserver(UpdateObserver updateObserver) {
+        this.updateObserver = updateObserver;
     }
 
     public File getAbsoluteDirectory() {
@@ -75,7 +75,7 @@ public class AudioBook {
         // Only set the duration if unknown.
         if (index == fileDurations.size()) {
             fileDurations.add(durationMs);
-            // TODO: persist durations.
+            notifyUpdateObserver();
         }
     }
 
@@ -94,24 +94,16 @@ public class AudioBook {
         return fileSet.isDemoSample;
     }
 
-    /**
-     * Set the last position.
-     * Doesn't call the position observer. Use only when reading AudioBook state from storage.
-     */
-    void setLastPosition(Position lastPosition) {
-        this.lastPosition = lastPosition;
-    }
-
     public void updatePosition(long seekPosition) {
         DebugUtil.verifyIsOnMainThread();
         lastPosition = new Position(lastPosition.filePath, seekPosition);
-        notifyPositionObserver();
+        notifyUpdateObserver();
     }
 
     public void resetPosition() {
         DebugUtil.verifyIsOnMainThread();
         lastPosition = new Position(fileSet.filePaths.get(0), 0);
-        notifyPositionObserver();
+        notifyUpdateObserver();
     }
 
     public ColourScheme getColourScheme() {
@@ -129,18 +121,30 @@ public class AudioBook {
         boolean hasMoreFiles = newIndex < filePaths.size();
         if (hasMoreFiles) {
             lastPosition = new Position(filePaths.get(newIndex), 0);
-            notifyPositionObserver();
+            notifyUpdateObserver();
         }
 
         return hasMoreFiles;
+    }
+
+    List<Long> getFileDurations() {
+        return fileDurations;
+    }
+
+    void restore(ColourScheme colourScheme, Position lastPosition, List<Long> fileDurations) {
+        this.lastPosition = lastPosition;
+        if (colourScheme != null)
+            this.colourScheme = colourScheme;
+        if (fileDurations != null)
+            this.fileDurations = fileDurations;
     }
 
     private static String directoryToTitle(String directory) {
         return directory.replace('_', ' ');
     }
 
-    private void notifyPositionObserver() {
-        if (positionObserver != null)
-            positionObserver.onAudioBookPositionChanged(this);
+    private void notifyUpdateObserver() {
+        if (updateObserver != null)
+            updateObserver.onAudioBookStateUpdated(this);
     }
 }
