@@ -69,27 +69,25 @@ public class FileScanner {
 
     private FileSet createFileSet(File bookDirectory) {
         File[] allFiles = getAllAudioFiles(bookDirectory);
-        String[] filePaths = new String[allFiles.length];
         int bookDirectoryPathLength = bookDirectory.getAbsolutePath().length();
 
         ByteBuffer bufferLong = ByteBuffer.allocate(Long.SIZE);
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");
-            for (int i = 0; i < filePaths.length; ++i) {
-                String path = allFiles[i].getAbsolutePath();
+            for (File file : allFiles) {
+                String path = file.getAbsolutePath();
                 String relativePath = path.substring(bookDirectoryPathLength);
-                filePaths[i] = relativePath;
 
                 // TODO: what if the same book is in two directories?
-                bufferLong.putLong(0, allFiles[i].length());
+                bufferLong.putLong(0, file.length());
                 digest.update(relativePath.getBytes());
                 digest.update(bufferLong);
             }
             String id = Base64.encodeToString(digest.digest(), Base64.NO_PADDING | Base64.NO_WRAP);
-            if (filePaths.length > 0) {
+            if (allFiles.length > 0) {
                 File sampleIndicator = new File(bookDirectory, SAMPLE_BOOK_FILE_NAME);
                 boolean isDemoSample = sampleIndicator.exists();
-                return new FileSet(id, bookDirectory, Arrays.asList(filePaths), isDemoSample);
+                return new FileSet(id, bookDirectory, allFiles, isDemoSample);
             } else {
                 return null;
             }

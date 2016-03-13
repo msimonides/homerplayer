@@ -15,7 +15,6 @@
     <string name="pref_jump_back_title">Cofnij przy wznawianiu odtwarzania</string>
     <string name="pref_jump_back_entry_disabled">Wyłączone</string>
     <string name="pref_jump_back_summary">Cofnij o %d sekund</string>
-    <string name="playback_in_progress">Odtwarzanie</string>
     <string name="pref_screen_orientation">Orientacja ekranu</string>
     <string name="pref_unregister_device_owner">Wyłącz uprawnienia wymagane przez tryb kiosku</string>
     <string name="pref_unregister_device_owner_dialog_message">Ta akcja wyłączy tryb kiosku i nie może być łatwo cofnięta.\nWykonać?</string>

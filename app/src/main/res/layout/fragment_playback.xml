@@ -7,15 +7,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#008856"
-        android:padding="@dimen/bookListItemPadding">
+        android:paddingLeft="@dimen/bookListItemPadding"
+        android:paddingRight="@dimen/bookListItemPadding"
+        android:paddingBottom="@dimen/bookListItemPadding">
 
         <TextView
-            android:text="@string/playback_in_progress"
+            android:id="@+id/elapsedTime"
             android:textColor="#ffffff"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textSize="@dimen/bookListTextSize"
-            android:singleLine="false"
+            android:textSize="@dimen/bookElapsedTimeTextSize"
             android:gravity="center"
             android:layout_above="@+id/stopButton"/>
 

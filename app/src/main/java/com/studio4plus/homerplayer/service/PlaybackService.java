@@ -11,23 +11,36 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
+import com.google.common.base.Preconditions;
+import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.events.PlaybackElapsedTimeSyncEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppedEvent;
+import com.studio4plus.homerplayer.events.PlaybackStoppingEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
 import com.studio4plus.homerplayer.ui.MainActivity;
-import com.studio4plus.homerplayer.util.DebugUtil;
+
+import java.io.File;
+import java.util.List;
+
+import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
 public class PlaybackService
-        extends Service
-        implements AudioBookPlayer.Observer, FaceDownDetector.Listener {
+        extends Service implements FaceDownDetector.Listener {
 
     private static final int NOTIFICATION = R.string.playback_service_notification;
+    private static final PlaybackStoppingEvent PLAYBACK_STOPPING_EVENT = new PlaybackStoppingEvent();
     private static final PlaybackStoppedEvent PLAYBACK_STOPPED_EVENT = new PlaybackStoppedEvent();
 
-    private AudioBookPlayer player;
+    @Inject public GlobalSettings globalSettings;
+    @Inject public EventBus eventBus;
+
+    private Player player;
+    private DurationQuery durationQueryInProgress;
+    private AudioBookPlayback playbackInProgress;
     private FaceDownDetector faceDownDetector;
 
     @Override
@@ -38,6 +51,8 @@ public class PlaybackService
     @Override
     public void onCreate() {
         super.onCreate();
+        HomerPlayerApplication.getComponent(getApplicationContext()).inject(this);
+        // TODO: use Dagger to create FaceDownDetector?
         SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (FaceDownDetector.hasSensors(sensorManager)) {
             faceDownDetector =
@@ -52,18 +67,23 @@ public class PlaybackService
     }
 
     public void startPlayback(AudioBook book) {
-        if (player != null)
-            player.stopPlayback();
+        Preconditions.checkState(playbackInProgress == null);
+        Preconditions.checkState(durationQueryInProgress == null);
+        Preconditions.checkState(player == null);
 
-        player = HomerPlayerApplication.getComponent(getApplicationContext()).getAudioBookPlayer();
-        player.setObserver(this);
-        player.setAudioBook(book);
-        player.startPlayback();
+        player = HomerPlayerApplication.getComponent(getApplicationContext()).createAudioBookPlayer();
 
         if (faceDownDetector != null)
             faceDownDetector.enable();
 
         startForeground(NOTIFICATION, createNotification());
+
+        if (book.getLastPositionTime() == AudioBook.UNKNOWN_POSITION) {
+            durationQueryInProgress = new DurationQuery(player, book);
+        } else {
+            playbackInProgress = new AudioBookPlayback(
+                    player, book, globalSettings.getJumpBackPreferenceMs());
+        }
     }
 
     public boolean isInPlaybackMode() {
@@ -71,27 +91,40 @@ public class PlaybackService
     }
 
     public void stopPlayback() {
-        if (player != null)
-            player.stopPlayback();
+        if (durationQueryInProgress != null) {
+            durationQueryInProgress.stop();
+            durationQueryInProgress = null;
+        } else if (playbackInProgress != null) {
+            playbackInProgress.stop();
+            playbackInProgress = null;
+        }
 
         if (faceDownDetector != null)
             faceDownDetector.disable();
 
-        player = null;
-        stopForeground(true);
+        eventBus.post(PLAYBACK_STOPPING_EVENT);
     }
 
-    @Override
-    public void onPlaybackStopped() {
-        DebugUtil.verifyIsOnMainThread();
-        if (player != null)
-            stopPlayback();
-        EventBus.getDefault().post(PLAYBACK_STOPPED_EVENT);
+    public void requestElapsedTimeSyncEvent() {
+        if (playbackInProgress != null)
+            playbackInProgress.requestElapsedTimeSyncEvent();
     }
 
     @Override
     public void onDeviceFaceDown() {
         stopPlayback();
+    }
+
+    public class ServiceBinder extends Binder {
+        public PlaybackService getService() {
+            return PlaybackService.this;
+        }
+    }
+
+    private void onPlayerReleased() {
+        player = null;
+        stopForeground(true);
+        eventBus.post(PLAYBACK_STOPPED_EVENT);
     }
 
     private Notification createNotification() {
@@ -108,9 +141,98 @@ public class PlaybackService
                 .build();
     }
 
-    public class ServiceBinder extends Binder {
-        public PlaybackService getService() {
-            return PlaybackService.this;
+    private class AudioBookPlayback implements PlaybackController.Observer {
+
+        private final AudioBook audioBook;
+        private final PlaybackController controller;
+        private boolean isPlaying;
+
+        private AudioBookPlayback(Player player, AudioBook audioBook, int jumpBackMs) {
+            this.audioBook = audioBook;
+
+            controller = player.createPlayback();
+            controller.setObserver(this);
+            AudioBook.Position position = audioBook.getLastPosition();
+            long startPositionMs = Math.max(0, position.seekPosition - jumpBackMs);
+            controller.start(position.file, startPositionMs);
+        }
+
+        public void stop() {
+            controller.stop();
+        }
+
+        public void requestElapsedTimeSyncEvent() {
+            if (isPlaying) {
+                eventBus.post(new PlaybackElapsedTimeSyncEvent(
+                        audioBook.getLastPositionTime(controller.getCurrentPosition())));
+            }
+        }
+
+        @Override
+        public void onPlaybackStarted() {
+            isPlaying = true;
+            long positionTime = audioBook.getLastPositionTime(controller.getCurrentPosition());
+            eventBus.post(new PlaybackElapsedTimeSyncEvent(positionTime));
+        }
+
+        @Override
+        public void onDuration(File file, long durationMs) {
+            audioBook.offerFileDuration(file, durationMs);
+        }
+
+        @Override
+        public void onPlaybackEnded() {
+            isPlaying = false;
+            boolean hasMoreToPlay = audioBook.advanceFile();
+            if (hasMoreToPlay) {
+                AudioBook.Position position = audioBook.getLastPosition();
+                controller.start(position.file, position.seekPosition);
+            } else {
+                PlaybackService.this.stopPlayback();
+            }
+        }
+
+        @Override
+        public void onPlayerReleased(long currentPositionMs) {
+            isPlaying = false;
+            audioBook.updatePosition(currentPositionMs);
+            PlaybackService.this.onPlayerReleased();
+        }
+    }
+
+    private class DurationQuery implements DurationQueryController.Observer {
+
+        private final AudioBook audioBook;
+        private final DurationQueryController controller;
+
+        private DurationQuery(Player player, AudioBook audioBook) {
+            this.audioBook = audioBook;
+
+            List<File> files = audioBook.getFilesWithNoDurationUpToPosition();
+            controller = player.createDurationQuery(files);
+            controller.start(this);
+        }
+
+        public void stop() {
+            controller.stop();
+        }
+
+        @Override
+        public void onDuration(File file, long durationMs) {
+            audioBook.offerFileDuration(file, durationMs);
+        }
+
+        @Override
+        public void onFinished() {
+            Preconditions.checkState(durationQueryInProgress == this);
+            durationQueryInProgress = null;
+            playbackInProgress = new AudioBookPlayback(
+                    player, audioBook, globalSettings.getJumpBackPreferenceMs());
+        }
+
+        @Override
+        public void onPlayerReleased() {
+            PlaybackService.this.onPlayerReleased();
         }
     }
 }

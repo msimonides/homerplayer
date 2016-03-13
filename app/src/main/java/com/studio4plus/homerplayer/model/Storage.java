@@ -5,13 +5,17 @@ import android.content.SharedPreferences;
 
 import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.greenrobot.event.EventBus;
 
-public class Storage implements AudioBook.PositionObserver {
+public class Storage implements AudioBook.UpdateObserver {
 
     private static final String PREFERENCES_NAME = Storage.class.getSimpleName();
     private static final String AUDIOBOOK_KEY_PREFIX = "audiobook_";
@@ -19,8 +23,10 @@ public class Storage implements AudioBook.PositionObserver {
 
     private static final String FIELD_POSITION = "position";
     private static final String FIELD_COLOUR_SCHEME = "colourScheme";
-    private static final String FIELD_POSITION_FILEPATH = "filePath";
+    private static final String FIELD_POSITION_FILEPATH_DEPRECATED = "filePath";
+    private static final String FIELD_POSITION_FILE_INDEX = "fileIndex";
     private static final String FIELD_POSITION_SEEK = "seek";
+    private static final String FIELD_FILE_DURATIONS = "fileDurations";
 
 
     private final SharedPreferences preferences;
@@ -34,16 +40,32 @@ public class Storage implements AudioBook.PositionObserver {
         String bookData = preferences.getString(getAudioBookPreferenceKey(audioBook.getId()), null);
         if (bookData != null) {
             try {
+                ColourScheme colourScheme = null;
+                List<Long> durations = null;
+
                 JSONObject jsonObject = (JSONObject) new JSONTokener(bookData).nextValue();
                 JSONObject jsonPosition = jsonObject.getJSONObject(FIELD_POSITION);
-                String fileName = jsonPosition.getString(FIELD_POSITION_FILEPATH);
-                int seek = jsonPosition.getInt(FIELD_POSITION_SEEK);
-                audioBook.setLastPosition(new Position(fileName, seek));
+                String fileName = jsonPosition.optString(FIELD_POSITION_FILEPATH_DEPRECATED, null);
+                int fileIndex = jsonPosition.optInt(FIELD_POSITION_FILE_INDEX, -1);
+                long seek = jsonPosition.getLong(FIELD_POSITION_SEEK);
 
                 String colourSchemeName = jsonObject.optString(FIELD_COLOUR_SCHEME, null);
                 if (colourSchemeName != null) {
-                    audioBook.setColourScheme(ColourScheme.valueOf(colourSchemeName));
+                    colourScheme = ColourScheme.valueOf(colourSchemeName);
                 }
+
+                JSONArray jsonDurations = jsonObject.optJSONArray(FIELD_FILE_DURATIONS);
+                if (jsonDurations != null) {
+                    final int count = jsonDurations.length();
+                    durations = new ArrayList<>(count);
+                    for (int i = 0; i < count; ++i)
+                        durations.add(jsonDurations.getLong(i));
+                }
+
+                if (fileIndex >= 0)
+                    audioBook.restore(colourScheme, fileIndex, seek, durations);
+                else
+                    audioBook.restoreOldFormat(colourScheme, fileName, seek, durations);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -53,12 +75,14 @@ public class Storage implements AudioBook.PositionObserver {
     public void writeAudioBookState(AudioBook audioBook) {
         JSONObject jsonAudioBook = new JSONObject();
         JSONObject jsonPosition = new JSONObject();
-        Position position = audioBook.getLastPosition();
+        AudioBook.Position position = audioBook.getLastPosition();
         try {
-            jsonPosition.put(FIELD_POSITION_FILEPATH, position.filePath);
+            jsonPosition.put(FIELD_POSITION_FILE_INDEX, position.fileIndex);
             jsonPosition.put(FIELD_POSITION_SEEK, position.seekPosition);
+            JSONArray jsonDurations = new JSONArray(audioBook.getFileDurations());
             jsonAudioBook.put(FIELD_POSITION, jsonPosition);
             jsonAudioBook.putOpt(FIELD_COLOUR_SCHEME, audioBook.getColourScheme());
+            jsonAudioBook.put(FIELD_FILE_DURATIONS, jsonDurations);
 
             SharedPreferences.Editor editor = preferences.edit();
             String key = getAudioBookPreferenceKey(audioBook.getId());
@@ -81,7 +105,7 @@ public class Storage implements AudioBook.PositionObserver {
     }
 
     @Override
-    public void onAudioBookPositionChanged(AudioBook audioBook) {
+    public void onAudioBookStateUpdated(AudioBook audioBook) {
         writeAudioBookState(audioBook);
     }
 

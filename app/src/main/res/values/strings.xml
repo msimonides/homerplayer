@@ -28,7 +28,7 @@
     <string name="pref_reset_all_book_progress_dialog_title">Reset listening progress on all books?</string>
     <string name="pref_reset_all_book_progress_done">Book progress reset</string>
     <string name="pref_version_title">Version</string>
-    <string name="playback_in_progress">Playback in progress</string>
+    <string name="playback_elapsed_time" translatable="false">%1$2d:%2$02d:%3$02d</string>
     <string name="button_start">Start</string>
     <string name="button_stop">Stop</string>
     <string name="multi_tap_prompt">%d more to go</string>
