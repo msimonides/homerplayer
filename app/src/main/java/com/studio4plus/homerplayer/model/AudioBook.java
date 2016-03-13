@@ -5,6 +5,7 @@ import com.studio4plus.homerplayer.util.DebugUtil;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AudioBook {
@@ -13,6 +14,18 @@ public class AudioBook {
 
     public interface UpdateObserver {
         void onAudioBookStateUpdated(AudioBook audioBook);
+    }
+
+    public class Position {
+        public final int fileIndex;
+        public final long seekPosition;
+        public final File file;
+
+        public Position(int fileIndex, long seekPosition) {
+            this.fileIndex = fileIndex;
+            this.seekPosition = seekPosition;
+            this.file = fileSet.files[fileIndex];
+        }
     }
 
     private final FileSet fileSet;
@@ -24,16 +37,12 @@ public class AudioBook {
 
     public AudioBook(FileSet fileSet) {
         this.fileSet = fileSet;
-        this.lastPosition = new Position(fileSet.filePaths.get(0), 0);
-        this.fileDurations = new ArrayList<>(fileSet.filePaths.size());
+        this.lastPosition = new Position(0, 0);
+        this.fileDurations = new ArrayList<>(fileSet.files.length);
     }
 
     public void setUpdateObserver(UpdateObserver updateObserver) {
         this.updateObserver = updateObserver;
-    }
-
-    public File getAbsoluteDirectory() {
-        return fileSet.absolutePath;
     }
 
     public String getTitle() {
@@ -53,8 +62,7 @@ public class AudioBook {
     }
 
     public long getLastPositionTime(long lastFileSeekPosition) {
-        int index = fileSet.filePaths.indexOf(lastPosition.filePath);
-        Preconditions.checkState(index >= 0);
+        int index = lastPosition.fileIndex;
 
         if (index <= fileDurations.size()) {
             long totalPosition = 0;
@@ -67,8 +75,8 @@ public class AudioBook {
         }
     }
 
-    public void offerFileDuration(String fileName, long durationMs) {
-        int index = fileSet.filePaths.indexOf(fileName);
+    public void offerFileDuration(File file, long durationMs) {
+        int index = Arrays.asList(fileSet.files).indexOf(file);
         Preconditions.checkState(index >= 0);
         Preconditions.checkState(index <= fileDurations.size(), "Duration set out of order.");
 
@@ -79,15 +87,12 @@ public class AudioBook {
         }
     }
 
-    public List<String> getFileNamesWithNoDurationUpToPosition() {
-        int lastIndex = fileSet.filePaths.indexOf(lastPosition.filePath);
-        Preconditions.checkState(lastIndex >= 0);
+    public List<File> getFilesWithNoDurationUpToPosition() {
+        int lastIndex = lastPosition.fileIndex;
         int firstIndex = fileDurations.size();
-        List<String> fileNames = new ArrayList<>(lastIndex - firstIndex);
-        for (int i = firstIndex; i < lastIndex; ++i) {
-            fileNames.add(fileSet.filePaths.get(i));
-        }
-        return fileNames;
+        List<File> files = new ArrayList<>(lastIndex - firstIndex);
+        files.addAll(Arrays.asList(fileSet.files).subList(firstIndex, lastIndex));
+        return files;
     }
 
     public boolean isDemoSample() {
@@ -96,13 +101,13 @@ public class AudioBook {
 
     public void updatePosition(long seekPosition) {
         DebugUtil.verifyIsOnMainThread();
-        lastPosition = new Position(lastPosition.filePath, seekPosition);
+        lastPosition = new Position(lastPosition.fileIndex, seekPosition);
         notifyUpdateObserver();
     }
 
     public void resetPosition() {
         DebugUtil.verifyIsOnMainThread();
-        lastPosition = new Position(fileSet.filePaths.get(0), 0);
+        lastPosition = new Position(0, 0);
         notifyUpdateObserver();
     }
 
@@ -116,11 +121,10 @@ public class AudioBook {
 
     public boolean advanceFile() {
         DebugUtil.verifyIsOnMainThread();
-        final List<String> filePaths = fileSet.filePaths;
-        int newIndex = filePaths.indexOf(lastPosition.filePath) + 1;
-        boolean hasMoreFiles = newIndex < filePaths.size();
+        int newIndex = lastPosition.fileIndex + 1;
+        boolean hasMoreFiles = newIndex < fileSet.files.length;
         if (hasMoreFiles) {
-            lastPosition = new Position(filePaths.get(newIndex), 0);
+            lastPosition = new Position(newIndex, 0);
             notifyUpdateObserver();
         }
 
@@ -131,12 +135,33 @@ public class AudioBook {
         return fileDurations;
     }
 
-    void restore(ColourScheme colourScheme, Position lastPosition, List<Long> fileDurations) {
-        this.lastPosition = lastPosition;
+    void restore(
+            ColourScheme colourScheme, int fileIndex, long seekPosition, List<Long> fileDurations) {
+        this.lastPosition = new Position(fileIndex, seekPosition);
         if (colourScheme != null)
             this.colourScheme = colourScheme;
         if (fileDurations != null)
             this.fileDurations = fileDurations;
+    }
+
+    void restoreOldFormat(
+            ColourScheme colourScheme, String fileName, long seekPosition, List<Long> fileDurations) {
+        if (colourScheme != null)
+            this.colourScheme = colourScheme;
+        if (fileDurations != null)
+            this.fileDurations = fileDurations;
+
+        int fileIndex = -1;
+        for (int i = 0; i < fileSet.files.length; ++i) {
+            String path = fileSet.files[i].getAbsolutePath();
+            if (path.endsWith(fileName)) {
+                fileIndex = i;
+                break;
+            }
+        }
+        if (fileIndex >= 0) {
+            lastPosition = new Position(fileIndex, seekPosition);
+        }
     }
 
     private static String directoryToTitle(String directory) {

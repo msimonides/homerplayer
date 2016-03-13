@@ -23,7 +23,8 @@ public class Storage implements AudioBook.UpdateObserver {
 
     private static final String FIELD_POSITION = "position";
     private static final String FIELD_COLOUR_SCHEME = "colourScheme";
-    private static final String FIELD_POSITION_FILEPATH = "filePath";
+    private static final String FIELD_POSITION_FILEPATH_DEPRECATED = "filePath";
+    private static final String FIELD_POSITION_FILE_INDEX = "fileIndex";
     private static final String FIELD_POSITION_SEEK = "seek";
     private static final String FIELD_FILE_DURATIONS = "fileDurations";
 
@@ -44,9 +45,9 @@ public class Storage implements AudioBook.UpdateObserver {
 
                 JSONObject jsonObject = (JSONObject) new JSONTokener(bookData).nextValue();
                 JSONObject jsonPosition = jsonObject.getJSONObject(FIELD_POSITION);
-                String fileName = jsonPosition.getString(FIELD_POSITION_FILEPATH);
+                String fileName = jsonPosition.optString(FIELD_POSITION_FILEPATH_DEPRECATED, null);
+                int fileIndex = jsonPosition.optInt(FIELD_POSITION_FILE_INDEX, -1);
                 long seek = jsonPosition.getLong(FIELD_POSITION_SEEK);
-                Position position = new Position(fileName, seek);
 
                 String colourSchemeName = jsonObject.optString(FIELD_COLOUR_SCHEME, null);
                 if (colourSchemeName != null) {
@@ -61,7 +62,10 @@ public class Storage implements AudioBook.UpdateObserver {
                         durations.add(jsonDurations.getLong(i));
                 }
 
-                audioBook.restore(colourScheme, position, durations);
+                if (fileIndex >= 0)
+                    audioBook.restore(colourScheme, fileIndex, seek, durations);
+                else
+                    audioBook.restoreOldFormat(colourScheme, fileName, seek, durations);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -71,9 +75,9 @@ public class Storage implements AudioBook.UpdateObserver {
     public void writeAudioBookState(AudioBook audioBook) {
         JSONObject jsonAudioBook = new JSONObject();
         JSONObject jsonPosition = new JSONObject();
-        Position position = audioBook.getLastPosition();
+        AudioBook.Position position = audioBook.getLastPosition();
         try {
-            jsonPosition.put(FIELD_POSITION_FILEPATH, position.filePath);
+            jsonPosition.put(FIELD_POSITION_FILE_INDEX, position.fileIndex);
             jsonPosition.put(FIELD_POSITION_SEEK, position.seekPosition);
             JSONArray jsonDurations = new JSONArray(audioBook.getFileDurations());
             jsonAudioBook.put(FIELD_POSITION, jsonPosition);

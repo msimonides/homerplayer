@@ -19,11 +19,9 @@ import com.studio4plus.homerplayer.events.PlaybackElapsedTimeSyncEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppedEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppingEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
-import com.studio4plus.homerplayer.model.Position;
 import com.studio4plus.homerplayer.ui.MainActivity;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -143,12 +141,6 @@ public class PlaybackService
                 .build();
     }
 
-    private void offerAudioBookFileDuration(AudioBook book, File file, long durationMs) {
-        final int baseDirectoryPathLength = book.getAbsoluteDirectory().getAbsolutePath().length();
-        String fileName = file.getAbsolutePath().substring(baseDirectoryPathLength);
-        book.offerFileDuration(fileName, durationMs);
-    }
-
     private class AudioBookPlayback implements PlaybackController.Observer {
 
         private final AudioBook audioBook;
@@ -160,10 +152,9 @@ public class PlaybackService
 
             controller = player.createPlayback();
             controller.setObserver(this);
-            Position position = audioBook.getLastPosition();
-            File currentFile = fileForPosition(audioBook, position);
+            AudioBook.Position position = audioBook.getLastPosition();
             long startPositionMs = Math.max(0, position.seekPosition - jumpBackMs);
-            controller.start(currentFile, startPositionMs);
+            controller.start(position.file, startPositionMs);
         }
 
         public void stop() {
@@ -186,7 +177,7 @@ public class PlaybackService
 
         @Override
         public void onDuration(File file, long durationMs) {
-            offerAudioBookFileDuration(audioBook, file, durationMs);
+            audioBook.offerFileDuration(file, durationMs);
         }
 
         @Override
@@ -194,9 +185,8 @@ public class PlaybackService
             isPlaying = false;
             boolean hasMoreToPlay = audioBook.advanceFile();
             if (hasMoreToPlay) {
-                Position position = audioBook.getLastPosition();
-                File currentFile = fileForPosition(audioBook, position);
-                controller.start(currentFile, position.seekPosition);
+                AudioBook.Position position = audioBook.getLastPosition();
+                controller.start(position.file, position.seekPosition);
             } else {
                 PlaybackService.this.stopPlayback();
             }
@@ -208,11 +198,6 @@ public class PlaybackService
             audioBook.updatePosition(currentPositionMs);
             PlaybackService.this.onPlayerReleased();
         }
-
-        private File fileForPosition(AudioBook audioBook, Position position) {
-            File bookDirectory = audioBook.getAbsoluteDirectory();
-            return new File(bookDirectory, position.filePath);
-        }
     }
 
     private class DurationQuery implements DurationQueryController.Observer {
@@ -223,13 +208,7 @@ public class PlaybackService
         private DurationQuery(Player player, AudioBook audioBook) {
             this.audioBook = audioBook;
 
-            File directory = audioBook.getAbsoluteDirectory();
-            List<String> fileNames = audioBook.getFileNamesWithNoDurationUpToPosition();
-            List<File> files = new ArrayList<>(fileNames.size());
-            for (String fileName : fileNames) {
-                files.add(new File(directory, fileName));
-            }
-
+            List<File> files = audioBook.getFilesWithNoDurationUpToPosition();
             controller = player.createDurationQuery(files);
             controller.start(this);
         }
@@ -240,7 +219,7 @@ public class PlaybackService
 
         @Override
         public void onDuration(File file, long durationMs) {
-            offerAudioBookFileDuration(audioBook, file, durationMs);
+            audioBook.offerFileDuration(file, durationMs);
         }
 
         @Override
