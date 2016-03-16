@@ -9,4 +9,8 @@
         <item name="android:background">@drawable/button_stop</item>
     </style>
 
+    <style name="buttonFFRewind" parent="buttonStartStop">
+        <item name="android:background">@color/buttonFFRewindBackground</item>
+    </style>
+
 </resources>

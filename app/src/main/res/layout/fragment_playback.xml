@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+<io.codetail.widget.RevealFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -18,15 +19,53 @@
             android:layout_height="match_parent"
             android:textSize="@dimen/bookElapsedTimeTextSize"
             android:gravity="center"
-            android:layout_above="@+id/stopButton"/>
+            android:layout_above="@+id/buttons"/>
 
-        <Button
-            android:id="@+id/stopButton"
-            style="@style/buttonStop"
-            android:text="@string/button_stop"
+        <LinearLayout
+            android:id="@+id/buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"/>
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
 
+            <Button
+                android:id="@+id/rewindButton"
+                android:text="@string/button_rewind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/buttonFFRewind"/>
+
+            <Button
+                android:id="@+id/stopButton"
+                style="@style/buttonStop"
+                android:text="@string/button_stop"/>
+
+            <Button
+                android:id="@+id/fastForwardButton"
+                android:text="@string/button_fastforward"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/buttonFFRewind"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rewindFFOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/ffRewindFillBackground"
+        android:visibility="gone">
+
+        <!-- The text view is positioned to match the elapsedTime position -->
+        <TextView
+            android:id="@+id/elapsedTimeRewindFF"
+            android:textColor="#ffffff"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="@dimen/bookElapsedTimeTextSize"
+            android:gravity="center"/>
     </RelativeLayout>
 
     <ViewStub
@@ -36,4 +75,4 @@
         android:visibility="gone"
         android:layout="@layout/hint_horizontal_image" />
 
-</FrameLayout>
+</io.codetail.widget.RevealFrameLayout>

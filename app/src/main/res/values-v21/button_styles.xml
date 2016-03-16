@@ -11,4 +11,9 @@
         <item name="android:backgroundTintMode">multiply</item>
     </style>
 
+    <style name="buttonFFRewind" parent="buttonStartStop">
+        <item name="android:backgroundTint">@color/buttonFFRewindBackground</item>
+        <item name="android:backgroundTintMode">multiply</item>
+    </style>
+
 </resources>
