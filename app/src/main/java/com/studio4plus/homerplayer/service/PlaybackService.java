@@ -91,18 +91,12 @@ public class PlaybackService
     }
 
     public void stopPlayback() {
-        if (durationQueryInProgress != null) {
+        if (durationQueryInProgress != null)
             durationQueryInProgress.stop();
-            durationQueryInProgress = null;
-        } else if (playbackInProgress != null) {
+        else if (playbackInProgress != null)
             playbackInProgress.stop();
-            playbackInProgress = null;
-        }
 
-        if (faceDownDetector != null)
-            faceDownDetector.disable();
-
-        eventBus.post(PLAYBACK_STOPPING_EVENT);
+        onPlaybackEnded();
     }
 
     public void requestElapsedTimeSyncEvent() {
@@ -119,6 +113,15 @@ public class PlaybackService
         public PlaybackService getService() {
             return PlaybackService.this;
         }
+    }
+
+    private void onPlaybackEnded() {
+        durationQueryInProgress = null;
+        playbackInProgress = null;
+         if (faceDownDetector != null)
+            faceDownDetector.disable();
+
+        eventBus.post(PLAYBACK_STOPPING_EVENT);
     }
 
     private void onPlayerReleased() {
@@ -188,14 +191,20 @@ public class PlaybackService
                 AudioBook.Position position = audioBook.getLastPosition();
                 controller.start(position.file, position.seekPosition);
             } else {
-                PlaybackService.this.stopPlayback();
+                audioBook.resetPosition();
+                PlaybackService.this.onPlaybackEnded();
+                controller.release();
             }
         }
 
         @Override
-        public void onPlayerReleased(long currentPositionMs) {
-            isPlaying = false;
+        public void onPlaybackStopped(long currentPositionMs) {
             audioBook.updatePosition(currentPositionMs);
+        }
+
+        @Override
+        public void onPlayerReleased() {
+            isPlaying = false;
             PlaybackService.this.onPlayerReleased();
         }
     }

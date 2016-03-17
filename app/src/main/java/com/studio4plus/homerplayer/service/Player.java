@@ -76,6 +76,12 @@ public class Player {
 
         public void stop() {
             exoPlayer.stop();
+            observer.onPlaybackStopped(exoPlayer.getCurrentPosition());
+        }
+
+        @Override
+        public void release() {
+            exoPlayer.stop();
         }
 
         @Override
@@ -94,10 +100,9 @@ public class Player {
                     observer.onPlaybackEnded();
                     break;
                 case ExoPlayer.STATE_IDLE:
-                    long currentPositionMs = exoPlayer.getCurrentPosition();
                     exoPlayer.release();
                     exoPlayer.removeListener(this);
-                    observer.onPlayerReleased((int) currentPositionMs);
+                    observer.onPlayerReleased();
                     break;
             }
         }
