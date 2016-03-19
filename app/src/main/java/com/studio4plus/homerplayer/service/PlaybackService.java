@@ -78,7 +78,7 @@ public class PlaybackService
 
         startForeground(NOTIFICATION, createNotification());
 
-        if (book.getLastPositionTime() == AudioBook.UNKNOWN_POSITION) {
+        if (book.getTotalDuration() == AudioBook.UNKNOWN_POSITION) {
             durationQueryInProgress = new DurationQuery(player, book);
         } else {
             playbackInProgress = new AudioBookPlayback(
@@ -217,7 +217,7 @@ public class PlaybackService
         private DurationQuery(Player player, AudioBook audioBook) {
             this.audioBook = audioBook;
 
-            List<File> files = audioBook.getFilesWithNoDurationUpToPosition();
+            List<File> files = audioBook.getFilesWithNoDuration();
             controller = player.createDurationQuery(files);
             controller.start(this);
         }
