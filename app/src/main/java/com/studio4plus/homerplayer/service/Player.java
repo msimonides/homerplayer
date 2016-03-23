@@ -56,10 +56,12 @@ public class Player {
 
         private File currentFile;
         private Observer observer;
+        private int lastPlaybackState;
 
         private PlaybackControllerImpl() {
             exoPlayer.setPlayWhenReady(true);  // Call before setting the listener.
             exoPlayer.addListener(this);
+            lastPlaybackState = exoPlayer.getPlaybackState();
         }
 
         @Override
@@ -71,7 +73,13 @@ public class Player {
         public void start(File currentFile, long startPositionMs) {
             Preconditions.checkNotNull(observer);
             this.currentFile = currentFile;
+            exoPlayer.setPlayWhenReady(true);
             prepareAudioFile(currentFile, startPositionMs);
+        }
+
+        @Override
+        public void pause() {
+            exoPlayer.setPlayWhenReady(false);
         }
 
         public void stop() {
@@ -91,6 +99,10 @@ public class Player {
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+            if (playbackState == lastPlaybackState)
+                return;
+            lastPlaybackState = playbackState;
+
             switch(playbackState) {
                 case ExoPlayer.STATE_READY:
                     observer.onPlaybackStarted();

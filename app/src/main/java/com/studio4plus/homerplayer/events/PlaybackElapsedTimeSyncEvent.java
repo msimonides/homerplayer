@@ -6,8 +6,10 @@ package com.studio4plus.homerplayer.events;
  */
 public class PlaybackElapsedTimeSyncEvent {
     public final long playbackPositionMs;
+    public final long totalTimeMs;
 
-    public PlaybackElapsedTimeSyncEvent(long playbackTimeMs) {
-        this.playbackPositionMs = playbackTimeMs;
+    public PlaybackElapsedTimeSyncEvent(long playbackPositionMs, long totalTimeMs) {
+        this.playbackPositionMs = playbackPositionMs;
+        this.totalTimeMs = totalTimeMs;
     }
 }

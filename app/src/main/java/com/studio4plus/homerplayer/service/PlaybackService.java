@@ -78,7 +78,7 @@ public class PlaybackService
 
         startForeground(NOTIFICATION, createNotification());
 
-        if (book.getTotalDuration() == AudioBook.UNKNOWN_POSITION) {
+        if (book.getTotalDurationMs() == AudioBook.UNKNOWN_POSITION) {
             durationQueryInProgress = new DurationQuery(player, book);
         } else {
             playbackInProgress = new AudioBookPlayback(
@@ -88,6 +88,16 @@ public class PlaybackService
 
     public boolean isInPlaybackMode() {
         return player != null;
+    }
+
+    public void pauseForRewind() {
+        Preconditions.checkNotNull(playbackInProgress);
+        playbackInProgress.pauseForRewind();
+    }
+
+    public void resumeFromRewind(long newTotalPositionMs) {
+        Preconditions.checkNotNull(playbackInProgress);
+        playbackInProgress.resumeFromRewind(newTotalPositionMs);
     }
 
     public void stopPlayback() {
@@ -164,10 +174,21 @@ public class PlaybackService
             controller.stop();
         }
 
+        public void pauseForRewind() {
+            controller.pause();
+        }
+
+        public void resumeFromRewind(long newTotalPositionMs) {
+            audioBook.updateTotalPosition(newTotalPositionMs);
+            AudioBook.Position position = audioBook.getLastPosition();
+            controller.start(position.file, position.seekPosition);
+        }
+
         public void requestElapsedTimeSyncEvent() {
             if (isPlaying) {
                 eventBus.post(new PlaybackElapsedTimeSyncEvent(
-                        audioBook.getLastPositionTime(controller.getCurrentPosition())));
+                        audioBook.getLastPositionTime(controller.getCurrentPosition()),
+                        audioBook.getTotalDurationMs()));
             }
         }
 
@@ -175,7 +196,8 @@ public class PlaybackService
         public void onPlaybackStarted() {
             isPlaying = true;
             long positionTime = audioBook.getLastPositionTime(controller.getCurrentPosition());
-            eventBus.post(new PlaybackElapsedTimeSyncEvent(positionTime));
+            eventBus.post(
+                    new PlaybackElapsedTimeSyncEvent(positionTime, audioBook.getTotalDurationMs()));
         }
 
         @Override

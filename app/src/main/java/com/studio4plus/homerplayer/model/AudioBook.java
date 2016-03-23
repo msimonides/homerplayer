@@ -72,7 +72,7 @@ public class AudioBook {
         }
     }
 
-    public long getTotalDuration() {
+    public long getTotalDurationMs() {
         return totalDuration;
     }
 
@@ -105,6 +105,22 @@ public class AudioBook {
     public void updatePosition(long seekPosition) {
         DebugUtil.verifyIsOnMainThread();
         lastPosition = new Position(lastPosition.fileIndex, seekPosition);
+        notifyUpdateObserver();
+    }
+
+    public void updateTotalPosition(long totalPositionMs) {
+        Preconditions.checkArgument(totalPositionMs <= totalDuration);
+
+        long fullFileDurationSum = 0;
+        int fileIndex = 0;
+        for (; fileIndex < fileDurations.size(); ++fileIndex) {
+            long total = fullFileDurationSum + fileDurations.get(fileIndex);
+            if (totalPositionMs <= total)
+                break;
+            fullFileDurationSum = total;
+        }
+        long seekPosition = totalPositionMs - fullFileDurationSum;
+        lastPosition = new Position(fileIndex, seekPosition);
         notifyUpdateObserver();
     }
 
