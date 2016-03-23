@@ -1,37 +1,54 @@
 package com.studio4plus.homerplayer.ui;
 
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
 import android.app.Fragment;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.events.PlaybackElapsedTimeSyncEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppingEvent;
+import com.studio4plus.homerplayer.util.ViewUtils;
 
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import io.codetail.animation.SupportAnimator;
+import io.codetail.animation.ViewAnimationUtils;
 
-public class FragmentPlayback extends Fragment {
+public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer {
 
     private View view;
     private Button stopButton;
+    private Button rewindButton;
+    private Button ffButton;
     private TextView elapsedTimeView;
-    private TimerTask timerTask;
+    private TextView elapsedTimeRewindFFView;
+    private PlaybackTimer timerTask;
+    private Animator elapsedTimeRewindFFViewAnimation;
+    private SoundBank.Sound ffRewindSound;
 
     @Inject public GlobalSettings globalSettings;
     @Inject public EventBus eventBus;
+    @Inject public SoundBank soundBank;
 
     @Override
     public View onCreateView(
@@ -50,6 +67,46 @@ public class FragmentPlayback extends Fragment {
         });
 
         elapsedTimeView = (TextView) view.findViewById(R.id.elapsedTime);
+        elapsedTimeRewindFFView = (TextView) view.findViewById(R.id.elapsedTimeRewindFF);
+
+        elapsedTimeView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(
+                    View v,
+                    int left, int top, int right, int bottom,
+                    int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                RelativeLayout.LayoutParams params =
+                        (RelativeLayout.LayoutParams) elapsedTimeRewindFFView.getLayoutParams();
+                params.leftMargin = left;
+                params.topMargin = top;
+                params.width = right - left;
+                params.height = bottom - top;
+                elapsedTimeRewindFFView.setLayoutParams(params);
+            }
+        });
+
+        rewindButton = (Button) view.findViewById(R.id.rewindButton);
+        ffButton = (Button) view.findViewById(R.id.fastForwardButton);
+
+        View rewindFFOverlay = view.findViewById(R.id.rewindFFOverlay);
+        RewindFFHandler rewindFFHandler = new RewindFFHandler(
+                (View) rewindFFOverlay.getParent(), rewindFFOverlay);
+        rewindButton.setOnTouchListener(new PressReleaseDetector(rewindFFHandler));
+        ffButton.setOnTouchListener(new PressReleaseDetector(rewindFFHandler));
+
+        rewindFFOverlay.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Don't let any events "through" the overlay.
+                return true;
+            }
+        });
+
+        elapsedTimeRewindFFViewAnimation =
+                AnimatorInflater.loadAnimator(view.getContext(), R.animator.bounce);
+        elapsedTimeRewindFFViewAnimation.setTarget(elapsedTimeRewindFFView);
+
+        ffRewindSound = soundBank.getSound(SoundBank.SoundId.FF_REWIND);
 
         return view;
     }
@@ -72,8 +129,7 @@ public class FragmentPlayback extends Fragment {
 
     @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
     public void onEvent(PlaybackStoppingEvent event) {
-        if (stopButton != null)
-            stopButton.setEnabled(false);
+        disableUiOnStopping();
         if (timerTask != null) {
             timerTask.stop();
             timerTask = null;
@@ -85,8 +141,22 @@ public class FragmentPlayback extends Fragment {
         if (timerTask != null)
             timerTask.stop();
 
-        timerTask = new TimerTask(new Handler(Looper.myLooper()), event.playbackPositionMs);
+        timerTask = new PlaybackTimer(
+                new Handler(Looper.myLooper()), event.playbackPositionMs, event.totalTimeMs);
+        timerTask.addObserver(this);
         timerTask.run();
+        enableUiOnStart();
+    }
+
+    private void enableUiOnStart() {
+        rewindButton.setEnabled(true);
+        ffButton.setEnabled(true);
+    }
+
+    private void disableUiOnStopping() {
+        rewindButton.setEnabled(false);
+        stopButton.setEnabled(false);
+        ffButton.setEnabled(false);
     }
 
     private String elapsedTime(long elapsedMs) {
@@ -112,31 +182,169 @@ public class FragmentPlayback extends Fragment {
         return (MainActivity) getActivity();
     }
 
-    private static final long TIMER_INTERVAL_MS = TimeUnit.SECONDS.toMillis(1);
+    @Override
+    public void onTimerUpdated(long displayTimeMs) {
+        elapsedTimeView.setText(elapsedTime(displayTimeMs));
+        elapsedTimeRewindFFView.setText(elapsedTime(displayTimeMs));
+    }
 
-    private class TimerTask implements Runnable {
+    @Override
+    public void onTimerLimitReached() {
+        if (elapsedTimeRewindFFView.getVisibility() == View.VISIBLE) {
+            elapsedTimeRewindFFViewAnimation.start();
+        }
+    }
 
-        private final Handler handler;
-        private final long startTimeMs;
-        private final long baseDisplayTimeMs;
+    private class RewindFFHandler implements PressReleaseDetector.Listener {
 
-        private TimerTask(Handler handler, long baseDisplayTimeMs) {
-            this.handler = handler;
-            this.baseDisplayTimeMs = baseDisplayTimeMs;
-            this.startTimeMs = System.currentTimeMillis();
+        private final View commonParent;
+        private final View rewindOverlay;
+        private SupportAnimator currentAnimator;
+        private RewindFFSpeedController speedController;
+
+        private RewindFFHandler(@NonNull View commonParent, @NonNull View rewindOverlay) {
+            this.commonParent = commonParent;
+            this.rewindOverlay = rewindOverlay;
         }
 
         @Override
-        public void run() {
-            long elapsedMs = System.currentTimeMillis() - startTimeMs;
-            elapsedTimeView.setText(elapsedTime(baseDisplayTimeMs + elapsedMs));
+        public void onPressed(View v, float x, float y) {
+            Preconditions.checkNotNull(timerTask);
+            if (currentAnimator != null) {
+                currentAnimator.cancel();
+            }
 
-            long adjustmentMs = (System.currentTimeMillis() - startTimeMs) % TIMER_INTERVAL_MS;
-            handler.postDelayed(this, TIMER_INTERVAL_MS - adjustmentMs);
+            final boolean isFF = (v == ffButton);
+            rewindOverlay.setVisibility(View.VISIBLE);
+            currentAnimator = createAnimation(v, x, y, true);
+            currentAnimator.addListener(new SupportAnimator.SimpleAnimatorListener() {
+                private boolean isCancelled = false;
+
+                @Override
+                public void onAnimationCancel() {
+                    isCancelled = true;
+                }
+
+                @Override
+                public void onAnimationEnd() {
+                    currentAnimator = null;
+                    if (!isCancelled) {
+                        speedController = new RewindFFSpeedController(timerTask, isFF, ffRewindSound);
+                        speedController.start();
+                    }
+                }
+            });
+            currentAnimator.start();
+
+            timerTask.stop();
+            getMainActivity().pauseForRewind();
+        }
+
+        @Override
+        public void onReleased(View v, float x, float y) {
+            if (currentAnimator != null) {
+                currentAnimator.cancel();
+                rewindOverlay.setVisibility(View.GONE);
+                currentAnimator = null;
+            } else {
+                currentAnimator = createAnimation(v, x, y, false);
+                currentAnimator.addListener(new SupportAnimator.SimpleAnimatorListener() {
+                    @Override
+                    public void onAnimationEnd() {
+                        rewindOverlay.setVisibility(View.GONE);
+                        currentAnimator = null;
+                    }
+                });
+                currentAnimator.start();
+            }
+
+            if (speedController != null) {
+                speedController.stop();
+                speedController = null;
+            }
+            timerTask.changeSpeed(1000);
+            getMainActivity().resumeFromRewind(timerTask.getDisplayTimeMs());
+        }
+
+        private SupportAnimator createAnimation(View v, float x, float y, boolean reveal) {
+            Rect viewRect = ViewUtils.getRelativeRect(commonParent, v);
+            float startX = viewRect.left + x;
+            float startY = viewRect.top + y;
+
+            // Compute final radius
+            float dx = Math.max(startX, commonParent.getWidth() - startX);
+            float dy = Math.max(startY, commonParent.getHeight() - startY);
+            float finalRadius = (float) Math.hypot(dx, dy);
+
+            float initialRadius = reveal ? 0f : finalRadius;
+            if (!reveal)
+                finalRadius = 0f;
+
+            final int durationResId = reveal
+                    ? R.integer.ff_rewind_overlay_show_animation_time_ms
+                    : R.integer.ff_rewind_overlay_hide_animation_time_ms;
+            SupportAnimator animator = ViewAnimationUtils.createCircularReveal(
+                    rewindOverlay, Math.round(startX), Math.round(startY), initialRadius, finalRadius);
+            animator.setDuration(getResources().getInteger(durationResId));
+            animator.setInterpolator(new AccelerateDecelerateInterpolator());
+
+            return animator;
+        }
+    }
+
+    private static class RewindFFSpeedController implements PlaybackTimer.Observer {
+
+        private static final int[] SPEED_LEVELS = { 250, 100, 25  };
+        private static final long[] SPEED_LEVEL_THRESHOLDS = { 15_000, 90_000, Long.MAX_VALUE };
+        private static final int[] SPEED_LEVEL_SOUND_RATE = { 1, 2, 4 };
+
+        private final PlaybackTimer timerTask;
+        private final boolean isFF;
+        private final SoundBank.Sound ffRewindSound;
+
+        private long initialDisplayTimeMs;
+        private int currentSpeedLevelIndex = -1;
+
+        private RewindFFSpeedController(
+                PlaybackTimer timerTask, boolean isFF, SoundBank.Sound ffRewindSound) {
+            this.timerTask = timerTask;
+            this.isFF = isFF;
+            this.ffRewindSound = ffRewindSound;
+        }
+
+        public void start() {
+            initialDisplayTimeMs = timerTask.getDisplayTimeMs();
+            timerTask.addObserver(this);
+            setSpeedLevel(0);
+        }
+
+        @Override
+        public void onTimerUpdated(long displayTimeMs) {
+            long skippedMs = Math.abs(displayTimeMs - initialDisplayTimeMs);
+            if (skippedMs > SPEED_LEVEL_THRESHOLDS[currentSpeedLevelIndex])
+                setSpeedLevel(currentSpeedLevelIndex + 1);
+        }
+
+        @Override public void onTimerLimitReached() {
+            ffRewindSound.track.stop();
         }
 
         public void stop() {
-            handler.removeCallbacks(this);
+            timerTask.removeObserver(this);
+            ffRewindSound.track.stop();
+            timerTask.stop();
+        }
+
+        private void setSpeedLevel(int speedLevelIndex) {
+            if (speedLevelIndex != currentSpeedLevelIndex) {
+                currentSpeedLevelIndex = speedLevelIndex;
+                int speed = SPEED_LEVELS[speedLevelIndex];
+                timerTask.changeSpeed(isFF ? speed : -speed);
+
+                int soundPlaybackFactor = SPEED_LEVEL_SOUND_RATE[speedLevelIndex];
+                ffRewindSound.track.setPlaybackRate(ffRewindSound.sampleRate * soundPlaybackFactor);
+                ffRewindSound.track.play();
+            }
         }
     }
 }

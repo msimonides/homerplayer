@@ -31,6 +31,8 @@
     <string name="playback_elapsed_time" translatable="false">%1$2d:%2$02d:%3$02d</string>
     <string name="button_start">Start</string>
     <string name="button_stop">Stop</string>
+    <string name="button_rewind" translatable="false">⏪</string>
+    <string name="button_fastforward" translatable="false">⏩</string>
     <string name="multi_tap_prompt">%d more to go</string>
     <string name="noBooksOrMessage">or</string>
     <string name="noBooksDownloadSamplesButton">Download book samples</string>

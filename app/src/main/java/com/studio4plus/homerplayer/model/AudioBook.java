@@ -32,6 +32,7 @@ public class AudioBook {
     private List<Long> fileDurations;
     private ColourScheme colourScheme;
     private Position lastPosition;
+    private long totalDuration = UNKNOWN_POSITION;
 
     private UpdateObserver updateObserver;
 
@@ -62,17 +63,17 @@ public class AudioBook {
     }
 
     public long getLastPositionTime(long lastFileSeekPosition) {
-        int index = lastPosition.fileIndex;
+        int fullFileCount = lastPosition.fileIndex;
 
-        if (index <= fileDurations.size()) {
-            long totalPosition = 0;
-            for (int i = 0; i < index; ++i) {
-                totalPosition += fileDurations.get(i);
-            }
-            return totalPosition + lastFileSeekPosition;
+        if (fullFileCount <= fileDurations.size()) {
+            return fileDurationSum(fullFileCount) + lastFileSeekPosition;
         } else {
             return UNKNOWN_POSITION;
         }
+    }
+
+    public long getTotalDurationMs() {
+        return totalDuration;
     }
 
     public void offerFileDuration(File file, long durationMs) {
@@ -83,15 +84,17 @@ public class AudioBook {
         // Only set the duration if unknown.
         if (index == fileDurations.size()) {
             fileDurations.add(durationMs);
+            if (fileDurations.size() == fileSet.files.length)
+                totalDuration = fileDurationSum(fileSet.files.length);
             notifyUpdateObserver();
         }
     }
 
-    public List<File> getFilesWithNoDurationUpToPosition() {
-        int lastIndex = lastPosition.fileIndex;
+    public List<File> getFilesWithNoDuration() {
+        int count = fileSet.files.length;
         int firstIndex = fileDurations.size();
-        List<File> files = new ArrayList<>(lastIndex - firstIndex);
-        files.addAll(Arrays.asList(fileSet.files).subList(firstIndex, lastIndex));
+        List<File> files = new ArrayList<>(count - firstIndex);
+        files.addAll(Arrays.asList(fileSet.files).subList(firstIndex, count));
         return files;
     }
 
@@ -102,6 +105,22 @@ public class AudioBook {
     public void updatePosition(long seekPosition) {
         DebugUtil.verifyIsOnMainThread();
         lastPosition = new Position(lastPosition.fileIndex, seekPosition);
+        notifyUpdateObserver();
+    }
+
+    public void updateTotalPosition(long totalPositionMs) {
+        Preconditions.checkArgument(totalPositionMs <= totalDuration);
+
+        long fullFileDurationSum = 0;
+        int fileIndex = 0;
+        for (; fileIndex < fileDurations.size(); ++fileIndex) {
+            long total = fullFileDurationSum + fileDurations.get(fileIndex);
+            if (totalPositionMs <= total)
+                break;
+            fullFileDurationSum = total;
+        }
+        long seekPosition = totalPositionMs - fullFileDurationSum;
+        lastPosition = new Position(fileIndex, seekPosition);
         notifyUpdateObserver();
     }
 
@@ -140,16 +159,22 @@ public class AudioBook {
         this.lastPosition = new Position(fileIndex, seekPosition);
         if (colourScheme != null)
             this.colourScheme = colourScheme;
-        if (fileDurations != null)
+        if (fileDurations != null) {
             this.fileDurations = fileDurations;
+            if (fileDurations.size() == fileSet.files.length)
+                this.totalDuration = fileDurationSum(fileDurations.size());
+        }
     }
 
     void restoreOldFormat(
             ColourScheme colourScheme, String fileName, long seekPosition, List<Long> fileDurations) {
         if (colourScheme != null)
             this.colourScheme = colourScheme;
-        if (fileDurations != null)
+        if (fileDurations != null) {
             this.fileDurations = fileDurations;
+            if (fileDurations.size() == fileSet.files.length)
+                this.totalDuration = fileDurationSum(fileDurations.size());
+        }
 
         int fileIndex = -1;
         for (int i = 0; i < fileSet.files.length; ++i) {
@@ -162,6 +187,14 @@ public class AudioBook {
         if (fileIndex >= 0) {
             lastPosition = new Position(fileIndex, seekPosition);
         }
+    }
+
+    private long fileDurationSum(int fileCount) {
+        long totalPosition = 0;
+        for (int i = 0; i < fileCount; ++i) {
+            totalPosition += fileDurations.get(i);
+        }
+        return totalPosition;
     }
 
     private static String directoryToTitle(String directory) {

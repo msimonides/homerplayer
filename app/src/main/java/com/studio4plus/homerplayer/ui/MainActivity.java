@@ -182,6 +182,16 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    public void pauseForRewind() {
+        if (playbackService != null)
+            playbackService.pauseForRewind();
+    }
+
+    public void resumeFromRewind(long newTotalPositionMs) {
+        if (playbackService != null)
+            playbackService.resumeFromRewind(newTotalPositionMs);
+    }
+
     public void requestElapsedTimeSyncEvent() {
         if (playbackService != null)
             playbackService.requestElapsedTimeSyncEvent();

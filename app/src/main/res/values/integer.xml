@@ -3,4 +3,6 @@
     <integer name="flip_animation_time_ms">500</integer>
     <integer name="flip_animation_time_half_ms">250</integer>
     <integer name="battery_charging_animation_frame_time_ms">1000</integer>
+    <integer name="ff_rewind_overlay_show_animation_time_ms">500</integer>
+    <integer name="ff_rewind_overlay_hide_animation_time_ms">300</integer>
 </resources>
