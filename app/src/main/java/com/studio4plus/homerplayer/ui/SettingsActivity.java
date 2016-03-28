@@ -11,6 +11,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ import de.greenrobot.event.EventBus;
 public class SettingsActivity extends BaseActivity {
 
     // Pseudo preferences that don't change any preference values directly.
+    private static final String KEY_KIOSK_MODE_SCREEN = "kiosk_mode_screen";
     private static final String KEY_UNREGISTER_DEVICE_OWNER = "unregister_device_owner_preference";
     private static final String KEY_RESET_ALL_BOOK_PROGRESS = "reset_all_book_progress_preference";
     private static final String KEY_VERSION = "version_preference";
@@ -69,6 +71,15 @@ public class SettingsActivity extends BaseActivity {
         return "Settings";
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        }
+    }
+
     public static class SettingsFragment
             extends PreferenceFragment
             implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -91,7 +102,12 @@ public class SettingsActivity extends BaseActivity {
                 Preference kioskModePreference = findPreference(GlobalSettings.KEY_KIOSK_MODE);
                 kioskModePreference.setEnabled(false);
             }
-            updateKioskModeSummary();
+            if (Build.VERSION.SDK_INT < 19) {
+                Preference simpleKioskModePreference =
+                        findPreference(GlobalSettings.KEY_SIMPLE_KIOSK_MODE);
+                simpleKioskModePreference.setEnabled(false);
+            }
+            updateKioskModeSummaries();
 
             ConfirmDialogPreference preferenceUnregisterDeviceOwner =
                     (ConfirmDialogPreference) findPreference(KEY_UNREGISTER_DEVICE_OWNER);
@@ -149,6 +165,9 @@ public class SettingsActivity extends BaseActivity {
                 case GlobalSettings.KEY_KIOSK_MODE:
                     onKioskModeSwitched(sharedPreferences);
                     break;
+                case GlobalSettings.KEY_SIMPLE_KIOSK_MODE:
+                    onAnyKioskModeSwitched();
+                    break;
                 case GlobalSettings.KEY_JUMP_BACK:
                     updateJumpBackSummary(sharedPreferences);
                     break;
@@ -186,26 +205,43 @@ public class SettingsActivity extends BaseActivity {
             }
         }
 
-        private void updateKioskModeSummary() {
-            SwitchPreference preference =
+        private void updateKioskModeSummaries() {
+            SwitchPreference fullModePreference =
                     (SwitchPreference) findPreference(GlobalSettings.KEY_KIOSK_MODE);
-            int summaryStringId;
-            if (Build.VERSION.SDK_INT < 21) {
-                summaryStringId = R.string.pref_kiosk_mode_summary_old_version;
-            } else {
-                summaryStringId = preference.isChecked()
-                        ? R.string.pref_kiosk_mode_summary_on
-                        : R.string.pref_kiosk_mode_summary_off;
+            {
+                int summaryStringId;
+                if (Build.VERSION.SDK_INT < 21) {
+                    summaryStringId = R.string.pref_kiosk_mode_full_summary_old_version;
+                } else {
+                    summaryStringId = fullModePreference.isChecked()
+                            ? R.string.pref_kiosk_mode_any_summary_on
+                            : R.string.pref_kiosk_mode_any_summary_off;
+                }
+                fullModePreference.setSummary(summaryStringId);
             }
-            preference.setSummary(summaryStringId);
+
+            SwitchPreference simpleModePreference =
+                    (SwitchPreference) findPreference(GlobalSettings.KEY_SIMPLE_KIOSK_MODE);
+            {
+                int summaryStringId;
+                if (Build.VERSION.SDK_INT < 19) {
+                    summaryStringId = R.string.pref_kiosk_mode_simple_summary_old_version;
+                } else {
+                    summaryStringId = simpleModePreference.isChecked()
+                            ? R.string.pref_kiosk_mode_any_summary_on
+                            : R.string.pref_kiosk_mode_any_summary_off;
+                }
+                simpleModePreference.setSummary(summaryStringId);
+                simpleModePreference.setEnabled(!fullModePreference.isChecked());
+            }
         }
 
         private void updateUnregisterDeviceOwner(boolean isEnabled) {
             Preference preference = findPreference(KEY_UNREGISTER_DEVICE_OWNER);
             preference.setEnabled(isEnabled);
             preference.setSummary(getString(isEnabled
-                    ? R.string.pref_unregister_device_owner_summary_on
-                    : R.string.pref_unregister_device_owner_summary_off));
+                    ? R.string.pref_kiosk_mode_unregister_device_owner_summary_on
+                    : R.string.pref_kiosk_mode_unregister_device_owner_summary_off));
         }
 
         private void updateVersionSummary() {
@@ -245,7 +281,12 @@ public class SettingsActivity extends BaseActivity {
             } else if (!newKioskModeEnabled && isTaskLocked) {
                 ApplicationLocker.unlockApplication(getActivity());
             }
-            updateKioskModeSummary();
+
+            onAnyKioskModeSwitched();
+        }
+
+        private void onAnyKioskModeSwitched() {
+            updateKioskModeSummaries();
         }
     }
 
