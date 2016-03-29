@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -38,8 +39,8 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
 
     private View view;
     private Button stopButton;
-    private Button rewindButton;
-    private Button ffButton;
+    private ImageButton rewindButton;
+    private ImageButton ffButton;
     private TextView elapsedTimeView;
     private TextView elapsedTimeRewindFFView;
     private PlaybackTimer timerTask;
@@ -85,8 +86,8 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
             }
         });
 
-        rewindButton = (Button) view.findViewById(R.id.rewindButton);
-        ffButton = (Button) view.findViewById(R.id.fastForwardButton);
+        rewindButton = (ImageButton) view.findViewById(R.id.rewindButton);
+        ffButton = (ImageButton) view.findViewById(R.id.fastForwardButton);
 
         View rewindFFOverlay = view.findViewById(R.id.rewindFFOverlay);
         RewindFFHandler rewindFFHandler = new RewindFFHandler(
@@ -331,6 +332,7 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
 
         public void stop() {
             timerTask.removeObserver(this);
+            ffRewindSound.track.pause();
             ffRewindSound.track.stop();
             timerTask.stop();
         }

@@ -29,11 +29,11 @@
             android:gravity="center_horizontal"
             android:orientation="horizontal">
 
-            <Button
+            <ImageButton
                 android:id="@+id/rewindButton"
-                android:text="@string/button_rewind"
+                android:src="@drawable/rewind"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:enabled="false"
                 style="@style/buttonFFRewind"/>
 
@@ -42,11 +42,11 @@
                 style="@style/buttonStop"
                 android:text="@string/button_stop"/>
 
-            <Button
+            <ImageButton
                 android:id="@+id/fastForwardButton"
-                android:text="@string/button_fastforward"
+                android:src="@drawable/ff"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:enabled="false"
                 style="@style/buttonFFRewind"/>
         </LinearLayout>
