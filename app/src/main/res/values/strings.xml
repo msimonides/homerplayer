@@ -19,7 +19,7 @@
     <string name="pref_jump_back_title">Jump back when resuming playback</string>
     <string name="pref_jump_back_summary">Jump %d seconds back</string>
     <string name="pref_screen_orientation">Screen orientation</string>
-    <string name="pref_screen_orientation_default_value" translatable="false">LANDSCAPE_LOCKED</string>
+    <string name="pref_screen_orientation_default_value" translatable="false">LANDSCAPE_AUTO</string>
     <string name="pref_unregister_device_owner">Drop the privilege required for kiosk mode</string>
     <string name="pref_unregister_device_owner_dialog_message">This action will disable the kiosk mode and cannot be easily undone.\nProceed?</string>
     <string name="pref_unregister_device_owner_summary_off">Not a "device owner"</string>
