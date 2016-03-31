@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.BuildConfig;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
@@ -148,6 +149,10 @@ public class SettingsActivity extends BaseActivity {
                     PreferenceManager.getDefaultSharedPreferences(getActivity());
             sharedPreferences.registerOnSharedPreferenceChangeListener(this);
             EventBus.getDefault().register(this);
+
+            // A fix for the action bar covering the first preference.
+            Preconditions.checkNotNull(getView());
+            getView().setFitsSystemWindows(true);
         }
 
         @Override
