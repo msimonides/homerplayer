@@ -10,20 +10,23 @@
     <string name="hint_flip_to_stop">Put the device with screen down to stop</string>
     <string name="settings_title">Settings</string>
     <string name="settings_device_owner_required_alert">The application must be a "device owner". See http://goo.gl/46gevp</string>
-    <string name="pref_kiosk_mode_title">Prevent from exiting the application (kiosk mode)</string>
-    <string name="pref_kiosk_mode_summary_off">Disabled</string>
-    <string name="pref_kiosk_mode_summary_on">Enabled</string>
-    <string name="pref_kiosk_mode_summary_old_version">Android 5.0 or newer required</string>
+    <string name="pref_kiosk_mode_screen_title">Prevent exiting the application (kiosk mode)…</string>
+    <string name="pref_kiosk_mode_full_title">Full mode - prevent exiting the application (recommended)</string>
+    <string name="pref_kiosk_mode_simple_title">Simple mode - only hide the navigation bar</string>
+    <string name="pref_kiosk_mode_any_summary_off">Disabled</string>
+    <string name="pref_kiosk_mode_any_summary_on">Enabled</string>
+    <string name="pref_kiosk_mode_simple_summary_old_version">Android 4.4 or newer required</string>
+    <string name="pref_kiosk_mode_full_summary_old_version">Android 5.0 or newer required</string>
+    <string name="pref_kiosk_mode_unregister_device_owner">Drop the privilege required for the full kiosk mode</string>
+    <string name="pref_kiosk_mode_unregister_device_owner_dialog_message">This action will disable the full kiosk mode and cannot be easily undone.\nProceed?</string>
+    <string name="pref_kiosk_mode_unregister_device_owner_summary_off">Not a "device owner"</string>
+    <string name="pref_kiosk_mode_unregister_device_owner_summary_on">Privilege granted</string>
     <string name="pref_jump_back_default_value" translatable="false">5</string>
     <string name="pref_jump_back_entry_disabled">Disabled</string>
     <string name="pref_jump_back_title">Jump back when resuming playback</string>
     <string name="pref_jump_back_summary">Jump %d seconds back</string>
     <string name="pref_screen_orientation">Screen orientation</string>
     <string name="pref_screen_orientation_default_value" translatable="false">LANDSCAPE_AUTO</string>
-    <string name="pref_unregister_device_owner">Drop the privilege required for kiosk mode</string>
-    <string name="pref_unregister_device_owner_dialog_message">This action will disable the kiosk mode and cannot be easily undone.\nProceed?</string>
-    <string name="pref_unregister_device_owner_summary_off">Not a "device owner"</string>
-    <string name="pref_unregister_device_owner_summary_on">Privilege granted</string>
     <string name="pref_reset_all_book_progress">Rewind all books to the beginning…</string>
     <string name="pref_reset_all_book_progress_dialog_title">Reset listening progress on all books?</string>
     <string name="pref_reset_all_book_progress_done">Book progress reset</string>

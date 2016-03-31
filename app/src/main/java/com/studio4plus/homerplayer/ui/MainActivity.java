@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PersistableBundle;
@@ -19,6 +20,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.battery.BatteryStatusProvider;
@@ -50,6 +52,7 @@ public class MainActivity extends BaseActivity {
 
     @Inject public AudioBookManager audioBookManager;
     @Inject public BatteryStatusProvider batteryStatusProvider;
+    @Inject public GlobalSettings globalSettings;
 
     enum Page {
         NO_BOOKS() {
@@ -147,9 +150,23 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        // Start animations.
-        if (hasFocus)
+        if (hasFocus) {
+            // Start animations.
             batteryStatusIndicator.startAnimations();
+
+            // Set fullscreen mode.
+            int visibilitySetting =
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            if (globalSettings.isSimpleKioskModeEnabled() &&
+                    Build.VERSION.SDK_INT >= 19) {
+                visibilitySetting |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                        View.SYSTEM_UI_FLAG_FULLSCREEN |
+                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            }
+            getWindow().getDecorView().setSystemUiVisibility(visibilitySetting);
+        }
     }
 
     @Override
