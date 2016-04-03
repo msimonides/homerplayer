@@ -1,3 +1,13 @@
+{% if site.debug_ga %}
+<script>
+  var experimentVariation = 1;
+</script>
+{% else %}
+<script src="//www.google-analytics.com/cx/api.js?experiment=uCTmkILvR5GLes0oRHvnLQ"></script>
+<script>
+  var experimentVariation = cxApi.chooseVariation();
+</script>
+{% endif %}
 <script>
 {% if site.debug_ga %}
   var ga = function() {
@@ -24,4 +34,3 @@ function gaVirtualPageView(page, title) {
 }
 
 </script>
-

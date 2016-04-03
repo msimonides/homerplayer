@@ -154,6 +154,15 @@ ul.social a:hover {
 	color: #666;
 }
 
+.gallery img {
+	border: 1px solid #000;
+	margin-bottom: 0.7em;
+}
+.gallery .photo {
+	text-align: center;
+	margin-bottom: 2.5em;
+}
+
 footer {
 	padding-bottom: 2em;
 }

@@ -1,3 +1,10 @@
+<script>
+if (experimentVariation == 1) {
+  var galleryNav = document.querySelector('.page-gallery-html');
+  galleryNav.className = galleryNav.className.replace(/\bhidden\b/,'');
+}
+</script>
+
 <!-- Bootstrap Core JavaScript -->
 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 <script src="{{ "/js/bootstrap.min.js " | prepend: site.baseurl }}"></script>

@@ -1,10 +1,12 @@
 {% for nav_url in navigation %}
   {% assign node_array = site.pages | where:'url',nav_url %}
   {% assign node = node_array[0] %}
+  {% assign class = "" %}
   {% if page.url == node.url %}
     {% assign class = "active" %}
-  {% else %}
-    {% assign class = nil %}
   {% endif %}
-  <li class="{{ class }}"><a href="{{ node.url | prepend: site.baseurl }}">{{ node.title }}</a>
+  {% if node.hideFromNavigation %}
+    {% capture class %}{{ class }} hidden{% endcapture %}
+  {% endif %}
+  <li class="{{ class }} page-{{ node.url  | slugify }}"><a href="{{ node.url | prepend: site.baseurl }}">{{ node.title }}</a>
 {% endfor %}
