@@ -94,6 +94,8 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
                 (View) rewindFFOverlay.getParent(), rewindFFOverlay);
         rewindButton.setOnTouchListener(new PressReleaseDetector(rewindFFHandler));
         ffButton.setOnTouchListener(new PressReleaseDetector(rewindFFHandler));
+        rewindButton.setEnabled(false);
+        ffButton.setEnabled(false);
 
         rewindFFOverlay.setOnTouchListener(new View.OnTouchListener() {
             @Override

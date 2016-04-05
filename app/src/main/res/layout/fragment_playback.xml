@@ -34,7 +34,6 @@
                 android:src="@drawable/rewind"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:enabled="false"
                 style="@style/buttonFFRewind"/>
 
             <Button
@@ -47,7 +46,6 @@
                 android:src="@drawable/ff"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:enabled="false"
                 style="@style/buttonFFRewind"/>
         </LinearLayout>
 
