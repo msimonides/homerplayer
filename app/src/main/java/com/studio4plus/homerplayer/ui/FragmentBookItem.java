@@ -57,12 +57,13 @@ public class FragmentBookItem extends BookListChildFragment {
                 copyBooksInstruction.setVisibility(View.VISIBLE);
             }
 
-            Button startButton = (Button) view.findViewById(R.id.startButton);
+            final Button startButton = (Button) view.findViewById(R.id.startButton);
             startButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     MainActivity mainActivity = (MainActivity) getActivity();
                     mainActivity.startPlayback(bookId);
+                    startButton.setEnabled(false);
                 }
             });
         }
