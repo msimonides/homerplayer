@@ -109,7 +109,8 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
                 AnimatorInflater.loadAnimator(view.getContext(), R.animator.bounce);
         elapsedTimeRewindFFViewAnimation.setTarget(elapsedTimeRewindFFView);
 
-        ffRewindSound = soundBank.getSound(SoundBank.SoundId.FF_REWIND);
+        if (globalSettings.isFFRewindSoundEnabled())
+            ffRewindSound = soundBank.getSound(SoundBank.SoundId.FF_REWIND);
 
         return view;
     }
@@ -329,13 +330,16 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
         }
 
         @Override public void onTimerLimitReached() {
-            ffRewindSound.track.stop();
+            if (ffRewindSound != null)
+                ffRewindSound.track.stop();
         }
 
         public void stop() {
             timerTask.removeObserver(this);
-            ffRewindSound.track.pause();
-            ffRewindSound.track.stop();
+            if (ffRewindSound != null) {
+                ffRewindSound.track.pause();
+                ffRewindSound.track.stop();
+            }
             timerTask.stop();
         }
 
@@ -346,8 +350,10 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
                 timerTask.changeSpeed(isFF ? speed : -speed);
 
                 int soundPlaybackFactor = SPEED_LEVEL_SOUND_RATE[speedLevelIndex];
-                ffRewindSound.track.setPlaybackRate(ffRewindSound.sampleRate * soundPlaybackFactor);
-                ffRewindSound.track.play();
+                if (ffRewindSound != null) {
+                    ffRewindSound.track.setPlaybackRate(ffRewindSound.sampleRate * soundPlaybackFactor);
+                    ffRewindSound.track.play();
+                }
             }
         }
     }

@@ -31,6 +31,7 @@ public class GlobalSettings {
     public static final String KEY_SIMPLE_KIOSK_MODE = "simple_kiosk_mode_preference";
     public static final String KEY_JUMP_BACK = "jump_back_preference";
     public static final String KEY_SCREEN_ORIENTATION = "screen_orientation_preference";
+    public static final String KEY_FF_REWIND_SOUND = "ff_rewind_sound_preference";
 
     private static final String KEY_BROWSING_HINT_SHOWN = "hints.browsing_hint_shown";
     private static final String KEY_SETTINGS_HINT_SHOWN = "hints.settings.hint_shown";
@@ -117,5 +118,9 @@ public class GlobalSettings {
 
     public boolean isSimpleKioskModeEnabled() {
         return sharedPreferences.getBoolean(KEY_SIMPLE_KIOSK_MODE, false);
+    }
+
+    public boolean isFFRewindSoundEnabled() {
+        return sharedPreferences.getBoolean(KEY_FF_REWIND_SOUND, true);
     }
 }
