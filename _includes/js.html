@@ -1,6 +1,12 @@
 <script>
-if (experimentVariation == 1) {
+if (experimentVariation != 0 && experimentVariation != 4) {
   var galleryNav = document.querySelector('.page-gallery-html');
+  var galleryLink = galleryNav.querySelector('a');
+  if (experimentVariation == 2 || experimentVariation == 6)
+    galleryLink.textContent = 'Gallery';
+  else if (experimentVariation == 3 || experimentVariation == 7)
+    galleryLink.textContent = 'Screenshots';
+
   galleryNav.className = galleryNav.className.replace(/\bhidden\b/,'');
 }
 </script>

@@ -6,8 +6,7 @@ html,body {
 	height: 100%;
 	width: 100%;
 	display: table;
-	background-color: #555;
-	background: url(../img/index-bg.jpg) no-repeat center center;
+	background: #422307 url(../img/index-bg.jpg) no-repeat center center;
 	-moz-background-size: cover;
 	-webkit-background-size: cover;
 	-o-background-size: cover;
@@ -57,12 +56,20 @@ html,body {
 .buttons ul a,
 .buttons ul a:visited {
 	color: #fff;
+	background-color: rgba(0, 0, 0, 0.2);
 }
 
 .buttons ul a:hover {
 	color: #000;
 	background-color: #fff;
 	text-decoration: none;
+}
+
+.buttons ul.overlay {
+	position: fixed;
+	width: 100%;
+	box-sizing: border-box;
+	z-index: 100000;
 }
 
 .social-row {
