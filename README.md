@@ -12,7 +12,6 @@ Project Goal
 Turn a regular Android tablet into a dedicated audio book player that can be
 easily used by visually impaired and the elderly.
 
-
 Assumptions
 -----------
 * used at home,
@@ -23,20 +22,22 @@ Assumptions
 * only a single function of the device (runs in kiosk-like mode, no access to
   other applications).
 
-
 Status
 ------
-At this point it's just an experiment.
+The main functionality has been implemented and the app is available in the
+[Play Store](https://play.google.com/store/apps/details?id=com.studio4plus.homerplayer).
 
-The functionality is limited to browsing through audio books present on the
-device (titles read out loud via Text-to-Speech), playback and stopping when
-the device is laid down with the screen downwards.
+See the [website](http://msimonides.github.io/homerplayer/features.html) for details
+on the main features.
 
+Contributions
+-------------
+Translations (incl. Play Store description): Stefan Rotermund, Magdalena
+Wodyńska.
 
 Contact
 -------
 marcin@studio4plus.com
-
 
 License
 -------
