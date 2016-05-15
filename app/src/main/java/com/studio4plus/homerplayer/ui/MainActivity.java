@@ -20,6 +20,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.crashlytics.android.Crashlytics;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
@@ -38,6 +39,7 @@ import de.greenrobot.event.EventBus;
 public class MainActivity extends BaseActivity {
 
     private static final int TTS_CHECK_CODE = 1;
+    private static final String TAG = "MainActivity";
 
     private Speaker speaker;
 
@@ -108,14 +110,18 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onStart() {
+        Page page;
         if (audioBookManager.getAudioBooks().isEmpty()) {
-            showPage(Page.NO_BOOKS, true);
+            page = Page.NO_BOOKS;
         } else if (playbackService != null && playbackService.isInPlaybackMode()) {
-            showPage(Page.PLAYBACK, true);
+            page = Page.PLAYBACK;
         } else {
-            showPage(Page.BOOK_LIST, true);
+            page = Page.BOOK_LIST;
             registerScreenOnReceiver();
         }
+
+        Crashlytics.log(Log.INFO, TAG, "onStart showing page: " + page);
+        showPage(page, true);
 
         EventBus.getDefault().register(eventListener);
         batteryStatusProvider.start();
@@ -219,6 +225,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void showPage(Page page, boolean suppressAnimation) {
+        Crashlytics.log(Log.INFO, TAG, "Switching to page: " + page);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         if (!suppressAnimation)
@@ -305,6 +312,8 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             playbackService = ((PlaybackService.ServiceBinder) service).getService();
+            Crashlytics.log(Log.INFO, TAG, "PlaybackService conected, is in playback mode: " +
+                    playbackService.isInPlaybackMode());
             if (playbackService.isInPlaybackMode())
                 showPage(Page.PLAYBACK, true);
         }
@@ -312,6 +321,7 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             playbackService = null;
+            Crashlytics.log(Log.INFO, TAG, "PlaybackService disconected.");
         }
     }
 
@@ -332,12 +342,15 @@ public class MainActivity extends BaseActivity {
 
         @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
         public void onEvent(PlaybackStoppedEvent ignored) {
+            Crashlytics.log(Log.INFO, TAG, "Playback stopped");
             if (isRunning)
                 showPage(Page.BOOK_LIST);
         }
 
         @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
         public void onEvent(AudioBooksChangedEvent event) {
+            Crashlytics.log(Log.INFO, TAG, "AudioBooks changed, new count: " +
+                    audioBookManager.getAudioBooks().size());
             if (isRunning) {
                 if (audioBookManager.getAudioBooks().isEmpty()) {
                     showPage(Page.NO_BOOKS);

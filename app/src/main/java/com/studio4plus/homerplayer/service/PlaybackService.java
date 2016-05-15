@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
@@ -31,6 +32,7 @@ import de.greenrobot.event.EventBus;
 public class PlaybackService
         extends Service implements FaceDownDetector.Listener {
 
+    private static final String CRASHLYTICS_TAG = "PlaybackService";
     private static final int NOTIFICATION = R.string.playback_service_notification;
     private static final PlaybackStoppingEvent PLAYBACK_STOPPING_EVENT = new PlaybackStoppingEvent();
     private static final PlaybackStoppedEvent PLAYBACK_STOPPED_EVENT = new PlaybackStoppedEvent();
@@ -58,12 +60,14 @@ public class PlaybackService
             faceDownDetector =
                     new FaceDownDetector(sensorManager, new Handler(getMainLooper()), this);
         }
+        Crashlytics.setString(CRASHLYTICS_TAG, "idle");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         stopPlayback();
+        Crashlytics.setString(CRASHLYTICS_TAG, "destroyed");
     }
 
     public void startPlayback(AudioBook book) {
@@ -80,9 +84,11 @@ public class PlaybackService
 
         if (book.getTotalDurationMs() == AudioBook.UNKNOWN_POSITION) {
             durationQueryInProgress = new DurationQuery(player, book);
+            Crashlytics.setString(CRASHLYTICS_TAG, "duration query");
         } else {
             playbackInProgress = new AudioBookPlayback(
                     player, book, globalSettings.getJumpBackPreferenceMs());
+            Crashlytics.setString(CRASHLYTICS_TAG, "playback");
         }
     }
 
@@ -93,11 +99,13 @@ public class PlaybackService
     public void pauseForRewind() {
         Preconditions.checkNotNull(playbackInProgress);
         playbackInProgress.pauseForRewind();
+        Crashlytics.setString(CRASHLYTICS_TAG, "pause for rewind");
     }
 
     public void resumeFromRewind(long newTotalPositionMs) {
         Preconditions.checkNotNull(playbackInProgress);
         playbackInProgress.resumeFromRewind(newTotalPositionMs);
+        Crashlytics.setString(CRASHLYTICS_TAG, "playback");
     }
 
     public void stopPlayback() {
@@ -132,12 +140,14 @@ public class PlaybackService
             faceDownDetector.disable();
 
         eventBus.post(PLAYBACK_STOPPING_EVENT);
+        Crashlytics.setString(CRASHLYTICS_TAG, "playback stopping");
     }
 
     private void onPlayerReleased() {
         player = null;
         stopForeground(true);
         eventBus.post(PLAYBACK_STOPPED_EVENT);
+        Crashlytics.setString(CRASHLYTICS_TAG, "idle");
     }
 
     private Notification createNotification() {
@@ -259,6 +269,7 @@ public class PlaybackService
             durationQueryInProgress = null;
             playbackInProgress = new AudioBookPlayback(
                     player, audioBook, globalSettings.getJumpBackPreferenceMs());
+            Crashlytics.setString(CRASHLYTICS_TAG, "playback");
         }
 
         @Override
