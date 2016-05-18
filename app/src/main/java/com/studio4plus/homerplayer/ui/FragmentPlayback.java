@@ -43,6 +43,7 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
     private ImageButton ffButton;
     private TextView elapsedTimeView;
     private TextView elapsedTimeRewindFFView;
+    private RewindFFHandler rewindFFHandler;
     private PlaybackTimer timerTask;
     private Animator elapsedTimeRewindFFViewAnimation;
     private SoundBank.Sound ffRewindSound;
@@ -90,7 +91,7 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
         ffButton = (ImageButton) view.findViewById(R.id.fastForwardButton);
 
         View rewindFFOverlay = view.findViewById(R.id.rewindFFOverlay);
-        RewindFFHandler rewindFFHandler = new RewindFFHandler(
+        rewindFFHandler = new RewindFFHandler(
                 (View) rewindFFOverlay.getParent(), rewindFFOverlay);
         rewindButton.setOnTouchListener(new PressReleaseDetector(rewindFFHandler));
         ffButton.setOnTouchListener(new PressReleaseDetector(rewindFFHandler));
@@ -125,6 +126,7 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
 
     @Override
     public void onPause() {
+        rewindFFHandler.onPause();
         if (timerTask != null)
             timerTask.stop();
         eventBus.unregister(this);
@@ -205,6 +207,7 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
         private final View rewindOverlay;
         private SupportAnimator currentAnimator;
         private RewindFFSpeedController speedController;
+        private boolean isRunning;
 
         private RewindFFHandler(@NonNull View commonParent, @NonNull View rewindOverlay) {
             this.commonParent = commonParent;
@@ -227,6 +230,7 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
                 @Override
                 public void onAnimationCancel() {
                     isCancelled = true;
+                    resumeFromRewind();
                 }
 
                 @Override
@@ -242,6 +246,7 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
 
             timerTask.stop();
             getMainActivity().pauseForRewind();
+            isRunning = true;
         }
 
         @Override
@@ -262,12 +267,27 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
                 currentAnimator.start();
             }
 
+            resumeFromRewind();
+        }
+
+        public void onPause() {
+            if (currentAnimator != null) {
+                // Cancelling the animation calls resumeFromRewind.
+                currentAnimator.cancel();
+                currentAnimator = null;
+            } else if (isRunning) {
+                resumeFromRewind();
+            }
+        }
+
+        private void resumeFromRewind() {
             if (speedController != null) {
                 speedController.stop();
                 speedController = null;
             }
             timerTask.changeSpeed(1000);
             getMainActivity().resumeFromRewind(timerTask.getDisplayTimeMs());
+            isRunning = false;
         }
 
         private SupportAnimator createAnimation(View v, float x, float y, boolean reveal) {
