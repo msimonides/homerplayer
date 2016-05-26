@@ -23,6 +23,10 @@ public class AnalyticsTracker {
     private final GoogleAnalytics googleAnalytics;
     private final GlobalSettings globalSettings;
 
+    public enum EventCategory {
+        BOOKS_INSTALLED
+    }
+
     @Inject
     public AnalyticsTracker(
             Tracker tracker, GoogleAnalytics googleAnalytics, GlobalSettings globalSettings, EventBus eventBus) {
@@ -41,8 +45,14 @@ public class AnalyticsTracker {
         googleAnalytics.dispatchLocalHits();
     }
 
+    public void sendEvent(EventCategory category, String actionName) {
+        tracker.send(new HitBuilders.EventBuilder(category.name(), actionName).build());
+    }
+
     @SuppressWarnings("unused")
     public void onEvent(AudioBooksChangedEvent event) {
+        if (event.contentType.supersedes(globalSettings.booksEverInstalled()))
+            sendEvent(EventCategory.BOOKS_INSTALLED, event.contentType.name());
         globalSettings.setBooksEverInstalled(event.contentType);
     }
 
