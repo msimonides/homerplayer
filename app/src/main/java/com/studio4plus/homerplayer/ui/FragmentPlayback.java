@@ -136,6 +136,7 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
     @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
     public void onEvent(PlaybackStoppingEvent event) {
         disableUiOnStopping();
+        rewindFFHandler.onStopping();
         if (timerTask != null) {
             timerTask.stop();
             timerTask = null;
@@ -280,13 +281,23 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
             }
         }
 
+        public void onStopping() {
+            if (isRunning)
+                stopRewind();
+        }
+
         private void resumeFromRewind() {
+            stopRewind();
+
+            timerTask.changeSpeed(1000);
+            getMainActivity().resumeFromRewind(timerTask.getDisplayTimeMs());
+        }
+
+        private void stopRewind() {
             if (speedController != null) {
                 speedController.stop();
                 speedController = null;
             }
-            timerTask.changeSpeed(1000);
-            getMainActivity().resumeFromRewind(timerTask.getDisplayTimeMs());
             isRunning = false;
         }
 
