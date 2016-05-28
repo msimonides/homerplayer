@@ -6,15 +6,16 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class Decompress {
-    private String _zipFile;
+    private InputStream _zipInputStream;
     private String _location;
 
-    public Decompress(String zipFile, String location) {
-        _zipFile = zipFile;
+    public Decompress(InputStream zipInputStream, String location) {
+        _zipInputStream = zipInputStream;
         _location = location;
 
         _dirChecker("");
@@ -22,8 +23,7 @@ public class Decompress {
 
     public void unzip() {
         try  {
-            FileInputStream fin = new FileInputStream(_zipFile);
-            ZipInputStream zin = new ZipInputStream(fin);
+            ZipInputStream zin = new ZipInputStream(_zipInputStream);
             ZipEntry ze = null;
             while ((ze = zin.getNextEntry()) != null) {
                 if (ze.isDirectory()) {

@@ -2,21 +2,22 @@ package com.studio4plus.homerplayer.downloads;
 
 import android.app.DownloadManager;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 
 import java.io.File;
 
 public class DownloadQueries {
 
-    public static @Nullable File queryLocalFile(
+    public static @Nullable Uri queryContentUri(
             DownloadManager downloadManager, long downloadId) {
         Cursor cursor = getDownloadRowById(downloadManager, downloadId);
 
         if (cursor != null) {
-            int filenameIndex = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME);
-            String filename = cursor.getString(filenameIndex);
+            int filenameIndex = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
+            String uri = cursor.getString(filenameIndex);
             cursor.close();
-            return filename != null ? new File(filename) : null;
+            return uri != null ? Uri.parse(uri) : null;
         } else {
             return null;
         }

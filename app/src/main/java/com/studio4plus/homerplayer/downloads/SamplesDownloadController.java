@@ -21,8 +21,6 @@ import com.studio4plus.homerplayer.events.MediaStoreUpdateEvent;
 import com.studio4plus.homerplayer.model.DemoSamplesInstaller;
 import com.studio4plus.homerplayer.util.Callback;
 
-import java.io.File;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -77,9 +75,9 @@ public class SamplesDownloadController {
         Log.d("SamplesDownloadControll", "Processing finished download.");
         final DownloadManager downloadManager =
                 (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        final File downloadedFile =
-                DownloadQueries.queryLocalFile(downloadManager, downloadId);
-        if (downloadedFile != null) {
+        final Uri downloadUri =
+                DownloadQueries.queryContentUri(downloadManager, downloadId);
+        if (downloadUri != null) {
             DemoSamplesInstaller installer =
                     HomerPlayerApplication.getComponent(context).createDemoSamplesInstaller();
             Callback<Boolean> onFinished = new Callback<Boolean>() {
@@ -89,7 +87,7 @@ public class SamplesDownloadController {
                 }
             };
             InstallTask installTask =
-                    new InstallTask(installer, downloadedFile, onFinished);
+                    new InstallTask(installer, downloadUri, onFinished);
             installTask.execute();
         } else {
             onFinished(false, downloadId);
@@ -163,15 +161,15 @@ public class SamplesDownloadController {
     private static class InstallTask extends AsyncTask<Void, Void, Boolean> {
 
         private final @NonNull DemoSamplesInstaller installer;
-        private final @NonNull File samplesZipFile;
+        private final @NonNull Uri samplesZipUri;
         private final @NonNull Callback<Boolean> callback;
 
         private InstallTask(
                 @NonNull DemoSamplesInstaller installer,
-                @NonNull File samplesZipFile,
+                @NonNull Uri samplesZipUri,
                 @NonNull Callback<Boolean> finishedCallback) {
             this.installer = installer;
-            this.samplesZipFile = samplesZipFile;
+            this.samplesZipUri = samplesZipUri;
             this.callback = finishedCallback;
         }
 
@@ -179,7 +177,7 @@ public class SamplesDownloadController {
         @WorkerThread
         protected Boolean doInBackground(Void... params) {
             try {
-                installer.installBooksFromZip(samplesZipFile);
+                installer.installBooksFromZip(samplesZipUri);
                 return true;
             } catch(Throwable t) {
                 Crashlytics.logException(t);

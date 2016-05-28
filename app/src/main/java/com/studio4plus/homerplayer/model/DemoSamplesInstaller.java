@@ -2,6 +2,7 @@ package com.studio4plus.homerplayer.model;
 
 import android.content.Context;
 import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.support.annotation.MainThread;
 import android.support.annotation.WorkerThread;
 
@@ -16,6 +17,7 @@ import org.json.JSONTokener;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Locale;
 
@@ -36,9 +38,10 @@ public class DemoSamplesInstaller {
     }
 
     @WorkerThread
-    public boolean installBooksFromZip(File zipFile) {
+    public boolean installBooksFromZip(Uri zipUri) throws IOException {
         File tempFolder = Files.createTempDir();
-        Decompress decompress = new Decompress(zipFile.getAbsolutePath(), tempFolder.getAbsolutePath());
+        InputStream inputStream = context.getContentResolver().openInputStream(zipUri);
+        Decompress decompress = new Decompress(inputStream, tempFolder.getAbsolutePath());
         decompress.unzip();
         boolean anythingInstalled = installBooks((tempFolder));
         deleteFolderWithFiles(tempFolder);
