@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 
 import java.util.Locale;
 
@@ -75,5 +76,12 @@ public class ApplicationModule {
     @Provides @Singleton
     Tracker provideGoogleAnalyticsTracker(GoogleAnalytics googleAnalytics) {
         return googleAnalytics.newTracker(R.xml.global_tracker);
+    }
+
+    @Provides @Singleton
+    AnalyticsTracker provideAnalyticsTracker(
+            Tracker tracker, GoogleAnalytics googleAnalytics, GlobalSettings globalSettings,
+            EventBus eventBus) {
+        return new AnalyticsTracker(tracker, googleAnalytics, globalSettings, eventBus);
     }
 }

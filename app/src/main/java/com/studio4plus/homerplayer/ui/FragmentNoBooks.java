@@ -24,7 +24,8 @@ import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.downloads.DownloadStatus;
 import com.studio4plus.homerplayer.downloads.SamplesDownloadController;
-import com.studio4plus.homerplayer.events.DemoSamplesInstallationFinished;
+import com.studio4plus.homerplayer.events.DemoSamplesInstallationFinishedEvent;
+import com.studio4plus.homerplayer.events.DemoSamplesInstallationStartedEvent;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.util.TaskRepeater;
 
@@ -66,6 +67,7 @@ public class FragmentNoBooks extends Fragment {
         downloadSamplesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                eventBus.post(new DemoSamplesInstallationStartedEvent());
                 samplesDownloadController.startSamplesDownload();
                 showDownloadAndInstallationProgress();
             }
@@ -105,7 +107,7 @@ public class FragmentNoBooks extends Fragment {
     }
 
     @SuppressWarnings("unused")
-    public void onEvent(DemoSamplesInstallationFinished event) {
+    public void onEvent(DemoSamplesInstallationFinishedEvent event) {
         if (!event.success) {
             new AlertDialog.Builder(view.getContext())
                     .setTitle(R.string.samplesDownloadErrorTitle)

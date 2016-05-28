@@ -1,10 +1,10 @@
 package com.studio4plus.homerplayer.events;
 
-public class DemoSamplesInstallationFinished {
+public class DemoSamplesInstallationFinishedEvent {
 
     public final boolean success;
 
-    public DemoSamplesInstallationFinished(boolean success) {
+    public DemoSamplesInstallationFinishedEvent(boolean success) {
         this.success = success;
     }
 }

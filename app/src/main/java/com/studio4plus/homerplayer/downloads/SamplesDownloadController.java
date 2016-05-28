@@ -16,7 +16,7 @@ import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
-import com.studio4plus.homerplayer.events.DemoSamplesInstallationFinished;
+import com.studio4plus.homerplayer.events.DemoSamplesInstallationFinishedEvent;
 import com.studio4plus.homerplayer.events.MediaStoreUpdateEvent;
 import com.studio4plus.homerplayer.model.DemoSamplesInstaller;
 import com.studio4plus.homerplayer.util.Callback;
@@ -96,7 +96,7 @@ public class SamplesDownloadController {
 
     @MainThread
     public void onFinished(boolean success, long downloadId) {
-        eventBus.post(new DemoSamplesInstallationFinished(success));
+        eventBus.post(new DemoSamplesInstallationFinishedEvent(success));
         eventBus.post(new MediaStoreUpdateEvent());
         downloadManager.remove(downloadId);
         DownloadReceiver.setEnabled(context, false);

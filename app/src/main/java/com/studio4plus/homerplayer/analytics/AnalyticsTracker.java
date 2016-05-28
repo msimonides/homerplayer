@@ -5,6 +5,8 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
+import com.studio4plus.homerplayer.events.DemoSamplesInstallationFinishedEvent;
+import com.studio4plus.homerplayer.events.DemoSamplesInstallationStartedEvent;
 import com.studio4plus.homerplayer.events.SettingsEnteredEvent;
 
 import javax.inject.Inject;
@@ -24,7 +26,8 @@ public class AnalyticsTracker {
     private final GlobalSettings globalSettings;
 
     public enum EventCategory {
-        BOOKS_INSTALLED
+        BOOKS_INSTALLED,
+        ONBOARDING
     }
 
     @Inject
@@ -45,20 +48,45 @@ public class AnalyticsTracker {
         googleAnalytics.dispatchLocalHits();
     }
 
-    public void sendEvent(EventCategory category, String actionName) {
-        tracker.send(new HitBuilders.EventBuilder(category.name(), actionName).build());
+    public void sendEvent(EventCategory category, String actionName, boolean dispatchImmediately) {
+        sendEvent(category, actionName, null, dispatchImmediately);
+    }
+
+    public void sendEvent(
+            EventCategory category, String actionName, String label, boolean dispatchImmediately) {
+        HitBuilders.EventBuilder builder =
+                new HitBuilders.EventBuilder(category.name(), actionName);
+        if (label != null)
+            builder.setLabel(label);
+        tracker.send(builder.build());
+        if (dispatchImmediately)
+            googleAnalytics.dispatchLocalHits();
     }
 
     @SuppressWarnings("unused")
     public void onEvent(AudioBooksChangedEvent event) {
         if (event.contentType.supersedes(globalSettings.booksEverInstalled()))
-            sendEvent(EventCategory.BOOKS_INSTALLED, event.contentType.name());
+            sendEvent(EventCategory.BOOKS_INSTALLED, event.contentType.name(), true);
         globalSettings.setBooksEverInstalled(event.contentType);
     }
 
     @SuppressWarnings("unused")
     public void onEvent(SettingsEnteredEvent event) {
         globalSettings.setSettingsEverEntered();
+    }
+
+    @SuppressWarnings("unused")
+    public void onEvent(DemoSamplesInstallationStartedEvent event) {
+        sendEvent(EventCategory.ONBOARDING, "SAMPLES_DOWNLOAD_STARTED", true);
+    }
+
+    @SuppressWarnings("unused")
+    public void onEvent(DemoSamplesInstallationFinishedEvent event) {
+        sendEvent(
+                EventCategory.ONBOARDING,
+                "SAMPLES_INSTALLATION_FINISHED",
+                event.success ? "success" : "failure",
+                true);
     }
 
     private String settingsDimensionValue() {
