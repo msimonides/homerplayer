@@ -3,6 +3,7 @@ package com.studio4plus.homerplayer.service;
 import android.app.Notification;
 import android.content.Context;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.app.PendingIntent;
@@ -10,6 +11,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -31,7 +34,8 @@ import javax.inject.Inject;
 import de.greenrobot.event.EventBus;
 
 public class PlaybackService
-        extends Service implements FaceDownDetector.Listener {
+        extends Service
+        implements FaceDownDetector.Listener, AudioManager.OnAudioFocusChangeListener {
 
     private static final String TAG = "PlaybackService";
     private static final int NOTIFICATION = R.string.playback_service_notification;
@@ -45,6 +49,7 @@ public class PlaybackService
     private DurationQuery durationQueryInProgress;
     private AudioBookPlayback playbackInProgress;
     private FaceDownDetector faceDownDetector;
+    private TelephonyManager telephonyManager;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -61,6 +66,10 @@ public class PlaybackService
             faceDownDetector =
                     new FaceDownDetector(sensorManager, new Handler(getMainLooper()), this);
         }
+        telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(
+                        Context.TELEPHONY_SERVICE);
+        telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
+
         Crashlytics.setString(TAG, "idle");
     }
 
@@ -68,6 +77,7 @@ public class PlaybackService
     public void onDestroy() {
         super.onDestroy();
         stopPlayback();
+        telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE);
         Crashlytics.setString(TAG, "destroyed");
     }
 
@@ -77,6 +87,7 @@ public class PlaybackService
         Preconditions.checkState(durationQueryInProgress == null);
         Preconditions.checkState(player == null);
 
+        requestAudiofocus();
         player = HomerPlayerApplication.getComponent(getApplicationContext()).createAudioBookPlayer();
 
         if (faceDownDetector != null)
@@ -129,6 +140,12 @@ public class PlaybackService
         stopPlayback();
     }
 
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        if (focusChange == AudioManager.AUDIOFOCUS_LOSS)
+            stopPlayback();
+    }
+
     public class ServiceBinder extends Binder {
         public PlaybackService getService() {
             return PlaybackService.this;
@@ -142,6 +159,7 @@ public class PlaybackService
          if (faceDownDetector != null)
             faceDownDetector.disable();
 
+        dropAudioFocus();
         eventBus.post(PLAYBACK_STOPPING_EVENT);
         Crashlytics.setString(TAG, "playback stopping");
     }
@@ -169,6 +187,19 @@ public class PlaybackService
                 .setSmallIcon(android.R.drawable.ic_media_play)
                 .setOngoing(true)
                 .build();
+    }
+
+    private void requestAudiofocus() {
+        AudioManager audioManager =
+                (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager.requestAudioFocus(
+                this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+    }
+
+    private void dropAudioFocus() {
+        AudioManager audioManager =
+                (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager.abandonAudioFocus(this);
     }
 
     private class AudioBookPlayback implements PlaybackController.Observer {
@@ -284,4 +315,16 @@ public class PlaybackService
             PlaybackService.this.onPlayerReleased();
         }
     }
+
+    private final PhoneStateListener phoneStateListener = new PhoneStateListener() {
+        @Override
+        public void onCallStateChanged(int state, String incomingNumber) {
+            if (state==TelephonyManager.CALL_STATE_RINGING ||
+                    state==TelephonyManager.CALL_STATE_OFFHOOK) {
+                stopPlayback();
+            }
+
+            super.onCallStateChanged(state, incomingNumber);
+        }
+    };
 }
