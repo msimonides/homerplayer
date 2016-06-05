@@ -38,8 +38,7 @@ public class FileScanner {
 
     public List<FileSet> scanAudioBooksDirectories() {
         List<FileSet> fileSets = new ArrayList<>();
-        List<File> dirsToScan =
-                new ArrayList<>(Arrays.asList(FilesystemUtil.listRootDirs(context)));
+        List<File> dirsToScan = FilesystemUtil.listRootDirs(context);
         File defaultStorage = Environment.getExternalStorageDirectory();
         if (!containsByValue(dirsToScan, defaultStorage))
             dirsToScan.add(defaultStorage);

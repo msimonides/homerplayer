@@ -5,19 +5,23 @@ import android.content.Context;
 import android.os.Build;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FilesystemUtil {
 
-    public static File[] listRootDirs(Context context) {
+    public static List<File> listRootDirs(Context context) {
         File[] filesDirs;
         if (Build.VERSION.SDK_INT < 19)
             filesDirs = new File[]{ context.getExternalFilesDir(null) };
         else
             filesDirs = API19.getExternalFilesDirs(context);
 
-        File[] rootDirs = new File[filesDirs.length];
-        for (int i = 0; i < filesDirs.length; ++i) {
-            rootDirs[i] = getFSRootForPath(filesDirs[i]);
+        List<File> rootDirs = new ArrayList<>(filesDirs.length);
+        for (File path : filesDirs) {
+            File root = getFSRootForPath(path);
+            if (root != null)
+                rootDirs.add(root);
         }
         return rootDirs;
     }
@@ -26,10 +30,9 @@ public class FilesystemUtil {
         while (path != null && path.isDirectory()) {
             long fsSize = path.getTotalSpace();
             File parent = path.getParentFile();
-            if (parent != null && parent.getTotalSpace() != fsSize)
+            if (parent == null || parent.getTotalSpace() != fsSize)
                 return path;
-            if (parent != null)
-                path = parent;
+            path = parent;
         }
         return path;
     }
