@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 
 import java.util.Locale;
@@ -79,9 +80,14 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
+    FirebaseAnalytics provideFirebaseTracker(Context context) {
+        return FirebaseAnalytics.getInstance(context);
+    }
+
+    @Provides @Singleton
     AnalyticsTracker provideAnalyticsTracker(
-            Tracker tracker, GoogleAnalytics googleAnalytics, GlobalSettings globalSettings,
-            EventBus eventBus) {
-        return new AnalyticsTracker(tracker, googleAnalytics, globalSettings, eventBus);
+            Tracker tracker, GoogleAnalytics googleAnalytics, FirebaseAnalytics firebaseAnalytics,
+            GlobalSettings globalSettings, EventBus eventBus) {
+        return new AnalyticsTracker(tracker, googleAnalytics, firebaseAnalytics, globalSettings, eventBus);
     }
 }

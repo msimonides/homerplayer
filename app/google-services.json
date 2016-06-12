@@ -1,1 +1,49 @@
-{"project_info":{"project_id":"homer-player","project_number":"669588398670","name":"Homer Player"},"client":[{"client_info":{"client_id":"android:com.studio4plus.homerplayer","client_type":1,"android_client_info":{"package_name":"com.studio4plus.homerplayer"}},"oauth_client":[],"services":{"analytics_service":{"status":2,"analytics_property":{"tracking_id":"UA-62359300-3"}},"cloud_messaging_service":{"status":1,"apns_config":[]},"appinvite_service":{"status":1,"other_platform_oauth_client":[]},"google_signin_service":{"status":1},"ads_service":{"status":1}}}],"ARTIFACT_VERSION":"1"}
+{
+  "project_info": {
+    "project_number": "669588398670",
+    "firebase_url": "https://homer-player.firebaseio.com",
+    "project_id": "homer-player",
+    "storage_bucket": "homer-player.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:669588398670:android:4a86e61d0559de7b",
+        "android_client_info": {
+          "package_name": "com.studio4plus.homerplayer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "669588398670-nm42dtc1rhmrkv1kujgu441ianinslcb.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "669588398670-a1dr4oa5orqecv4u7tin026u9ro3e288.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPW_pqbLQhJxB_UQKpub7bgXP57lbDpPQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-62359300-3"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

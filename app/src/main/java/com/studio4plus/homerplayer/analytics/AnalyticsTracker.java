@@ -3,6 +3,7 @@ package com.studio4plus.homerplayer.analytics;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
 import com.studio4plus.homerplayer.events.DemoSamplesInstallationFinishedEvent;
@@ -17,12 +18,17 @@ public class AnalyticsTracker {
 
     private static final int ENTERED_SETTINGS_DIMENSION = 1;
     private static final int HAD_BOOKS_DIMENSION = 2;
+    private static final String EVENT_SAMPLES_DOWNLOAD_STARTED = "SAMPLES_DOWNLOAD_STARTED";
+    private static final String EVENT_SAMPLES_DOWNLOAD_FINISHED = "SAMPLES_DOWNLOAD_FINISHED";
+    private static final String EVENT_SAMPLES_DOWNLOAD_SUCCESS = "SAMPLES_DOWNLOAD_SUCCESS";
+    private static final String EVENT_SAMPLES_DOWNLOAD_FAILURE = "SAMPLES_DOWNLOAD_FAILURE";
     private static final String ONCE_OR_MORE = "At least once";
     private static final String NEVER = "Never";
     private static final String SAMPLE_BOOKS_ONLY = "Samples only";
 
     private final Tracker tracker;
     private final GoogleAnalytics googleAnalytics;
+    private final FirebaseAnalytics firebaseAnalytics;
     private final GlobalSettings globalSettings;
 
     public enum EventCategory {
@@ -32,9 +38,11 @@ public class AnalyticsTracker {
 
     @Inject
     public AnalyticsTracker(
-            Tracker tracker, GoogleAnalytics googleAnalytics, GlobalSettings globalSettings, EventBus eventBus) {
+            Tracker tracker, GoogleAnalytics googleAnalytics, FirebaseAnalytics firebaseAnalytics,
+            GlobalSettings globalSettings, EventBus eventBus) {
         this.tracker = tracker;
         this.googleAnalytics = googleAnalytics;
+        this.firebaseAnalytics = firebaseAnalytics;
         this.globalSettings = globalSettings;
         eventBus.register(this);
     }
@@ -65,8 +73,12 @@ public class AnalyticsTracker {
 
     @SuppressWarnings("unused")
     public void onEvent(AudioBooksChangedEvent event) {
-        if (event.contentType.supersedes(globalSettings.booksEverInstalled()))
+        if (event.contentType.supersedes(globalSettings.booksEverInstalled())) {
             sendEvent(EventCategory.BOOKS_INSTALLED, event.contentType.name(), true);
+
+            firebaseAnalytics.logEvent(
+                    EventCategory.BOOKS_INSTALLED.name() + '_' + event.contentType.name(), null);
+        }
         globalSettings.setBooksEverInstalled(event.contentType);
     }
 
@@ -77,16 +89,22 @@ public class AnalyticsTracker {
 
     @SuppressWarnings("unused")
     public void onEvent(DemoSamplesInstallationStartedEvent event) {
-        sendEvent(EventCategory.ONBOARDING, "SAMPLES_DOWNLOAD_STARTED", true);
+        sendEvent(EventCategory.ONBOARDING, EVENT_SAMPLES_DOWNLOAD_STARTED, true);
+
+        firebaseAnalytics.logEvent(EVENT_SAMPLES_DOWNLOAD_STARTED, null);
     }
 
     @SuppressWarnings("unused")
     public void onEvent(DemoSamplesInstallationFinishedEvent event) {
         sendEvent(
                 EventCategory.ONBOARDING,
-                "SAMPLES_INSTALLATION_FINISHED",
+                EVENT_SAMPLES_DOWNLOAD_FINISHED,
                 event.success ? "success" : "failure",
                 true);
+
+        firebaseAnalytics.logEvent(
+                event.success ? EVENT_SAMPLES_DOWNLOAD_SUCCESS : EVENT_SAMPLES_DOWNLOAD_FAILURE,
+                null);
     }
 
     private String settingsDimensionValue() {
