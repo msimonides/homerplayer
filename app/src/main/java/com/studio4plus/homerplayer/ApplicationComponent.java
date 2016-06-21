@@ -30,6 +30,7 @@ public interface ApplicationComponent {
     void inject(FragmentBookList fragment);
     void inject(FragmentNoBooks fragment);
     void inject(FragmentPlayback fragment);
+    void inject(HomerPlayerApplication application);
     void inject(SettingsActivity.SettingsFragment fragment);
     void inject(BatteryStatusProvider batteryStatusProvider);
     void inject(BatteryStatusIndicator batteryStatusIndicator);

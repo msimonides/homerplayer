@@ -120,6 +120,10 @@ public class GlobalSettings {
         return sharedPreferences.getBoolean(KEY_SIMPLE_KIOSK_MODE, false);
     }
 
+    public boolean isAnyKioskModeEnabled() {
+        return isSimpleKioskModeEnabled() || sharedPreferences.getBoolean(KEY_KIOSK_MODE, false);
+    }
+
     public boolean isFFRewindSoundEnabled() {
         return sharedPreferences.getBoolean(KEY_FF_REWIND_SOUND, true);
     }

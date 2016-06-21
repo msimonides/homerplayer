@@ -7,10 +7,14 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
+import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
+import com.studio4plus.homerplayer.ui.HomeActivity;
 import com.studio4plus.homerplayer.util.MediaScannerUtil;
 
 import java.io.File;
 import java.io.IOException;
+
+import javax.inject.Inject;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -23,6 +27,9 @@ public class HomerPlayerApplication extends Application {
     private ApplicationComponent component;
     private MediaStoreUpdateObserver mediaStoreUpdateObserver;
 
+    @Inject public GlobalSettings globalSettings;
+    @Inject public AnalyticsTracker analyticsTracker;  // Force creation of the tracker early.
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -34,12 +41,13 @@ public class HomerPlayerApplication extends Application {
                 .applicationModule(new ApplicationModule(this, Uri.parse(DEMO_SAMPLES_URL)))
                 .audioBookManagerModule(new AudioBookManagerModule(AUDIOBOOKS_DIRECTORY))
                 .build();
-        // Force creation of the AnalyticsTracker early.
-        component.getAnalyticsTracker();
+        component.inject(this);
 
         mediaStoreUpdateObserver = new MediaStoreUpdateObserver(new Handler(getMainLooper()));
         getContentResolver().registerContentObserver(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, mediaStoreUpdateObserver);
+
+        HomeActivity.setEnabled(this, globalSettings.isAnyKioskModeEnabled());
 
         createAudioBooksDirectory(component.getAudioBookManager().getDefaultAudioBooksDirectory());
     }

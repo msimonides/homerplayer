@@ -28,11 +28,9 @@
             android:name=".ui.MainActivity"
             android:launchMode="singleTask"
             android:clearTaskOnLaunch="true">
-            <intent-filter >
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </activity>
 
@@ -42,6 +40,19 @@
             android:theme="@style/SettingsTheme"
             android:excludeFromRecents="true">
         </activity>
+
+        <activity
+            android:name=".ui.HomeActivity"
+            android:enabled="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
 
         <service android:name=".service.PlaybackService"/>
 

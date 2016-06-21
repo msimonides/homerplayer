@@ -10,7 +10,6 @@ import android.support.annotation.MainThread;
 
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 
-
 public class DownloadReceiver extends BroadcastReceiver {
 
     @Override

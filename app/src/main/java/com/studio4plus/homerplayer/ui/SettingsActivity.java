@@ -32,7 +32,6 @@ import de.greenrobot.event.EventBus;
 public class SettingsActivity extends BaseActivity {
 
     // Pseudo preferences that don't change any preference values directly.
-    private static final String KEY_KIOSK_MODE_SCREEN = "kiosk_mode_screen";
     private static final String KEY_UNREGISTER_DEVICE_OWNER = "unregister_device_owner_preference";
     private static final String KEY_RESET_ALL_BOOK_PROGRESS = "reset_all_book_progress_preference";
     private static final String KEY_VERSION = "version_preference";
@@ -86,6 +85,7 @@ public class SettingsActivity extends BaseActivity {
             implements SharedPreferences.OnSharedPreferenceChangeListener {
 
         @Inject public AudioBookManager audioBookManager;
+        @Inject public GlobalSettings globalSettings;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -292,6 +292,7 @@ public class SettingsActivity extends BaseActivity {
 
         private void onAnyKioskModeSwitched() {
             updateKioskModeSummaries();
+            HomeActivity.setEnabled(getActivity(), globalSettings.isAnyKioskModeEnabled());
         }
     }
 
