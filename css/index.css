@@ -50,7 +50,7 @@ html,body {
 	padding: 4px 20px;
 	display: inline-block;
 	border: solid 2pt #fff;
-	font-weight: bold;
+	font-weight: 600;
 }
 
 .buttons ul a,
