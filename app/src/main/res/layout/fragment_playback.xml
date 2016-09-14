@@ -8,9 +8,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#008856"
-        android:paddingLeft="@dimen/bookListItemPadding"
-        android:paddingRight="@dimen/bookListItemPadding"
-        android:paddingBottom="@dimen/bookListItemPadding">
+        android:paddingLeft="@dimen/bookListItemPaddingHoriz"
+        android:paddingRight="@dimen/bookListItemPaddingHoriz"
+        android:paddingBottom="@dimen/bookListItemPaddingVertical">
 
         <TextView
             android:id="@+id/elapsedTime"

@@ -4,7 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:padding="@dimen/bookListItemPadding">
+    android:paddingLeft="@dimen/bookListItemPaddingHoriz"
+    android:paddingRight="@dimen/bookListItemPaddingHoriz"
+    android:paddingTop="@dimen/bookListItemPaddingVertical"
+    android:paddingBottom="@dimen/bookListItemPaddingVertical">
 
     <TextView
         android:id="@+id/noBooksPath"

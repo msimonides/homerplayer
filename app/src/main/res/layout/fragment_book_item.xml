@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/bookListItemPadding"
-    android:paddingRight="@dimen/bookListItemPadding"
-    android:paddingBottom="@dimen/bookListItemPadding">
+    android:paddingLeft="@dimen/bookListItemPaddingHoriz"
+    android:paddingRight="@dimen/bookListItemPaddingHoriz"
+    android:paddingBottom="@dimen/bookListItemPaddingVertical">
 
     <TextView
         android:id="@+id/title"
