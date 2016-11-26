@@ -54,7 +54,8 @@
         </activity>
 
 
-        <service android:name=".service.PlaybackService"/>
+        <service android:name=".service.PlaybackService" android:exported="false"/>
+        <service android:name=".downloads.DownloadService" android:exported="false"/>
 
         <receiver android:name=".HomerPlayerDeviceAdmin"
             android:label="@string/device_admin_label"

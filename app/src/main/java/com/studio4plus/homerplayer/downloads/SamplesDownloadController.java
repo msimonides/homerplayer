@@ -1,175 +1,127 @@
 package com.studio4plus.homerplayer.downloads;
 
-import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
-import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.events.DemoSamplesInstallationFinishedEvent;
 import com.studio4plus.homerplayer.events.MediaStoreUpdateEvent;
 import com.studio4plus.homerplayer.model.DemoSamplesInstaller;
 import com.studio4plus.homerplayer.util.Callback;
+
+import java.io.File;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import de.greenrobot.event.EventBus;
 
-/**
- * Encapsulates the logic for handling samples download.
- *
- * The class has no state and it may be created and destroyed on demand (so e.g.
- * startSamplesDownload() may be called on a different instance (or even different process)
- * than the subsequent processFinishedDownload()).
- * All state is persisted either in the DownloadManager or SharedPreferences.
- */
 public class SamplesDownloadController {
-
-    private final static String PREF_DOWNLOAD_ID = "SamplesDownloadController.downloadId";
 
     private final Context context;
     private final EventBus eventBus;
-    private final DownloadManager downloadManager;
     private final Uri samplesDownloadUrl;
-    private final SharedPreferences sharedPreferences;
-    private final Resources resources;
+
+    private boolean isInstalling = false;
 
     @Inject
     public SamplesDownloadController(
             Context context,
             EventBus eventBus,
-            DownloadManager downloadManager,
-            @Named("SAMPLES_DOWNLOAD_URL") Uri samplesDownloadUrl,
-            SharedPreferences sharedPreferences, Resources resources) {
+            @Named("SAMPLES_DOWNLOAD_URL") Uri samplesDownloadUrl) {
         this.context = context;
         this.eventBus = eventBus;
-        this.downloadManager = downloadManager;
         this.samplesDownloadUrl = samplesDownloadUrl;
-        this.sharedPreferences = sharedPreferences;
-        this.resources = resources;
+
+        IntentFilter filter = new IntentFilter(DownloadService.BROADCAST_DOWNLOAD_FINISHED_ACTION);
+        // This causes the SamplesDownloadController to never be released but it's a singleton so
+        // not a big deal.
+        LocalBroadcastManager.getInstance(context).registerReceiver(
+                new DownloadIntentListener(), filter);
     }
 
     @MainThread
     public void startSamplesDownload() {
-        DownloadReceiver.setEnabled(context, true);
-        DownloadManager.Request request = new DownloadManager.Request(samplesDownloadUrl);
-        request.setVisibleInDownloadsUi(false);
-        request.setTitle(resources.getString(R.string.samplesDownloadNotificationTitle));
-        long downloadId = downloadManager.enqueue(request);
-        saveCurrentDownloadId(downloadId);
+        context.startService(DownloadService.createDownloadIntent(context, samplesDownloadUrl));
     }
 
     @MainThread
-    public void processFinishedDownload(final long downloadId) {
+    public void onDownloadFinished(final File downloadedFile) {
         Log.d("SamplesDownloadControll", "Processing finished download.");
-        final DownloadManager downloadManager =
-                (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        final Uri downloadUri =
-                DownloadQueries.queryContentUri(downloadManager, downloadId);
-        if (downloadUri != null) {
+        if (downloadedFile != null) {
             DemoSamplesInstaller installer =
                     HomerPlayerApplication.getComponent(context).createDemoSamplesInstaller();
             Callback<Boolean> onFinished = new Callback<Boolean>() {
                 @Override
                 public void onFinished(Boolean success) {
-                    SamplesDownloadController.this.onFinished(success, downloadId);
+                    SamplesDownloadController.this.onFinished(success);
                 }
             };
             InstallTask installTask =
-                    new InstallTask(installer, downloadUri, onFinished);
+                    new InstallTask(installer, downloadedFile, onFinished);
             installTask.execute();
+            isInstalling = true;
         } else {
-            onFinished(false, downloadId);
+            onFinished(false);
         }
     }
 
     @MainThread
-    public void onFinished(boolean success, long downloadId) {
+    public void onFinished(boolean success) {
+        isInstalling = false;
         eventBus.post(new DemoSamplesInstallationFinishedEvent(success));
         eventBus.post(new MediaStoreUpdateEvent());
-        downloadManager.remove(downloadId);
-        DownloadReceiver.setEnabled(context, false);
-        clearCurrentDownloadId();
     }
 
     @MainThread
     public boolean isDownloading() {
-        long downloadId = getCurrentDownloadId();
-        if (downloadId == -1)
-            return false;
-
-        DownloadStatus downloadStatus =
-                DownloadQueries.getDownloadStatus(downloadManager, downloadId);
-        if (downloadStatus != null) {
-            switch (downloadStatus.status) {
-                case DownloadManager.STATUS_RUNNING:
-                case DownloadManager.STATUS_PENDING:
-                case DownloadManager.STATUS_SUCCESSFUL:
-                case DownloadManager.STATUS_PAUSED:
-                    return true;
-                case DownloadManager.STATUS_FAILED:
-                    clearCurrentDownloadId();
-                    return false;
-                default:
-                    return false;
-            }
-        } else {
-            clearCurrentDownloadId();
-            return false;
-        }
-    }
-
-    @MainThread
-    public @Nullable DownloadStatus getDownloadProgress() {
-        long downloadId = getCurrentDownloadId();
-        Preconditions.checkState(downloadId != -1);
-
-        return DownloadQueries.getDownloadStatus(downloadManager, downloadId);
+        return DownloadService.isDownloading() || isInstalling;
     }
 
     @MainThread
     public void cancelDownload() {
-        long downloadId = getCurrentDownloadId();
-        Preconditions.checkState(downloadId != -1);
-
-        downloadManager.remove(downloadId);
+        if (isDownloading())
+            context.startService(DownloadService.createCancelIntent(context));
     }
 
-    private long getCurrentDownloadId() {
-        return sharedPreferences.getLong(PREF_DOWNLOAD_ID, -1);
-    }
+    private class DownloadIntentListener extends BroadcastReceiver {
 
-    private void saveCurrentDownloadId(long downloadId) {
-        sharedPreferences.edit().putLong(PREF_DOWNLOAD_ID, downloadId).apply();
-    }
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Preconditions.checkArgument(
+                    DownloadService.BROADCAST_DOWNLOAD_FINISHED_ACTION.equals(intent.getAction()));
+            File downloadedFile = null;
+            String downloadedFilePath = intent.getStringExtra(DownloadService.DOWNLOAD_FILE_EXTRA);
+            if (downloadedFilePath != null)
+                downloadedFile = new File(downloadedFilePath);
 
-    private void clearCurrentDownloadId() {
-        sharedPreferences.edit().remove(PREF_DOWNLOAD_ID).apply();
+            onDownloadFinished(downloadedFile);
+        }
     }
 
     private static class InstallTask extends AsyncTask<Void, Void, Boolean> {
 
         private final @NonNull DemoSamplesInstaller installer;
-        private final @NonNull Uri samplesZipUri;
+        private final @NonNull File samplesZipPath;
         private final @NonNull Callback<Boolean> callback;
 
         private InstallTask(
                 @NonNull DemoSamplesInstaller installer,
-                @NonNull Uri samplesZipUri,
+                @NonNull File samplesZipPath,
                 @NonNull Callback<Boolean> finishedCallback) {
             this.installer = installer;
-            this.samplesZipUri = samplesZipUri;
+            this.samplesZipPath = samplesZipPath;
             this.callback = finishedCallback;
         }
 
@@ -177,7 +129,7 @@ public class SamplesDownloadController {
         @WorkerThread
         protected Boolean doInBackground(Void... params) {
             try {
-                installer.installBooksFromZip(samplesZipUri);
+                installer.installBooksFromZip(samplesZipPath);
                 return true;
             } catch(Throwable t) {
                 Crashlytics.logException(t);

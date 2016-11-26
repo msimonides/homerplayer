@@ -1,7 +1,6 @@
 package com.studio4plus.homerplayer;
 
 import android.app.Application;
-import android.app.DownloadManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -12,6 +11,7 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
+import com.studio4plus.homerplayer.downloads.SamplesDownloadController;
 
 import java.util.Locale;
 
@@ -53,11 +53,6 @@ public class ApplicationModule {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    @Provides
-    DownloadManager provideDownloadManager(Context context) {
-        return (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-    }
-
     @Provides @Singleton @Named("SAMPLES_DOWNLOAD_URL")
     Uri provideSamplesUrl() {
         return samplesDownloadUrl;
@@ -89,5 +84,11 @@ public class ApplicationModule {
             Tracker tracker, GoogleAnalytics googleAnalytics, FirebaseAnalytics firebaseAnalytics,
             GlobalSettings globalSettings, EventBus eventBus) {
         return new AnalyticsTracker(tracker, googleAnalytics, firebaseAnalytics, globalSettings, eventBus);
+    }
+
+    @Provides @Singleton
+    SamplesDownloadController providerSamplesDownloadController(
+            Context context, EventBus eventBus, @Named("SAMPLES_DOWNLOAD_URL") Uri samplesDownloadUrl) {
+        return new SamplesDownloadController(context, eventBus, samplesDownloadUrl);
     }
 }

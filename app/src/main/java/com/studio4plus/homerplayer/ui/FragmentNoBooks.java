@@ -1,16 +1,16 @@
 package com.studio4plus.homerplayer.ui;
 
 import android.app.AlertDialog;
-import android.app.DownloadManager;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,12 +22,11 @@ import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.ApplicationComponent;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
-import com.studio4plus.homerplayer.downloads.DownloadStatus;
+import com.studio4plus.homerplayer.downloads.DownloadService;
 import com.studio4plus.homerplayer.downloads.SamplesDownloadController;
 import com.studio4plus.homerplayer.events.DemoSamplesInstallationFinishedEvent;
 import com.studio4plus.homerplayer.events.DemoSamplesInstallationStartedEvent;
 import com.studio4plus.homerplayer.model.AudioBookManager;
-import com.studio4plus.homerplayer.util.TaskRepeater;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -38,14 +37,12 @@ public class FragmentNoBooks extends Fragment {
 
     @Inject @Named("AUDIOBOOKS_DIRECTORY") public String audioBooksDirectoryName;
     @Inject public AudioBookManager audioBookManager;
-    @Inject public DownloadManager downloadManager;
     @Inject public SamplesDownloadController samplesDownloadController;
     @Inject public EventBus eventBus;
 
     private ProgressDialog progressDialog;
+    private BroadcastReceiver progressReceiver;
     private View view;
-    private TaskRepeater progressUpdater;
-    private Handler mainHandler;
 
     @Override
     public View onCreateView(
@@ -55,8 +52,6 @@ public class FragmentNoBooks extends Fragment {
         view = inflater.inflate(R.layout.fragment_no_books, container, false);
         ApplicationComponent component = HomerPlayerApplication.getComponent(view.getContext());
         component.inject(this);
-
-        mainHandler = new Handler(getActivity().getMainLooper());
 
         TextView noBooksPath = (TextView) view.findViewById(R.id.noBooksPath);
         String directoryMessage =
@@ -120,57 +115,45 @@ public class FragmentNoBooks extends Fragment {
 
     private void showDownloadAndInstallationProgress() {
         if (progressDialog == null) {
-            DownloadStatus downloadProgress = samplesDownloadController.getDownloadProgress();
-            Preconditions.checkNotNull(downloadProgress);
-            progressDialog = createProgressDialog(downloadProgress);
+            progressDialog = createProgressDialog();
             progressDialog.show();
-        }
 
-        progressUpdater = new TaskRepeater(new Runnable() {
-            @Override
-            public void run() {
-                DownloadStatus downloadProgress = samplesDownloadController.getDownloadProgress();
-                // The updater should be stopped before the download is removed.
-                // Therefore downloadProgress should always be available.
-                Preconditions.checkNotNull(downloadProgress);
-                updateProgress(downloadProgress);
-            }
-        }, mainHandler, 500);
-        progressUpdater.start();
+            Preconditions.checkState(progressReceiver == null);
+            IntentFilter filter = new IntentFilter(DownloadService.BROADCAST_DOWNLOAD_PROGRESS_ACTION);
+            progressReceiver = new DownloadProgressReceiver();
+            LocalBroadcastManager.getInstance(getActivity()).registerReceiver(
+                    progressReceiver, filter);
+        }
     }
 
     private void dismissDialog() {
         if (progressDialog != null) {
-            progressUpdater.stop();
+            LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(progressReceiver);
+            progressReceiver = null;
             progressDialog.dismiss();
-            progressUpdater = null;
             progressDialog = null;
         }
     }
 
-    private void updateProgress(@NonNull DownloadStatus downloadStatus) {
-        // TODO: if the download is paused, tell the user to enable data transfer.
-        if (downloadStatus.totalBytes == -1
-                || downloadStatus.transferredBytes == downloadStatus.totalBytes) {
+    private void updateProgress(int transferredBytes, int totalBytes) {
+        if (totalBytes == -1
+                || transferredBytes == totalBytes) {
             progressDialog.setIndeterminate(true);
         } else {
-            if (progressDialog.isIndeterminate()) {
+            int totalKBytes = totalBytes / 1024;
+            if (progressDialog.isIndeterminate() || progressDialog.getMax() != totalKBytes) {
                 progressDialog.setIndeterminate(false);
-                progressDialog.setMax(downloadStatus.totalBytes / 1024);
+                progressDialog.setMax(totalKBytes);
             }
         }
-        progressDialog.setProgress(downloadStatus.transferredBytes / 1024);
+        progressDialog.setProgress(transferredBytes / 1024);
     }
 
-    private ProgressDialog createProgressDialog(@NonNull DownloadStatus downloadStatus) {
+    private ProgressDialog createProgressDialog() {
         final ProgressDialog progressDialog = new ProgressDialog(view.getContext());
 
         int maxKB = 0;
         int progressKB = 0;
-        if (downloadStatus.totalBytes != -1) {
-            progressKB = downloadStatus.transferredBytes / 1024;
-            maxKB = downloadStatus.totalBytes / 1024;
-        }
 
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setTitle(R.string.samplesDownloadProgressTitle);
@@ -189,5 +172,17 @@ public class FragmentNoBooks extends Fragment {
                     }
                 });
         return progressDialog;
+    }
+
+    private class DownloadProgressReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Preconditions.checkArgument(
+                    DownloadService.BROADCAST_DOWNLOAD_PROGRESS_ACTION.equals(intent.getAction()));
+            int transferredBytes = intent.getIntExtra(DownloadService.PROGRESS_BYTES_EXTRA, 0);
+            int totalBytes = intent.getIntExtra(DownloadService.TOTAL_BYTES_EXTRA, -1);
+            updateProgress(transferredBytes, totalBytes);
+        }
     }
 }
