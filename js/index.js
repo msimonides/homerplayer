@@ -36,10 +36,8 @@
         initialDimensions: { width: WIDTH, height: HEIGHT }
       }
 
-      if (experimentVariation >= 4) {
-        lightview_options.onHide = onOverlayHide;
-        beforeOverlayShow();
-      }
+      lightview_options.onHide = onOverlayHide;
+      beforeOverlayShow();
 
       Lightview.show({
         url: VIDEO_URL,

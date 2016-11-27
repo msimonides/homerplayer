@@ -1,13 +1,3 @@
-{% if site.debug_ga %}
-<script>
-  var experimentVariation = 7;
-</script>
-{% else %}
-<script src="//www.google-analytics.com/cx/api.js?experiment=sU2HHY0cQC6wpylmI47RvQ"></script>
-<script>
-  var experimentVariation = cxApi.chooseVariation();
-</script>
-{% endif %}
 <script>
 {% if site.debug_ga %}
   var ga = function() {
