@@ -44,7 +44,7 @@ public class DemoSamplesInstaller {
         InputStream inputStream = new BufferedInputStream(new FileInputStream(zipPath));
         Decompress decompress = new Decompress(inputStream, tempFolder.getAbsolutePath());
         decompress.unzip();
-        boolean anythingInstalled = installBooks((tempFolder));
+        boolean anythingInstalled = installBooks(tempFolder);
         deleteFolderWithFiles(tempFolder);
 
         return anythingInstalled;
@@ -52,8 +52,11 @@ public class DemoSamplesInstaller {
 
     @WorkerThread
     private boolean installBooks(File sourceDirectory) {
-        boolean anythingInstalled = false;
+        if (!audioBooksDirectory.exists())
+            if (!audioBooksDirectory.mkdirs())
+                return false;
 
+        boolean anythingInstalled = false;
         File books[] = sourceDirectory.listFiles();
         for (File bookDirectory : books) {
             boolean success = installSingleBook(bookDirectory, audioBooksDirectory);
