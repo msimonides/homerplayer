@@ -66,7 +66,7 @@ public class FileScanner {
             File[] audioBookDirs = audioBooksDir.listFiles(new DirectoryFilter());
             for (File directory : audioBookDirs) {
                 FileSet fileSet = createFileSet(directory);
-                if (fileSet != null)
+                if (fileSet != null && !fileSets.contains(fileSet))
                     fileSets.add(fileSet);
             }
         }
