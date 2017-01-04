@@ -11,8 +11,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.telephony.PhoneStateListener;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -49,7 +47,6 @@ public class PlaybackService
     private DurationQuery durationQueryInProgress;
     private AudioBookPlayback playbackInProgress;
     private FaceDownDetector faceDownDetector;
-    private TelephonyManager telephonyManager;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -66,9 +63,6 @@ public class PlaybackService
             faceDownDetector =
                     new FaceDownDetector(sensorManager, new Handler(getMainLooper()), this);
         }
-        telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(
-                        Context.TELEPHONY_SERVICE);
-        telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
 
         Crashlytics.setString(TAG, "idle");
     }
@@ -77,7 +71,6 @@ public class PlaybackService
     public void onDestroy() {
         super.onDestroy();
         stopPlayback();
-        telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE);
         Crashlytics.setString(TAG, "destroyed");
     }
 
@@ -87,7 +80,7 @@ public class PlaybackService
         Preconditions.checkState(durationQueryInProgress == null);
         Preconditions.checkState(player == null);
 
-        requestAudiofocus();
+        requestAudioFocus();
         player = HomerPlayerApplication.getComponent(getApplicationContext()).createAudioBookPlayer();
 
         if (faceDownDetector != null)
@@ -142,8 +135,12 @@ public class PlaybackService
 
     @Override
     public void onAudioFocusChange(int focusChange) {
-        if (focusChange == AudioManager.AUDIOFOCUS_LOSS)
+        // TRANSIENT loss is reported on phone calls.
+        // Notifications should request TRANSIENT_CAN_DUCK so they won't interfere.
+        if (focusChange == AudioManager.AUDIOFOCUS_LOSS ||
+                focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
             stopPlayback();
+        }
     }
 
     public class ServiceBinder extends Binder {
@@ -189,7 +186,7 @@ public class PlaybackService
                 .build();
     }
 
-    private void requestAudiofocus() {
+    private void requestAudioFocus() {
         AudioManager audioManager =
                 (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         audioManager.requestAudioFocus(
@@ -315,16 +312,4 @@ public class PlaybackService
             PlaybackService.this.onPlayerReleased();
         }
     }
-
-    private final PhoneStateListener phoneStateListener = new PhoneStateListener() {
-        @Override
-        public void onCallStateChanged(int state, String incomingNumber) {
-            if (state==TelephonyManager.CALL_STATE_RINGING ||
-                    state==TelephonyManager.CALL_STATE_OFFHOOK) {
-                stopPlayback();
-            }
-
-            super.onCallStateChanged(state, incomingNumber);
-        }
-    };
 }
