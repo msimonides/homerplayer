@@ -91,8 +91,8 @@ step. The software installed here can be uninstalled later.
 
 <ul id="adb-install-tabs" class="nav nav-tabs" data-tabs="adb-install-tab-content">
   <li class="active"><a href="#adb-install-windows" data-toggle="tab">Windows</a></li>
+  <li><a href="#adb-install-mac" data-toggle="tab">Mac</a></li>
   <li><a href="#adb-install-ubuntu" data-toggle="tab">Ubuntu</a></li>
-  <li><a href="#adb-install-other" data-toggle="tab">Other (Mac and Linux)</a></li>
 </ul>
 <div class="tab-content tab-content-framed">
   <div id="adb-install-windows" class="tab-pane active">
@@ -114,11 +114,16 @@ step. The software installed here can be uninstalled later.
   <blockquote><code>sudo apt-get install android-tools-adb</code></blockquote>
   </div>
 
-  <div id="adb-install-other" class="tab-pane">
-  <p>
-  Download and install the
-  <a href="https://developer.android.com/sdk/index.html#Other" target="_blank">Android SDK Tools</a>.
-  </p>
+  <div id="adb-install-mac" class="tab-pane">
+  <ol>
+    <li>Open the <strong>Terminal</strong> app.</li>
+    <li>Copy and execute the following command to install <a href="http://brew.sh" target="_blank">Homebrew</a> (on one line):
+    <blockquote><code>/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"</code></blockquote>
+    </li>
+    <li>Copy and execute the following command to install the <code>adb</code> command:
+    <blockquote><code>brew install android-platform-tools</code></blockquote>
+    </li>
+  </ol>
   </div>
 </div>
 
