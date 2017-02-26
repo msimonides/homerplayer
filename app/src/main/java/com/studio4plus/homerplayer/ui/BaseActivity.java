@@ -7,7 +7,6 @@ import android.preference.PreferenceManager;
 
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
-import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 
 import javax.inject.Inject;
 
@@ -19,7 +18,6 @@ public abstract class BaseActivity
 
     @Inject public SharedPreferences sharedPreferences;
     @Inject public GlobalSettings globalSettings;
-    @Inject public AnalyticsTracker analyticsTracker;
     @Inject public EventBus eventBus;
 
     @Override
@@ -33,7 +31,6 @@ public abstract class BaseActivity
         super.onStart();
         updateOrientation();
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-        analyticsTracker.sendScreenHit(getScreenName());
     }
 
     @Override
