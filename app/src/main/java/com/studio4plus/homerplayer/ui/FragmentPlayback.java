@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
-import io.codetail.animation.SupportAnimator;
 import io.codetail.animation.ViewAnimationUtils;
 
 public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer {
@@ -206,7 +205,7 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
 
         private final View commonParent;
         private final View rewindOverlay;
-        private SupportAnimator currentAnimator;
+        private Animator currentAnimator;
         private RewindFFSpeedController speedController;
         private boolean isRunning;
 
@@ -225,22 +224,22 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
             final boolean isFF = (v == ffButton);
             rewindOverlay.setVisibility(View.VISIBLE);
             currentAnimator = createAnimation(v, x, y, true);
-            currentAnimator.addListener(new SupportAnimator.SimpleAnimatorListener() {
+            currentAnimator.addListener(new SimpleAnimatorListener() {
                 private boolean isCancelled = false;
 
                 @Override
-                public void onAnimationCancel() {
-                    isCancelled = true;
-                    resumeFromRewind();
-                }
-
-                @Override
-                public void onAnimationEnd() {
+                public void onAnimationEnd(Animator animator) {
                     currentAnimator = null;
                     if (!isCancelled) {
                         speedController = new RewindFFSpeedController(timerTask, isFF, ffRewindSound);
                         speedController.start();
                     }
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animator) {
+                    isCancelled = true;
+                    resumeFromRewind();
                 }
             });
             currentAnimator.start();
@@ -258,9 +257,9 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
                 currentAnimator = null;
             } else {
                 currentAnimator = createAnimation(v, x, y, false);
-                currentAnimator.addListener(new SupportAnimator.SimpleAnimatorListener() {
+                currentAnimator.addListener(new SimpleAnimatorListener() {
                     @Override
-                    public void onAnimationEnd() {
+                    public void onAnimationEnd(Animator animator) {
                         rewindOverlay.setVisibility(View.GONE);
                         currentAnimator = null;
                     }
@@ -301,7 +300,7 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
             isRunning = false;
         }
 
-        private SupportAnimator createAnimation(View v, float x, float y, boolean reveal) {
+        private Animator createAnimation(View v, float x, float y, boolean reveal) {
             Rect viewRect = ViewUtils.getRelativeRect(commonParent, v);
             float startX = viewRect.left + x;
             float startY = viewRect.top + y;
@@ -318,7 +317,7 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
             final int durationResId = reveal
                     ? R.integer.ff_rewind_overlay_show_animation_time_ms
                     : R.integer.ff_rewind_overlay_hide_animation_time_ms;
-            SupportAnimator animator = ViewAnimationUtils.createCircularReveal(
+            Animator animator = ViewAnimationUtils.createCircularReveal(
                     rewindOverlay, Math.round(startX), Math.round(startY), initialRadius, finalRadius);
             animator.setDuration(getResources().getInteger(durationResId));
             animator.setInterpolator(new AccelerateDecelerateInterpolator());
