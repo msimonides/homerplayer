@@ -22,7 +22,7 @@ public class HomerPlayerApplication extends Application {
 
     private static final String AUDIOBOOKS_DIRECTORY = "AudioBooks";
     private static final String DEMO_SAMPLES_URL =
-            "http://msimonides.github.io/homerplayer/samples.zip";
+            "https://homer-player.firebaseapp.com/samples.zip";
 
     private ApplicationComponent component;
     private MediaStoreUpdateObserver mediaStoreUpdateObserver;
