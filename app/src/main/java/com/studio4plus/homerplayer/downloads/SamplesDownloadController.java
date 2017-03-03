@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -57,34 +58,6 @@ public class SamplesDownloadController {
     }
 
     @MainThread
-    public void onDownloadFinished(final File downloadedFile) {
-        Log.d("SamplesDownloadControll", "Processing finished download.");
-        if (downloadedFile != null) {
-            DemoSamplesInstaller installer =
-                    HomerPlayerApplication.getComponent(context).createDemoSamplesInstaller();
-            Callback<Boolean> onFinished = new Callback<Boolean>() {
-                @Override
-                public void onFinished(Boolean success) {
-                    SamplesDownloadController.this.onFinished(success);
-                }
-            };
-            InstallTask installTask =
-                    new InstallTask(installer, downloadedFile, onFinished);
-            installTask.execute();
-            isInstalling = true;
-        } else {
-            onFinished(false);
-        }
-    }
-
-    @MainThread
-    public void onFinished(boolean success) {
-        isInstalling = false;
-        eventBus.post(new DemoSamplesInstallationFinishedEvent(success));
-        eventBus.post(new MediaStoreUpdateEvent());
-    }
-
-    @MainThread
     public boolean isDownloading() {
         return DownloadService.isDownloading() || isInstalling;
     }
@@ -95,6 +68,36 @@ public class SamplesDownloadController {
             context.startService(DownloadService.createCancelIntent(context));
     }
 
+    @MainThread
+    private void onDownloadFinished(
+            final @Nullable File downloadedFile, final @Nullable String errorMessage) {
+        Log.d("SamplesDownloadControll", "Processing finished download.");
+        if (downloadedFile != null) {
+            DemoSamplesInstaller installer =
+                    HomerPlayerApplication.getComponent(context).createDemoSamplesInstaller();
+            Callback<Boolean> onFinished = new Callback<Boolean>() {
+                @Override
+                public void onFinished(Boolean success) {
+                    String installErrorMessage = success ? null : "Installation failed";
+                    SamplesDownloadController.this.onFinished(success, installErrorMessage);
+                }
+            };
+            InstallTask installTask =
+                    new InstallTask(installer, downloadedFile, onFinished);
+            installTask.execute();
+            isInstalling = true;
+        } else {
+            onFinished(false, errorMessage);
+        }
+    }
+
+    @MainThread
+    private void onFinished(boolean success, @Nullable String errorMessage) {
+        isInstalling = false;
+        eventBus.post(new DemoSamplesInstallationFinishedEvent(success, errorMessage));
+        eventBus.post(new MediaStoreUpdateEvent());
+    }
+
     private class DownloadIntentListener extends BroadcastReceiver {
 
         @Override
@@ -103,10 +106,11 @@ public class SamplesDownloadController {
                     DownloadService.BROADCAST_DOWNLOAD_FINISHED_ACTION.equals(intent.getAction()));
             File downloadedFile = null;
             String downloadedFilePath = intent.getStringExtra(DownloadService.DOWNLOAD_FILE_EXTRA);
+            String errorMessage = intent.getStringExtra(DownloadService.DOWNLOAD_ERROR_EXTRA);
             if (downloadedFilePath != null)
                 downloadedFile = new File(downloadedFilePath);
 
-            onDownloadFinished(downloadedFile);
+            onDownloadFinished(downloadedFile, errorMessage);
         }
     }
 

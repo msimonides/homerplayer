@@ -1,5 +1,7 @@
 package com.studio4plus.homerplayer.analytics;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
@@ -20,8 +22,7 @@ public class AnalyticsTracker {
     private final GlobalSettings globalSettings;
 
     public enum EventCategory {
-        BOOKS_INSTALLED,
-        ONBOARDING
+        BOOKS_INSTALLED
     }
 
     @Inject
@@ -56,5 +57,11 @@ public class AnalyticsTracker {
         firebaseAnalytics.logEvent(
                 event.success ? EVENT_SAMPLES_DOWNLOAD_SUCCESS : EVENT_SAMPLES_DOWNLOAD_FAILURE,
                 null);
+        // Firebase Analytics doesn't give any access to custom event parameters.
+        // Log samples installation errors with Fabric for now.
+        if (!event.success) {
+            Answers.getInstance().logCustom(new CustomEvent(EVENT_SAMPLES_DOWNLOAD_FAILURE)
+                    .putCustomAttribute("error", event.errorMessage));
+        }
     }
 }

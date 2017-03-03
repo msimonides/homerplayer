@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.MainThread;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.support.v4.content.LocalBroadcastManager;
@@ -43,6 +44,7 @@ public class DownloadService extends Service {
     public static final String BROADCAST_DOWNLOAD_FINISHED_ACTION =
             DownloadService.class.getName() + ".FINISHED";
     public static final String DOWNLOAD_FILE_EXTRA = "file";
+    public static final String DOWNLOAD_ERROR_EXTRA = "error";
 
     public static Intent createDownloadIntent(Context context, Uri downloadUri) {
         Intent intent = new Intent(context, DownloadService.class);
@@ -80,7 +82,7 @@ public class DownloadService extends Service {
                     currentDownloadThread = new DownloadThread(this, result, downloadUri);
                     currentDownloadThread.start();
                 } catch (MalformedURLException e) {
-                    onFinished(null);
+                    onFailed(e.getMessage());
                 }
                 break;
             }
@@ -115,10 +117,16 @@ public class DownloadService extends Service {
         return instance != null && instance.currentDownloadThread != null;
     }
 
-    private void onFinished(@Nullable File destinationPath) {
+    private void onFinished(@NonNull File destinationPath) {
         Intent intent = new Intent(BROADCAST_DOWNLOAD_FINISHED_ACTION);
-        if (destinationPath != null)
-            intent.putExtra(DOWNLOAD_FILE_EXTRA, destinationPath.getAbsolutePath());
+        intent.putExtra(DOWNLOAD_FILE_EXTRA, destinationPath.getAbsolutePath());
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        stopSelf();
+    }
+
+    private void onFailed(@NonNull String errorMessage) {
+        Intent intent = new Intent(BROADCAST_DOWNLOAD_FINISHED_ACTION);
+        intent.putExtra(DOWNLOAD_ERROR_EXTRA, errorMessage);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         stopSelf();
     }
@@ -145,11 +153,20 @@ public class DownloadService extends Service {
             this.handler = new Handler(looper);
         }
 
-        void onFinished(final @Nullable File downloadPath) {
+        void onFinished(final @NonNull File downloadPath) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
                     service.onFinished(downloadPath);
+                }
+            });
+        }
+
+        void onFailed(final @NonNull String errorMessage) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    service.onFailed(errorMessage);
                 }
             });
         }
@@ -209,7 +226,7 @@ public class DownloadService extends Service {
 
                 resultHandler.onFinished(tmpFile);
             } catch (IOException e) {
-                resultHandler.onFinished(null);
+                resultHandler.onFailed(e.getMessage());
             }
         }
     }
