@@ -55,16 +55,6 @@
         card and the internal storage are both available to the user.
         </p>
 
-        <p>
-        (This functionality is only available on Android 4.4 and newer. On older
-        Android versions audiobooks are read either from the internal storage or the SD
-        card.)
-        </p>
-
-        <p>However, recently several users reported that the SD card support
-        doesn't work with their tablets.<br>
-        <strong>For now it's best to assume that SD card may not work for you.</strong></p>
-
 - section: Audiobooks compatibility
   questions:
     - question: What audiobook formats are supported?
