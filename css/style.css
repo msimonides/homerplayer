@@ -69,6 +69,10 @@ footer a {
 	margin-bottom: 1em;
 }
 
+.content img.single-screenshot {
+	max-width: 450px;
+}
+
 .page-title-header {
 	width: 100%;
 	background: no-repeat center center;

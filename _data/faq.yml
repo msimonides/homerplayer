@@ -13,7 +13,7 @@
         can install an app player on your PC or Mac, for example <a
         href="http://www.bluestacks.com">Bluestacks</a>.
         </p>
-    
+
     - question: Is it necessary for the user to have WiFi or Internet connection after installing the app?
       answer: >
         <p>
@@ -25,10 +25,34 @@
         In fact I encourage disabling WiFi when "building" a dedicated player so that
         it lasts longer on a single battery charge.
         </p>
-    
+
     - question: I would like to make a Homer Player tablet but will I be able to do this with a Mac?
       answer: >
         <p>Yes, you can use a Mac or a PC with Windows or Linux.</p>
+
+    - question: When I browse books, the titles are not read aloud. How do I fix it?
+      answer: >
+        <p>The Text-to-Speech (TTS) module isn't working correctly.<br>
+        There may be a number of reasons:</p>
+        <ul>
+        <li>voice data for your language is not installed,
+        <li>your language is not supported by your TTS module,
+        <li>no TTS is installed on your device.
+        </ul>
+
+        <p>Go to <strong>Settings &rarr; Language &amp; input &rarr;
+        Text-to-speech output</strong><br>
+        Here you can choose the preferred engine, change its settings (e.g.
+        download more voices) and play an example sentence.</p>
+
+        <img src="img/tts-settings.png" class="img-responsive center-block single-screenshot">
+
+        <p>Most devices come with the Google Text-to-Speech Engine installed.
+        It supports a number of popular languages. If your language is missing
+        (or you don't like the voice) you can install other TTS engines from
+        the Play Store.<br>
+        One engine with a large number of supported languages is Vocalizer (paid). You
+        can also find TTS apps for specific languages.<p>
 
     - question: How can I start a book from the beginning? While I was testing the book advanced 10 minutes and now I want it to play from start when I give the tablet to my uncle.
       answer: >
