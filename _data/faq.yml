@@ -30,13 +30,6 @@
       answer: >
         <p>Yes, you can use a Mac or a PC with Windows or Linux.</p>
 
-    - question: How do I rewind the book to replay a fragment I have missed?
-      answer: >
-        <p>
-        This functionality hasn't been implemented yet. I will work on
-        rewind/fast-forward soon since this feature is often requested.
-        </p>
-
     - question: How can I start a book from the beginning? While I was testing the book advanced 10 minutes and now I want it to play from start when I give the tablet to my uncle.
       answer: >
         <p>There is a function to reset progress on <strong>all</strong> audiobooks to the beginning.</p>
