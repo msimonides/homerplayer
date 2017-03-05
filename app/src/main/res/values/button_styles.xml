@@ -3,13 +3,15 @@
 
     <style name="buttonStart" parent="buttonStartStop">
         <item name="android:background">@drawable/button_start</item>
+        <item name="android:paddingLeft">@dimen/buttonPaddingHoriz</item>
+        <item name="android:paddingRight">@dimen/buttonPaddingHoriz</item>
     </style>
 
     <style name="buttonStop" parent="buttonStartStop">
         <item name="android:background">@drawable/button_stop</item>
     </style>
 
-    <style name="buttonFFRewind" parent="buttonStartStop">
+    <style name="buttonFFRewind">
         <item name="android:background">@color/buttonFFRewindBackground</item>
     </style>
 

@@ -18,7 +18,6 @@
         android:layout_marginLeft="@dimen/horizontalScreenMargin"
         android:layout_marginRight="@dimen/horizontalScreenMargin"
         android:layout_marginBottom="@dimen/verticalScreenMargin">
-
     </FrameLayout>
 
     <ImageView

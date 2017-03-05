@@ -4,6 +4,8 @@
     <style name="buttonStart" parent="buttonStartStop">
         <item name="android:backgroundTint">@color/buttonStartBackground</item>
         <item name="android:backgroundTintMode">multiply</item>
+        <item name="android:paddingLeft">@dimen/buttonPaddingHoriz</item>
+        <item name="android:paddingRight">@dimen/buttonPaddingHoriz</item>
     </style>
 
     <style name="buttonStop" parent="buttonStartStop">
@@ -11,7 +13,7 @@
         <item name="android:backgroundTintMode">multiply</item>
     </style>
 
-    <style name="buttonFFRewind" parent="buttonStartStop">
+    <style name="buttonFFRewind">
         <item name="android:backgroundTint">@color/buttonFFRewindBackground</item>
         <item name="android:backgroundTintMode">multiply</item>
     </style>

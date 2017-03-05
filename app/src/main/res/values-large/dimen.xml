@@ -2,12 +2,13 @@
 <resources>
     <dimen name="bookListTextSize">50sp</dimen>
     <dimen name="bookElapsedTimeTextSize">120sp</dimen>
-    <dimen name="bookListItemPaddingHoriz">30dp</dimen>
-    <dimen name="bookListItemPaddingVertical">50dp</dimen>
+    <dimen name="bookListItemPaddingHoriz">15dp</dimen>
+    <dimen name="bookListItemPaddingVertical">40dp</dimen>
     <dimen name="copyBooksInstructionTextSize">30sp</dimen>
     <dimen name="hintTextSize">40sp</dimen>
-    <dimen name="horizontalScreenMargin">120dp</dimen>
-    <dimen name="verticalScreenMargin">160dp</dimen>
+    <dimen name="horizontalScreenMargin">100dp</dimen>
+    <dimen name="verticalScreenMargin">140dp</dimen>
     <dimen name="buttonPaddingHoriz">60dp</dimen>
+    <dimen name="buttonDistanceHoriz">10dp</dimen>
     <dimen name="buttonStrokeWidth">2dp</dimen>
 </resources>

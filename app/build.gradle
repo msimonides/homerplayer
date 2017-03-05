@@ -69,6 +69,7 @@ dependencies {
         transitive = true;
     }
     compile ('com.github.ozodrukh:CircularReveal:2.0.1@aar')
+    compile 'com.android.support.constraint:constraint-layout:1.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
