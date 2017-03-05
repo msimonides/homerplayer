@@ -52,7 +52,6 @@
             </intent-filter>
         </activity>
 
-
         <service android:name=".service.PlaybackService" android:exported="false"/>
         <service android:name=".downloads.DownloadService" android:exported="false"/>
 
@@ -65,13 +64,6 @@
 
             <intent-filter>
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED"/>
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name=".downloads.DownloadReceiver"
-            android:enabled="false">
-            <intent-filter>
-                <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
             </intent-filter>
         </receiver>
 
