@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.os.Build;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
@@ -36,6 +37,16 @@ public class SoundBank {
     }
 
     private final EnumMap<SoundId, Sound> tracks = new EnumMap<>(SoundId.class);
+
+    public static void stopTrack(AudioTrack track) {
+        // https://code.google.com/p/android/issues/detail?id=155984
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            track.pause();
+            track.flush();
+        } else {
+            track.stop();
+        }
+    }
 
     @Inject
     public SoundBank(Resources resources) {
