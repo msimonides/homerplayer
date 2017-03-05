@@ -2,7 +2,10 @@ package com.studio4plus.homerplayer.ui;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -171,7 +174,7 @@ public class SettingsActivity extends BaseActivity {
                     onKioskModeSwitched(sharedPreferences);
                     break;
                 case GlobalSettings.KEY_SIMPLE_KIOSK_MODE:
-                    onAnyKioskModeSwitched();
+                    onAnyKioskModeSwitched(sharedPreferences.getBoolean(key, false));
                     break;
                 case GlobalSettings.KEY_JUMP_BACK:
                     updateJumpBackSummary(sharedPreferences);
@@ -276,23 +279,40 @@ public class SettingsActivity extends BaseActivity {
                             .create();
                     dialog.show();
 
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putBoolean(GlobalSettings.KEY_KIOSK_MODE, false);
-                    editor.commit();
                     SwitchPreference switchPreference =
                             (SwitchPreference) findPreference(GlobalSettings.KEY_KIOSK_MODE);
                     switchPreference.setChecked(false);
+                    // Beware: the code below causes this function to be recursively entered again.
+                    // It should be the last thing the function does.
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean(GlobalSettings.KEY_KIOSK_MODE, false);
+                    editor.commit();
+                } else {
+                    onAnyKioskModeSwitched(true);
                 }
             } else if (!newKioskModeEnabled && isTaskLocked) {
                 ApplicationLocker.unlockApplication(getActivity());
+                onAnyKioskModeSwitched(false);
             }
-
-            onAnyKioskModeSwitched();
         }
 
-        private void onAnyKioskModeSwitched() {
+        private void onAnyKioskModeSwitched(boolean enable) {
             updateKioskModeSummaries();
-            HomeActivity.setEnabled(getActivity(), globalSettings.isAnyKioskModeEnabled());
+            HomeActivity.setEnabled(getActivity(), enable);
+            if (enable)
+                triggerHomeAppSelectionIfNecessary();
+        }
+
+        private void triggerHomeAppSelectionIfNecessary() {
+            final Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+            homeIntent.addCategory(Intent.CATEGORY_HOME);
+            homeIntent.addCategory(Intent.CATEGORY_DEFAULT);
+
+            PackageManager pm = getActivity().getPackageManager();
+            ResolveInfo resolveInfo = pm.resolveActivity(homeIntent, 0);
+            if (resolveInfo.activityInfo.name.equals("com.android.internal.app.ResolverActivity")) {
+                getActivity().startActivity(homeIntent);
+            }
         }
     }
 
