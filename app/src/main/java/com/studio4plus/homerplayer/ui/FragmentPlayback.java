@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.app.Fragment;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -367,8 +368,13 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
         public void stop() {
             timerTask.removeObserver(this);
             if (ffRewindSound != null) {
-                ffRewindSound.track.pause();
-                ffRewindSound.track.stop();
+                // https://code.google.com/p/android/issues/detail?id=155984
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ffRewindSound.track.pause();
+                    ffRewindSound.track.flush();
+                } else {
+                    ffRewindSound.track.stop();
+                }
             }
             timerTask.stop();
         }
