@@ -5,7 +5,7 @@ An audio book player for the elderly and visually impaired.
 
 [Go to the project website](http://msimonides.github.io/homerplayer/)
 or
-[watch the video](https://www.youtube.com/watch?v=yWK8flQ91WU).
+[watch the video](https://www.youtube.com/watch?v=RfLkoLtxzng).
 
 Project Goal
 ------------
@@ -32,8 +32,8 @@ on the main features.
 
 Contributions
 -------------
-Translations (incl. Play Store description): Stefan Rotermund, Magdalena
-Wodyńska.
+Translations (incl. Play Store description): Naomi Gumpel, Stefan Rotermund,
+Magdalena Wodyńska.
 
 Contact
 -------
@@ -41,4 +41,4 @@ marcin@studio4plus.com
 
 License
 -------
-Copyright (c) 2015 Marcin Simonides Licensed under the MIT license.
+Copyright (c) 2015-2017 Marcin Simonides Licensed under the MIT license.
