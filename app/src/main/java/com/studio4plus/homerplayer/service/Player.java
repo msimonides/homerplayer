@@ -1,17 +1,21 @@
 package com.studio4plus.homerplayer.service;
 
+import android.content.Context;
 import android.net.Uri;
 
-import com.google.android.exoplayer.ExoPlaybackException;
-import com.google.android.exoplayer.ExoPlayer;
-import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
-import com.google.android.exoplayer.MediaCodecSelector;
-import com.google.android.exoplayer.SampleSource;
-import com.google.android.exoplayer.extractor.ExtractorSampleSource;
-import com.google.android.exoplayer.upstream.Allocator;
-import com.google.android.exoplayer.upstream.DataSource;
-import com.google.android.exoplayer.upstream.DefaultAllocator;
-import com.google.android.exoplayer.upstream.FileDataSource;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.LoadControl;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.FileDataSourceFactory;
 import com.google.common.base.Preconditions;
 
 import java.io.File;
@@ -20,15 +24,13 @@ import java.util.List;
 
 public class Player {
 
-    private static final int BUFFER_SEGMENT_SIZE = 64 * 1024;
-    private static final int BUFFER_SEGMENT_COUNT = 128;
+    private final SimpleExoPlayer exoPlayer;
 
-    private final Allocator exoAllocator;
-    private final ExoPlayer exoPlayer;
+    public Player(Context context) {
+        LoadControl loadControl = new DefaultLoadControl();
+        TrackSelector trackSelector = new DefaultTrackSelector();
 
-    public Player() {
-        exoPlayer = ExoPlayer.Factory.newInstance(1);
-        exoAllocator = new DefaultAllocator(BUFFER_SEGMENT_SIZE);
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl);
     }
 
     public PlaybackController createPlayback() {
@@ -42,17 +44,16 @@ public class Player {
     private void prepareAudioFile(File file, long startPositionMs) {
         Uri fileUri = Uri.fromFile(file);
 
-        DataSource dataSource = new FileDataSource();
-        SampleSource source = new ExtractorSampleSource(
-                fileUri, dataSource, exoAllocator, BUFFER_SEGMENT_SIZE * BUFFER_SEGMENT_COUNT);
-        MediaCodecAudioTrackRenderer audioRenderer = new MediaCodecAudioTrackRenderer(
-                source, MediaCodecSelector.DEFAULT);
+        DataSource.Factory dataSourceFactory = new FileDataSourceFactory();
+        MediaSource source = new ExtractorMediaSource(
+                fileUri, dataSourceFactory, new DefaultExtractorsFactory(), null, null);
+
         exoPlayer.seekTo(startPositionMs);
-        exoPlayer.prepare(audioRenderer);
+        exoPlayer.prepare(source, false, true);
     }
 
     private class PlaybackControllerImpl
-            extends SimpleExoPlayerListener implements PlaybackController {
+            extends SimpleExoPlayerEventListener implements PlaybackController {
 
         private File currentFile;
         private Observer observer;
@@ -121,7 +122,7 @@ public class Player {
     }
 
     private class DurationQueryControllerImpl
-            extends SimpleExoPlayerListener implements DurationQueryController {
+            extends SimpleExoPlayerEventListener implements DurationQueryController {
 
         private final Iterator<File> iterator;
         private File currentFile;
