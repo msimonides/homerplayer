@@ -30,4 +30,5 @@ public interface PlaybackController {
     void stop();
     void release();
     long getCurrentPosition();
+    float getPlaybackSpeed();
 }

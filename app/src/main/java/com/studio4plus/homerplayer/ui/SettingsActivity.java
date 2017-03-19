@@ -100,6 +100,7 @@ public class SettingsActivity extends BaseActivity {
             SharedPreferences sharedPreferences =
                     PreferenceManager.getDefaultSharedPreferences(getActivity());
             updateScreenOrientationSummary(sharedPreferences);
+            updatePlaybackSpeedSummary(sharedPreferences);
             updateJumpBackSummary(sharedPreferences);
 
             if (Build.VERSION.SDK_INT < 21) {
@@ -182,6 +183,9 @@ public class SettingsActivity extends BaseActivity {
                 case GlobalSettings.KEY_SCREEN_ORIENTATION:
                     updateScreenOrientationSummary(sharedPreferences);
                     break;
+                case GlobalSettings.KEY_PLAYBACK_SPEED:
+                    updatePlaybackSpeedSummary(sharedPreferences);
+                    break;
             }
         }
 
@@ -190,14 +194,28 @@ public class SettingsActivity extends BaseActivity {
             updateUnregisterDeviceOwner(deviceAdminChangeEvent.isEnabled);
         }
 
-        private void updateScreenOrientationSummary(SharedPreferences sharedPreferences) {
-            String stringValue = sharedPreferences.getString(
-                    GlobalSettings.KEY_SCREEN_ORIENTATION,
-                    getString(R.string.pref_screen_orientation_default_value));
+        private void updateListPreferenceSummary(SharedPreferences sharedPreferences,
+                                                 String key,
+                                                 int default_value_res_id) {
+            String stringValue = sharedPreferences.getString(key, getString(default_value_res_id));
             ListPreference preference =
-                    (ListPreference) findPreference(GlobalSettings.KEY_SCREEN_ORIENTATION);
+                    (ListPreference) findPreference(key);
             int index = preference.findIndexOfValue(stringValue);
             preference.setSummary(preference.getEntries()[index]);
+        }
+
+        private void updateScreenOrientationSummary(SharedPreferences sharedPreferences) {
+            updateListPreferenceSummary(
+                    sharedPreferences,
+                    GlobalSettings.KEY_SCREEN_ORIENTATION,
+                    R.string.pref_screen_orientation_default_value);
+        }
+
+        private void updatePlaybackSpeedSummary(SharedPreferences sharedPreferences) {
+            updateListPreferenceSummary(
+                    sharedPreferences,
+                    GlobalSettings.KEY_PLAYBACK_SPEED,
+                    R.string.pref_playback_speed_default_value);
         }
 
         private void updateJumpBackSummary(SharedPreferences sharedPreferences) {

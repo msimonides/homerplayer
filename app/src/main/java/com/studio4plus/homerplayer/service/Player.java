@@ -1,15 +1,17 @@
 package com.studio4plus.homerplayer.service;
 
-import android.content.Context;
+import android.annotation.TargetApi;
+import android.media.PlaybackParams;
 import android.net.Uri;
+import android.os.Build;
 
-import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.LoadControl;
-import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Renderer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.mediacodec.MediaCodecSelector;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
@@ -24,13 +26,17 @@ import java.util.List;
 
 public class Player {
 
-    private final SimpleExoPlayer exoPlayer;
+    private final ExoPlayer exoPlayer;
+    private final Renderer audioRenderer;
 
-    public Player(Context context) {
-        LoadControl loadControl = new DefaultLoadControl();
+    private float playbackSpeed = 1.0f;
+
+    public Player() {
         TrackSelector trackSelector = new DefaultTrackSelector();
+        audioRenderer = new SonicMediaCodecAudioRenderer(MediaCodecSelector.DEFAULT);
+        Renderer renderers[] = { audioRenderer };
 
-        exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl);
+        exoPlayer = ExoPlayerFactory.newInstance(renderers, trackSelector);
     }
 
     public PlaybackController createPlayback() {
@@ -39,6 +45,17 @@ public class Player {
 
     public DurationQueryController createDurationQuery(List<File> files) {
         return new DurationQueryControllerImpl(files);
+    }
+
+    public void setPlaybackSpeed(float speed) {
+        this.playbackSpeed = speed;
+        if (Build.VERSION.SDK_INT < 23) {
+            ExoPlayer.ExoPlayerMessage message = new ExoPlayer.ExoPlayerMessage(
+                    audioRenderer, SonicMediaCodecAudioRenderer.MSG_SET_PLAYBACK_SPEED, speed);
+            exoPlayer.sendMessages(message);
+        } else {
+            API23.setPlaybackSpeed(exoPlayer, audioRenderer, speed);
+        }
     }
 
     private void prepareAudioFile(File file, long startPositionMs) {
@@ -96,6 +113,11 @@ public class Player {
         @Override
         public long getCurrentPosition() {
             return exoPlayer.getCurrentPosition();
+        }
+
+        @Override
+        public float getPlaybackSpeed() {
+            return Player.this.playbackSpeed;
         }
 
         @Override
@@ -181,6 +203,17 @@ public class Player {
                 prepareAudioFile(currentFile, 0);
             }
             return hasNext;
+        }
+    }
+
+    @TargetApi(23)
+    private static class API23 {
+        static void setPlaybackSpeed(ExoPlayer player, Renderer renderer, float speed) {
+            PlaybackParams params = new PlaybackParams();
+            params.setSpeed(speed);
+            ExoPlayer.ExoPlayerMessage message =
+                    new ExoPlayer.ExoPlayerMessage(renderer, C.MSG_SET_PLAYBACK_PARAMS, params);
+            player.sendMessages(message);
         }
     }
 }

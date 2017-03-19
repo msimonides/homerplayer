@@ -23,6 +23,8 @@
     <string name="pref_kiosk_mode_unregister_device_owner_dialog_message">Ta akcja wyłączy pelny tryb kiosku i nie może być łatwo cofnięta.\nWykonać?</string>
     <string name="pref_kiosk_mode_unregister_device_owner_summary_off">Nie posiada uprawnień "device owner"</string>
     <string name="pref_kiosk_mode_unregister_device_owner_summary_on">Posiada uprawnienia</string>
+    <string name="pref_playback_options_screen_title">Ustawienia odtwarzania…</string>
+    <string name="pref_playback_speed_title">Prędkość odtwarzania</string>
     <string name="pref_ff_rewind_sound">Dźwięk przewijania</string>
     <string name="pref_ff_rewind_sound_summary_on">Włączony</string>
     <string name="pref_ff_rewind_sound_summary_off">Wyłączony</string>

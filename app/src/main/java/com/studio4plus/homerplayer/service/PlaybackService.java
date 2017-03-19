@@ -82,6 +82,7 @@ public class PlaybackService
 
         requestAudioFocus();
         player = HomerPlayerApplication.getComponent(getApplicationContext()).createAudioBookPlayer();
+        player.setPlaybackSpeed(globalSettings.getPlaybackSpeed());
 
         if (faceDownDetector != null)
             faceDownDetector.enable();
@@ -233,7 +234,7 @@ public class PlaybackService
             if (isPlaying) {
                 eventBus.post(new PlaybackElapsedTimeSyncEvent(
                         audioBook.getLastPositionTime(controller.getCurrentPosition()),
-                        audioBook.getTotalDurationMs()));
+                        audioBook.getTotalDurationMs(), controller.getPlaybackSpeed()));
             }
         }
 
@@ -241,8 +242,8 @@ public class PlaybackService
         public void onPlaybackStarted() {
             isPlaying = true;
             long positionTime = audioBook.getLastPositionTime(controller.getCurrentPosition());
-            eventBus.post(
-                    new PlaybackElapsedTimeSyncEvent(positionTime, audioBook.getTotalDurationMs()));
+            eventBus.post(new PlaybackElapsedTimeSyncEvent(
+                    positionTime, audioBook.getTotalDurationMs(), controller.getPlaybackSpeed()));
         }
 
         @Override

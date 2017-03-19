@@ -149,6 +149,7 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
 
         timerTask = new PlaybackTimer(
                 new Handler(Looper.myLooper()), event.playbackPositionMs, event.totalTimeMs);
+        timerTask.setRegularSpeed((int) (1000.0f / event.playbackSpeed));
         timerTask.addObserver(this);
         timerTask.run();
         enableUiOnStart();
@@ -288,7 +289,7 @@ public class FragmentPlayback extends Fragment implements PlaybackTimer.Observer
         private void resumeFromRewind() {
             stopRewind();
 
-            timerTask.changeSpeed(1000);
+            timerTask.restoreRegularSpeed();
             getMainActivity().resumeFromRewind(timerTask.getDisplayTimeMs());
         }
 

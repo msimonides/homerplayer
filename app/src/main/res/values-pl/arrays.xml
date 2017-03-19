@@ -5,4 +5,10 @@
         <item>Zablokowana poziomo</item>
         <item>Zablokowana poziomo, odwrotnie</item>
     </string-array>
+    <string-array name="playback_speed_entries">
+        <item>Zwykła</item>
+        <item>Umiarkowana</item>
+        <item>Mała</item>
+        <item>Bardzo mała</item>
+    </string-array>
 </resources>

@@ -20,7 +20,8 @@ class PlaybackTimer implements Runnable {
     private final long maxTimeMs;
     private long lastTickAt;
     private long displayTimeMs;
-    private int speedMsPerS = 1000;
+    private int regularSpeedMsPerS = 1000;
+    private int speedMsPerS = regularSpeedMsPerS;
 
     PlaybackTimer(Handler handler, long baseDisplayTimeMs, long maxTimeMs) {
         this.handler = handler;
@@ -41,11 +42,20 @@ class PlaybackTimer implements Runnable {
         return displayTimeMs;
     }
 
+    public void setRegularSpeed(int speedMsPerS) {
+        this.regularSpeedMsPerS = speedMsPerS;
+        restoreRegularSpeed();
+    }
+
     public void changeSpeed(int speedMsPerS) {
         stop();
         this.lastTickAt = SystemClock.uptimeMillis();
         this.speedMsPerS = speedMsPerS;
         run();
+    }
+
+    public void restoreRegularSpeed() {
+        changeSpeed(regularSpeedMsPerS);
     }
 
     @Override

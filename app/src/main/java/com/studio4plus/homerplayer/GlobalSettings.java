@@ -32,6 +32,7 @@ public class GlobalSettings {
     public static final String KEY_JUMP_BACK = "jump_back_preference";
     public static final String KEY_SCREEN_ORIENTATION = "screen_orientation_preference";
     public static final String KEY_FF_REWIND_SOUND = "ff_rewind_sound_preference";
+    public static final String KEY_PLAYBACK_SPEED = "playback_speed_preference";
 
     private static final String KEY_BROWSING_HINT_SHOWN = "hints.browsing_hint_shown";
     private static final String KEY_SETTINGS_HINT_SHOWN = "hints.settings.hint_shown";
@@ -60,6 +61,12 @@ public class GlobalSettings {
                 GlobalSettings.KEY_SCREEN_ORIENTATION,
                 resources.getString(R.string.pref_screen_orientation_default_value));
         return Orientation.valueOf(stringValue).value;
+    }
+
+    public float getPlaybackSpeed() {
+        final String valueString = sharedPreferences.getString(
+                KEY_PLAYBACK_SPEED, resources.getString(R.string.pref_playback_speed_default_value));
+        return Float.parseFloat(valueString);
     }
 
     public LibraryContentType booksEverInstalled() {

@@ -6,12 +6,28 @@
         android:entries="@array/screen_orientation_entries"
         android:entryValues="@array/screen_orientation_values"
         android:defaultValue="@string/pref_screen_orientation_default_value"/>
-    <ListPreference
-        android:key="jump_back_preference"
-        android:title="@string/pref_jump_back_title"
-        android:entries="@array/jump_back_entries"
-        android:entryValues="@array/jump_back_values"
-        android:defaultValue="@string/pref_jump_back_default_value"/>
+    <PreferenceScreen
+        android:key="playback_options_screen"
+        android:title="@string/pref_playback_options_screen_title">
+        <ListPreference
+            android:key="jump_back_preference"
+            android:title="@string/pref_jump_back_title"
+            android:entries="@array/jump_back_entries"
+            android:entryValues="@array/jump_back_values"
+            android:defaultValue="@string/pref_jump_back_default_value"/>
+        <ListPreference
+            android:key="playback_speed_preference"
+            android:title="@string/pref_playback_speed_title"
+            android:entries="@array/playback_speed_entries"
+            android:entryValues="@array/playback_speed_values"
+            android:defaultValue="@string/pref_playback_speed_default_value"/>
+        <SwitchPreference
+            android:key="ff_rewind_sound_preference"
+            android:title="@string/pref_ff_rewind_sound"
+            android:summaryOn="@string/pref_ff_rewind_sound_summary_on"
+            android:summaryOff="@string/pref_ff_rewind_sound_summary_off"
+            android:defaultValue="true"/>
+    </PreferenceScreen>
     <PreferenceScreen
         android:key="kiosk_mode_screen"
         android:title="@string/pref_kiosk_mode_screen_title">
@@ -28,12 +44,6 @@
             android:title="@string/pref_kiosk_mode_unregister_device_owner"
             android:dialogMessage="@string/pref_kiosk_mode_unregister_device_owner_dialog_message"/>
     </PreferenceScreen>
-    <SwitchPreference
-        android:key="ff_rewind_sound_preference"
-        android:title="@string/pref_ff_rewind_sound"
-        android:summaryOn="@string/pref_ff_rewind_sound_summary_on"
-        android:summaryOff="@string/pref_ff_rewind_sound_summary_off"
-        android:defaultValue="true"/>
     <com.studio4plus.homerplayer.ui.ConfirmDialogPreference
         android:key="reset_all_book_progress_preference"
         android:title="@string/pref_reset_all_book_progress"
