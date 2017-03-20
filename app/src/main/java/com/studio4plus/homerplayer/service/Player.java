@@ -4,6 +4,8 @@ import android.annotation.TargetApi;
 import android.media.PlaybackParams;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -40,7 +42,7 @@ public class Player {
     }
 
     public PlaybackController createPlayback() {
-        return new PlaybackControllerImpl();
+        return new PlaybackControllerImpl(new Handler(Looper.myLooper()));
     }
 
     public DurationQueryController createDurationQuery(List<File> files) {
@@ -75,8 +77,16 @@ public class Player {
         private File currentFile;
         private Observer observer;
         private int lastPlaybackState;
+        private Handler handler;
+        private final Runnable updateProgressTask = new Runnable() {
+            @Override
+            public void run() {
+                updateProgress();
+            }
+        };
 
-        private PlaybackControllerImpl() {
+        private PlaybackControllerImpl(Handler handler) {
+            this.handler = handler;
             exoPlayer.setPlayWhenReady(true);  // Call before setting the listener.
             exoPlayer.addListener(this);
             lastPlaybackState = exoPlayer.getPlaybackState();
@@ -98,6 +108,9 @@ public class Player {
         @Override
         public void pause() {
             exoPlayer.setPlayWhenReady(false);
+            // This ought to be done in onPlayerStateChanged but detecting pause is not as trivial
+            // as doing this here directly.
+            handler.removeCallbacks(updateProgressTask);
         }
 
         public void stop() {
@@ -116,11 +129,6 @@ public class Player {
         }
 
         @Override
-        public float getPlaybackSpeed() {
-            return Player.this.playbackSpeed;
-        }
-
-        @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             if (playbackState == lastPlaybackState)
                 return;
@@ -130,16 +138,33 @@ public class Player {
                 case ExoPlayer.STATE_READY:
                     observer.onPlaybackStarted();
                     observer.onDuration(currentFile, exoPlayer.getDuration());
+                    updateProgress();
                     break;
                 case ExoPlayer.STATE_ENDED:
+                    handler.removeCallbacks(updateProgressTask);
                     observer.onPlaybackEnded();
                     break;
                 case ExoPlayer.STATE_IDLE:
+                    handler.removeCallbacks(updateProgressTask);
                     exoPlayer.release();
                     exoPlayer.removeListener(this);
                     observer.onPlayerReleased();
                     break;
             }
+        }
+
+        private void updateProgress() {
+            long positionMs = exoPlayer.getCurrentPosition();
+            observer.onPlaybackProgressed(positionMs);
+
+            // Aim a moment after the expected second change. It's necessary because the actual
+            // playback speed may be slightly different than playbackSpeed when it's different
+            // than 1.0.
+            long delayMs = (long) ((1200 - (positionMs % 1000)) * playbackSpeed);
+            if (delayMs < 100)
+                delayMs += (long) (1000 * playbackSpeed);
+
+            handler.postDelayed(updateProgressTask, delayMs);
         }
     }
 

@@ -18,7 +18,7 @@ import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
-import com.studio4plus.homerplayer.events.PlaybackElapsedTimeSyncEvent;
+import com.studio4plus.homerplayer.events.PlaybackProgressedEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppedEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppingEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
@@ -232,18 +232,22 @@ public class PlaybackService
 
         public void requestElapsedTimeSyncEvent() {
             if (isPlaying) {
-                eventBus.post(new PlaybackElapsedTimeSyncEvent(
+                eventBus.post(new PlaybackProgressedEvent(
                         audioBook.getLastPositionTime(controller.getCurrentPosition()),
-                        audioBook.getTotalDurationMs(), controller.getPlaybackSpeed()));
+                        audioBook.getTotalDurationMs()));
             }
         }
 
         @Override
         public void onPlaybackStarted() {
             isPlaying = true;
-            long positionTime = audioBook.getLastPositionTime(controller.getCurrentPosition());
-            eventBus.post(new PlaybackElapsedTimeSyncEvent(
-                    positionTime, audioBook.getTotalDurationMs(), controller.getPlaybackSpeed()));
+        }
+
+        @Override
+        public void onPlaybackProgressed(long currentPositionMs) {
+            eventBus.post(new PlaybackProgressedEvent(
+                    audioBook.getLastPositionTime(currentPositionMs),
+                    audioBook.getTotalDurationMs()));
         }
 
         @Override

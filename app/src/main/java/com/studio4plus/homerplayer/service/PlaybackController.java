@@ -9,6 +9,12 @@ public interface PlaybackController {
         void onDuration(File file, long durationMs);
 
         /**
+         * Playback position progressed. Called more or less once per second of playback in media
+         * time (i.e. affected by the playback speed).
+         */
+        void onPlaybackProgressed(long currentPositionMs);
+
+        /**
          * Playback ended because it reached the end of track
          */
         void onPlaybackEnded();
@@ -30,5 +36,4 @@ public interface PlaybackController {
     void stop();
     void release();
     long getCurrentPosition();
-    float getPlaybackSpeed();
 }

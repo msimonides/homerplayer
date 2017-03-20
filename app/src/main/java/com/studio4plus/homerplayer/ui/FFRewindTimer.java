@@ -6,7 +6,7 @@ import android.os.SystemClock;
 import java.util.ArrayList;
 import java.util.List;
 
-class PlaybackTimer implements Runnable {
+class FFRewindTimer implements Runnable {
 
     public interface Observer {
         void onTimerUpdated(long displayTimeMs);
@@ -20,10 +20,9 @@ class PlaybackTimer implements Runnable {
     private final long maxTimeMs;
     private long lastTickAt;
     private long displayTimeMs;
-    private int regularSpeedMsPerS = 1000;
-    private int speedMsPerS = regularSpeedMsPerS;
+    private int speedMsPerS = 1000;
 
-    PlaybackTimer(Handler handler, long baseDisplayTimeMs, long maxTimeMs) {
+    FFRewindTimer(Handler handler, long baseDisplayTimeMs, long maxTimeMs) {
         this.handler = handler;
         this.maxTimeMs = maxTimeMs;
         this.displayTimeMs = baseDisplayTimeMs;
@@ -42,20 +41,11 @@ class PlaybackTimer implements Runnable {
         return displayTimeMs;
     }
 
-    public void setRegularSpeed(int speedMsPerS) {
-        this.regularSpeedMsPerS = speedMsPerS;
-        restoreRegularSpeed();
-    }
-
     public void changeSpeed(int speedMsPerS) {
         stop();
         this.lastTickAt = SystemClock.uptimeMillis();
         this.speedMsPerS = speedMsPerS;
         run();
-    }
-
-    public void restoreRegularSpeed() {
-        changeSpeed(regularSpeedMsPerS);
     }
 
     @Override
