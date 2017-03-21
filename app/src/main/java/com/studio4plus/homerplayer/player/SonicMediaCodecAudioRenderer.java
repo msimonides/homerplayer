@@ -1,4 +1,4 @@
-package com.studio4plus.homerplayer.service;
+package com.studio4plus.homerplayer.player;
 
 import android.media.MediaCodec;
 import android.media.MediaFormat;

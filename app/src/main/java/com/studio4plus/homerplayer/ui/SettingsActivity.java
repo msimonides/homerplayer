@@ -13,6 +13,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
 import android.view.View;
 import android.view.WindowManager;
@@ -26,6 +27,7 @@ import com.studio4plus.homerplayer.HomerPlayerDeviceAdmin;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.events.DeviceAdminChangeEvent;
 import com.studio4plus.homerplayer.events.SettingsEnteredEvent;
+import com.studio4plus.homerplayer.model.AudioBook;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 
 import javax.inject.Inject;
@@ -89,6 +91,8 @@ public class SettingsActivity extends BaseActivity {
 
         @Inject public AudioBookManager audioBookManager;
         @Inject public GlobalSettings globalSettings;
+
+        private SnippetPlayer snippetPlayer = null;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -160,12 +164,30 @@ public class SettingsActivity extends BaseActivity {
         }
 
         @Override
+        public void onPause() {
+            super.onPause();
+            if (snippetPlayer != null) {
+                snippetPlayer.stop();
+                snippetPlayer = null;
+            }
+        }
+
+        @Override
         public void onStop() {
             super.onStop();
             SharedPreferences sharedPreferences =
                     PreferenceManager.getDefaultSharedPreferences(getActivity());
             sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
             EventBus.getDefault().unregister(this);
+        }
+
+        @Override
+        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+            if (GlobalSettings.KEY_PLAYBACK_SPEED.equals(preference.getKey()) &&
+                    (snippetPlayer == null || !snippetPlayer.isPlaying())) {
+                playSnippet();
+            }
+            return super.onPreferenceTreeClick(preferenceScreen, preference);
         }
 
         @Override
@@ -185,6 +207,7 @@ public class SettingsActivity extends BaseActivity {
                     break;
                 case GlobalSettings.KEY_PLAYBACK_SPEED:
                     updatePlaybackSpeedSummary(sharedPreferences);
+                    playSnippet();
                     break;
             }
         }
@@ -330,6 +353,20 @@ public class SettingsActivity extends BaseActivity {
             ResolveInfo resolveInfo = pm.resolveActivity(homeIntent, 0);
             if (resolveInfo.activityInfo.name.equals("com.android.internal.app.ResolverActivity")) {
                 getActivity().startActivity(homeIntent);
+            }
+        }
+
+        private void playSnippet() {
+            if (snippetPlayer != null) {
+                snippetPlayer.stop();
+                snippetPlayer = null;
+            }
+
+            AudioBook book = audioBookManager.getCurrentBook();
+            if (book != null) {
+                snippetPlayer = new SnippetPlayer(globalSettings.getPlaybackSpeed());
+
+                snippetPlayer.play(book);
             }
         }
     }

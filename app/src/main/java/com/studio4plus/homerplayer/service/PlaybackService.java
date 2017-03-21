@@ -22,6 +22,9 @@ import com.studio4plus.homerplayer.events.PlaybackProgressedEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppedEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppingEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
+import com.studio4plus.homerplayer.player.DurationQueryController;
+import com.studio4plus.homerplayer.player.PlaybackController;
+import com.studio4plus.homerplayer.player.Player;
 import com.studio4plus.homerplayer.ui.MainActivity;
 
 import java.io.File;

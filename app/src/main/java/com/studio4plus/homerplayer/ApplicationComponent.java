@@ -5,7 +5,7 @@ import com.studio4plus.homerplayer.battery.BatteryStatusProvider;
 import com.studio4plus.homerplayer.downloads.SamplesDownloadController;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.model.DemoSamplesInstaller;
-import com.studio4plus.homerplayer.service.Player;
+import com.studio4plus.homerplayer.player.Player;
 import com.studio4plus.homerplayer.service.AudioBookPlayerModule;
 import com.studio4plus.homerplayer.service.PlaybackService;
 import com.studio4plus.homerplayer.ui.BaseActivity;

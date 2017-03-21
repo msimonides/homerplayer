@@ -1,4 +1,4 @@
-package com.studio4plus.homerplayer.service;
+package com.studio4plus.homerplayer.player;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
