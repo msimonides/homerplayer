@@ -32,8 +32,8 @@
     </string-array>
     <string-array name="playback_speed_values" translatable="false">
         <item>1.0</item>
-        <item>0.85</item>
-        <item>0.7</item>
+        <item>0.8</item>
+        <item>0.65</item>
         <item>0.5</item>
     </string-array>
 </resources>

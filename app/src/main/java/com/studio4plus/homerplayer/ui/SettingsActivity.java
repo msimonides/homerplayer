@@ -224,6 +224,8 @@ public class SettingsActivity extends BaseActivity {
             ListPreference preference =
                     (ListPreference) findPreference(key);
             int index = preference.findIndexOfValue(stringValue);
+            if (index < 0)
+                index = 0;
             preference.setSummary(preference.getEntries()[index]);
         }
 
