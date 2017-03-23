@@ -24,6 +24,7 @@ import javax.inject.Named;
 public class FileScanner {
 
     static final String SAMPLE_BOOK_FILE_NAME = ".sample";
+    private static final String[] SUPPORTED_SUFFIXES = {".mp3", ".m4a", ".ogg"};
 
     private final String audioBooksDirectoryPath;
     private final Context context;
@@ -143,8 +144,11 @@ public class FileScanner {
     }
 
     private static boolean isAudioFile(File file) {
-        String fileName = file.getName();
-        // TODO: allow other formats
-        return fileName.toLowerCase().endsWith(".mp3");
+        String lowerCaseFileName = file.getName().toLowerCase();
+        for (String suffix : SUPPORTED_SUFFIXES)
+            if (lowerCaseFileName.endsWith(suffix))
+                return true;
+
+        return false;
     }
 }
