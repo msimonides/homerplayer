@@ -180,6 +180,10 @@ public class FragmentNoBooks extends Fragment {
         public void onReceive(Context context, Intent intent) {
             Preconditions.checkArgument(
                     DownloadService.BROADCAST_DOWNLOAD_PROGRESS_ACTION.equals(intent.getAction()));
+            // Workaround for intents being sent after the receiver is unregistered:
+            // https://code.google.com/p/android/issues/detail?id=191546
+            if (progressReceiver == null)
+                return;
             int transferredBytes = intent.getIntExtra(DownloadService.PROGRESS_BYTES_EXTRA, 0);
             int totalBytes = intent.getIntExtra(DownloadService.TOTAL_BYTES_EXTRA, -1);
             updateProgress(transferredBytes, totalBytes);
