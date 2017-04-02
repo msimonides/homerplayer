@@ -7,7 +7,6 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.downloads.SamplesDownloadController;
 
@@ -63,14 +62,8 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    FirebaseAnalytics provideFirebaseTracker(Context context) {
-        return FirebaseAnalytics.getInstance(context);
-    }
-
-    @Provides @Singleton
-    AnalyticsTracker provideAnalyticsTracker(
-            FirebaseAnalytics firebaseAnalytics, GlobalSettings globalSettings, EventBus eventBus) {
-        return new AnalyticsTracker(firebaseAnalytics, globalSettings, eventBus);
+    AnalyticsTracker provideAnalyticsTracker(GlobalSettings globalSettings, EventBus eventBus) {
+        return new AnalyticsTracker(globalSettings, eventBus);
     }
 
     @Provides @Singleton

@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
 import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
@@ -32,6 +33,7 @@ public class FragmentBookList extends Fragment {
     private ViewPager bookPager;
     private BookListPagerAdapter bookAdapter;
 
+    @Inject public AnalyticsTracker analyticsTracker;
     @Inject public AudioBookManager audioBookManager;
     @Inject public GlobalSettings globalSettings;
     @Inject public EventBus eventBus;
@@ -63,6 +65,7 @@ public class FragmentBookList extends Fragment {
                     int adjustedIndex = bookAdapter.wrapViewIndex(currentViewIndex);
                     if (adjustedIndex != currentViewIndex)
                         bookPager.setCurrentItem(adjustedIndex, false);
+                    analyticsTracker.onBookSwiped();
                 }
             }
         });

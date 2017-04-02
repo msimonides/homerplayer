@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.events.PlaybackProgressedEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppingEvent;
 import com.studio4plus.homerplayer.util.ViewUtils;
@@ -48,6 +49,7 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
     @Inject public GlobalSettings globalSettings;
     @Inject public EventBus eventBus;
     @Inject public SoundBank soundBank;
+    @Inject public AnalyticsTracker analyticsTracker;
 
     @Override
     public View onCreateView(
@@ -139,7 +141,7 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
 
     @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
     public void onEvent(PlaybackProgressedEvent event) {
-        totalTimeMs = event.totalTimeMs;
+        totalTimeMs = event.audioBook.getTotalDurationMs();
         onTimerUpdated(event.playbackPositionMs);
         enableUiOnStart();
     }
@@ -231,6 +233,7 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
                 @Override
                 public void onAnimationCancel(Animator animator) {
                     isCancelled = true;
+                    analyticsTracker.onFfRewindAborted(isFF);
                     resumeFromRewind();
                 }
             });
@@ -256,6 +259,8 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
                     }
                 });
                 currentAnimator.start();
+                analyticsTracker.onFfRewindFinished(
+                        speedController.runningTimeS(), speedController.isFf);
                 resumeFromRewind();
             }
         }
@@ -326,21 +331,24 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
         private static final int[] SPEED_LEVEL_SOUND_RATE = { 1, 2, 4 };
 
         private final FFRewindTimer timerTask;
-        private final boolean isFF;
         private final SoundBank.Sound ffRewindSound;
 
         private long initialDisplayTimeMs;
+        private long startTimeNano;
         private int currentSpeedLevelIndex = -1;
 
+        public final boolean isFf;
+
         private RewindFFSpeedController(
-                FFRewindTimer timerTask, boolean isFF, SoundBank.Sound ffRewindSound) {
+                FFRewindTimer timerTask, boolean isFf, SoundBank.Sound ffRewindSound) {
             this.timerTask = timerTask;
-            this.isFF = isFF;
+            this.isFf = isFf;
             this.ffRewindSound = ffRewindSound;
         }
 
         public void start() {
             initialDisplayTimeMs = timerTask.getDisplayTimeMs();
+            startTimeNano = System.nanoTime();
             timerTask.addObserver(this);
             setSpeedLevel(0);
             timerTask.run();
@@ -369,11 +377,15 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
             return timerTask.getDisplayTimeMs();
         }
 
+        public long runningTimeS() {
+            return TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - startTimeNano);
+        }
+
         private void setSpeedLevel(int speedLevelIndex) {
             if (speedLevelIndex != currentSpeedLevelIndex) {
                 currentSpeedLevelIndex = speedLevelIndex;
                 int speed = SPEED_LEVELS[speedLevelIndex];
-                timerTask.changeSpeed(isFF ? speed : -speed);
+                timerTask.changeSpeed(isFf ? speed : -speed);
 
                 int soundPlaybackFactor = SPEED_LEVEL_SOUND_RATE[speedLevelIndex];
                 if (ffRewindSound != null) {

@@ -125,7 +125,6 @@ public class DemoSamplesInstaller {
 
             return localizedTitle;
         } catch(IOException | JSONException | ClassCastException exception) {
-            exception.printStackTrace();
             Crashlytics.logException(exception);
             return null;
         }

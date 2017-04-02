@@ -2,17 +2,24 @@ package com.studio4plus.homerplayer;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
+
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
+import com.flurry.android.FlurryAgent;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.ui.HomeActivity;
 import com.studio4plus.homerplayer.util.MediaScannerUtil;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.inject.Inject;
 
@@ -23,6 +30,7 @@ public class HomerPlayerApplication extends Application {
     private static final String AUDIOBOOKS_DIRECTORY = "AudioBooks";
     private static final String DEMO_SAMPLES_URL =
             "https://homer-player.firebaseapp.com/samples.zip";
+    private static final String FLURRY_API_KEY_ASSET = "api_keys/flurry";
 
     private ApplicationComponent component;
     private MediaStoreUpdateObserver mediaStoreUpdateObserver;
@@ -36,6 +44,13 @@ public class HomerPlayerApplication extends Application {
 
         CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
         Fabric.with(this, new Crashlytics.Builder().core(core).build());
+
+        String flurryKey = getFlurryKey(getAssets());
+        if (flurryKey != null) {
+            new FlurryAgent.Builder()
+                    .withLogEnabled(true)
+                    .build(this, flurryKey);
+        }
 
         component = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this, Uri.parse(DEMO_SAMPLES_URL)))
@@ -80,4 +95,21 @@ public class HomerPlayerApplication extends Application {
             }
         }
     }
+
+  private @Nullable String getFlurryKey(AssetManager assets) {
+      try {
+          InputStream inputStream = assets.open(FLURRY_API_KEY_ASSET);
+          try {
+              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+              String key = reader.readLine();
+              inputStream.close();
+              return key;
+          } catch(IOException e) {
+              inputStream.close();
+              return null;
+          }
+      } catch (IOException e) {
+          return null;
+      }
+  }
 }
