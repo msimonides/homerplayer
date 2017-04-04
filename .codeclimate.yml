@@ -2,9 +2,6 @@
 engines:
   fixme:
     enabled: true
-  checkstyle:
-    enabled: true
-    channel: "beta"
   pmd:
     enabled: true
     channel: "beta"
@@ -14,3 +11,5 @@ ratings:
 exclude_paths: 
 - spec/**/*
 - "**/vendor/**/*"
+- app/src/main/java/sonic/**
+- app/src/main/java/com/github/**
