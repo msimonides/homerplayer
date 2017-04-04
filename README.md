@@ -1,4 +1,4 @@
-Homer Player 
+Homer Player [![Code Climate](https://codeclimate.com/github/msimonides/homerplayer/badges/gpa.svg)](https://codeclimate.com/github/msimonides/homerplayer)
 ============
 
 An audio book player for the elderly and visually impaired.
