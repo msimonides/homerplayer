@@ -53,10 +53,10 @@ public class FragmentBookList extends Fragment {
             int currentViewIndex;
 
             @Override
-            public void onPageSelected(int i) {
-                FragmentBookItem itemFragment = (FragmentBookItem) bookAdapter.getItem(i);
+            public void onPageSelected(int index) {
+                FragmentBookItem itemFragment = (FragmentBookItem) bookAdapter.getItem(index);
                 audioBookManager.setCurrentBook(itemFragment.getAudioBookId());
-                currentViewIndex = i;
+                currentViewIndex = index;
             }
 
             @Override
@@ -79,7 +79,9 @@ public class FragmentBookList extends Fragment {
                     }
                 }));
 
-        updateViewPosition();
+        bookPager.setCurrentItem(
+                bookAdapter.bookIndexToViewIndex(audioBookManager.getCurrentBookIndex()), false);
+
         eventBus.register(this);
 
         return view;
