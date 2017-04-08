@@ -14,6 +14,7 @@ import com.flurry.android.FlurryAgent;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.ui.HomeActivity;
 import com.studio4plus.homerplayer.util.MediaScannerUtil;
+import com.studio4plus.homerplayer.util.VersionUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,7 +47,7 @@ public class HomerPlayerApplication extends Application {
         Fabric.with(this, new Crashlytics.Builder().core(core).build());
 
         String flurryKey = getFlurryKey(getAssets());
-        if (flurryKey != null) {
+        if (flurryKey != null && VersionUtil.isOfficialVersion()) {
             new FlurryAgent.Builder()
                     .withLogEnabled(true)
                     .build(this, flurryKey);
