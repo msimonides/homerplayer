@@ -8,6 +8,8 @@
     <string name="hint_flip_to_stop">Odłóż ekranem do dołu aby zatrzymać</string>
     <string name="settings_title">Ustawienia</string>
     <string name="settings_device_owner_required_alert">Aplikacja musi być ustawiona jako "device owner". Szczegóły: http://goo.gl/46gevp</string>
+    <string name="pref_help_faq_title">Pomoc: FAQ</string>
+    <string name="pref_help_faq_summary">Otwórz stronę: %s</string>
     <string name="pref_jump_back_title">Cofnij przy wznawianiu odtwarzania</string>
     <string name="pref_jump_back_entry_disabled">Wyłączone</string>
     <string name="pref_jump_back_summary">Cofnij o %d sekund</string>

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,9 +38,12 @@ import de.greenrobot.event.EventBus;
 public class SettingsActivity extends BaseActivity {
 
     // Pseudo preferences that don't change any preference values directly.
-    private static final String KEY_UNREGISTER_DEVICE_OWNER = "unregister_device_owner_preference";
+    private static final String KEY_FAQ = "faq_preference";
     private static final String KEY_RESET_ALL_BOOK_PROGRESS = "reset_all_book_progress_preference";
+    private static final String KEY_UNREGISTER_DEVICE_OWNER = "unregister_device_owner_preference";
     private static final String KEY_VERSION = "version_preference";
+
+    private static final String FAQ_URL = "https://goo.gl/1RVxFW";
 
     private static final int BLOCK_TIME_MS = 500;
 
@@ -147,6 +151,7 @@ public class SettingsActivity extends BaseActivity {
                 }
             });
 
+            setupFaq();
             updateVersionSummary();
         }
 
@@ -293,6 +298,20 @@ public class SettingsActivity extends BaseActivity {
             preference.setSummary(getString(isEnabled
                     ? R.string.pref_kiosk_mode_unregister_device_owner_summary_on
                     : R.string.pref_kiosk_mode_unregister_device_owner_summary_off));
+        }
+
+        private void setupFaq() {
+            Preference preference = findPreference(KEY_FAQ);
+            preference.setSummary(getString(R.string.pref_help_faq_summary, FAQ_URL));
+            preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(FAQ_URL));
+                    startActivity(i);
+                    return true;
+                }
+            });
         }
 
         private void updateVersionSummary() {

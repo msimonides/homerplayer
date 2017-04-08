@@ -49,6 +49,9 @@
         android:title="@string/pref_reset_all_book_progress"
         android:dialogTitle="@string/pref_reset_all_book_progress_dialog_title"/>
     <Preference
+        android:key="faq_preference"
+        android:title="@string/pref_help_faq_title" />
+    <Preference
         android:key="version_preference"
         android:title="@string/pref_version_title"/>
 </PreferenceScreen>
