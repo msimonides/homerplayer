@@ -70,7 +70,7 @@ public class FragmentNoBooks extends Fragment {
 
         final Context context = view.getContext();
         view.setOnTouchListener(new MultitapTouchListener(
-                context, new MultitapGestureDetectorListener.Listener() {
+                context, new MultitapTouchListener.Listener() {
             @Override
             public void onMultiTap() {
                 startActivity(new Intent(context, SettingsActivity.class));
