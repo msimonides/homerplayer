@@ -6,7 +6,7 @@
   <meta name="description" content="{{ page.meta_description }}">
   {% endif %}
 
-  <link rel="canonical" href="{{ site.github.url }}{{ page.url }}">
+  <link rel="canonical" href="{{ site.github.url | replace: 'https://', 'http://' }}{{ page.url }}">
   <link rel="stylesheet" href="{{ "/css/bootstrap.min.css" | prepend: site.baseurl }}">
   <link rel="stylesheet" href="{{ "/css/style.css" | prepend: site.baseurl }}">
 
