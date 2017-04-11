@@ -4,15 +4,15 @@
         <meta property="fb:admins" content="{{ include.meta_og.admins }}">
 	<meta property="og:site_name" content="Homer Player">
 {% if include.meta_og.path %}
-        <meta property="og:url" content="{{ site.github.url | replage 'http://', '//' }}{{ include.meta_og.path }}" >
+        <meta property="og:url" content="{{ site.github.url | replace: 'http://', '//' }}{{ include.meta_og.path }}" >
 {% else %}
-	<meta property="og:url" content="{{ site.github.url | replace 'http://', '//' }}{{ page.url }}">
+	<meta property="og:url" content="{{ site.github.url | replace: 'http://', '//' }}{{ page.url }}">
 {% endif %}
 {% if include.meta_og.type %}
 	<meta property="og:type" content="{{ include.meta_og.type }}">
 {% endif %}
 {% if include.meta_og.image %}
-	<meta property="og:image" content="{{ site.github.url | replace 'http://', '//' }}{{ include.meta_og.image.path }}">
+	<meta property="og:image" content="{{ site.github.url | replace: 'http://', '//' }}{{ include.meta_og.image.path }}">
 	<meta property="og:image:width" content="{{ include.meta_og.image.width }}">
 	<meta property="og:image:height" content="{{ include.meta_og.image.height }}">
 {% endif %}
