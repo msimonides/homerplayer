@@ -2,7 +2,7 @@ package com.studio4plus.homerplayer.ui;
 
 import android.animation.Animator;
 
-class SimpleAnimatorListener implements Animator.AnimatorListener {
+public class SimpleAnimatorListener implements Animator.AnimatorListener {
     @Override
     public void onAnimationStart(Animator animator) {
     }

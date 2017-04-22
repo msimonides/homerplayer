@@ -1,4 +1,4 @@
-package com.studio4plus.homerplayer.ui;
+package com.studio4plus.homerplayer.ui.classic;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;

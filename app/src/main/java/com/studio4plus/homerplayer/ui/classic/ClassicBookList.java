@@ -1,10 +1,11 @@
-package com.studio4plus.homerplayer.ui;
+package com.studio4plus.homerplayer.ui.classic;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -16,27 +17,26 @@ import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
-import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
-import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
-import com.studio4plus.homerplayer.model.AudioBookManager;
+import com.studio4plus.homerplayer.ui.UiControllerBookList;
+import com.studio4plus.homerplayer.ui.BookListUi;
+import com.studio4plus.homerplayer.ui.HintOverlay;
+import com.studio4plus.homerplayer.ui.MultitapTouchListener;
+import com.studio4plus.homerplayer.ui.SettingsActivity;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import de.greenrobot.event.EventBus;
-
-public class FragmentBookList extends Fragment {
+public class ClassicBookList extends Fragment implements BookListUi {
 
     private View view;
     private ViewPager bookPager;
     private BookListPagerAdapter bookAdapter;
+    private UiControllerBookList uiControllerBookList;
 
     @Inject public AnalyticsTracker analyticsTracker;
-    @Inject public AudioBookManager audioBookManager;
     @Inject public GlobalSettings globalSettings;
-    @Inject public EventBus eventBus;
 
     @Override
     public View onCreateView(
@@ -46,16 +46,18 @@ public class FragmentBookList extends Fragment {
         view = inflater.inflate(R.layout.fragment_book_list, container, false);
         HomerPlayerApplication.getComponent(view.getContext()).inject(this);
 
-        bookAdapter = new BookListPagerAdapter(getChildFragmentManager(), audioBookManager);
         bookPager = (ViewPager) view.findViewById(R.id.bookListPager);
-        bookPager.setAdapter(bookAdapter);
         bookPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             int currentViewIndex;
+            String currentBookId;
 
             @Override
             public void onPageSelected(int index) {
                 FragmentBookItem itemFragment = (FragmentBookItem) bookAdapter.getItem(index);
-                audioBookManager.setCurrentBook(itemFragment.getAudioBookId());
+                if (!itemFragment.getAudioBookId().equals(currentBookId)) {
+                    currentBookId = itemFragment.getAudioBookId();
+                    uiControllerBookList.changeBook(currentBookId);
+                }
                 currentViewIndex = index;
             }
 
@@ -79,43 +81,31 @@ public class FragmentBookList extends Fragment {
                     }
                 }));
 
-        bookPager.setCurrentItem(
-                bookAdapter.bookIndexToViewIndex(audioBookManager.getCurrentBookIndex()), false);
-
-        eventBus.register(this);
-
         return view;
+    }
+
+    @Override
+    public void updateBookList(List<AudioBook> audioBooks, int currentBookIndex) {
+        bookAdapter = new BookListPagerAdapter(getChildFragmentManager(), audioBooks);
+        bookPager.setAdapter(bookAdapter);
+        bookPager.setCurrentItem(
+                bookAdapter.bookIndexToViewIndex(currentBookIndex), false);
+    }
+
+    @Override
+    public void updateCurrentBook(int currentBookId) {
+
+    }
+
+    @Override
+    public void initWithController(UiControllerBookList uiControllerBookList) {
+        this.uiControllerBookList = uiControllerBookList;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        analyticsTracker.onBookListDisplayed();
         showHintsIfNecessary();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        eventBus.unregister(this);
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEvent(AudioBooksChangedEvent event) {
-        bookAdapter = new BookListPagerAdapter(getChildFragmentManager(), audioBookManager);
-        bookPager.setAdapter(bookAdapter);
-        updateViewPosition();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEvent(CurrentBookChangedEvent event) {
-        updateViewPosition();
-    }
-
-    private void updateViewPosition() {
-        int newBookIndex = audioBookManager.getCurrentBookIndex();
-        if (newBookIndex != bookAdapter.getBookIndex(bookPager.getCurrentItem()))
-            bookPager.setCurrentItem(bookAdapter.bookIndexToViewIndex(newBookIndex), true);
     }
 
     private void showHintsIfNecessary() {
@@ -138,14 +128,14 @@ public class FragmentBookList extends Fragment {
 
         private static final int OFFSET = 1;
 
-        private final List<AudioBook> audioBooks;
+        private final @NonNull List<AudioBook> audioBooks;
 
-        public BookListPagerAdapter(FragmentManager fm, AudioBookManager audioBookManager) {
+        BookListPagerAdapter(@NonNull FragmentManager fm, @NonNull List<AudioBook> audioBooks) {
             super(fm);
-            this.audioBooks = audioBookManager.getAudioBooks();
+            this.audioBooks = audioBooks;
         }
 
-        public int getBookIndex(int viewIndex) {
+        int getBookIndex(int viewIndex) {
             int bookIndex = viewIndex - OFFSET;
             if (bookIndex < 0)
                 return audioBooks.size() + bookIndex;
@@ -156,7 +146,9 @@ public class FragmentBookList extends Fragment {
         @Override
         public Fragment getItem(int viewIndex) {
             int bookIndex = getBookIndex(viewIndex);
-            return FragmentBookItem.newInstance(audioBooks.get(bookIndex).getId());
+            FragmentBookItem item = FragmentBookItem.newInstance(audioBooks.get(bookIndex).getId());
+            item.setController(uiControllerBookList);
+            return item;
         }
 
         @Override
@@ -164,11 +156,11 @@ public class FragmentBookList extends Fragment {
             return audioBooks.size() > 0 ? audioBooks.size() + 2*OFFSET : 0;
         }
 
-        public int bookIndexToViewIndex(int bookIndex) {
+        int bookIndexToViewIndex(int bookIndex) {
             return bookIndex + OFFSET;
         }
 
-        public int wrapViewIndex(int viewIndex) {
+        int wrapViewIndex(int viewIndex) {
             if (viewIndex < OFFSET) {
                 viewIndex += audioBooks.size();
             } else {

@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.support.annotation.NonNull;
 
+import com.studio4plus.homerplayer.ApplicationScope;
 import com.studio4plus.homerplayer.events.BatteryStatusChangeEvent;
 
 import javax.inject.Inject;
@@ -20,7 +21,7 @@ public class BatteryStatusProvider extends BroadcastReceiver {
     private final EventBus eventBus;
 
     @Inject
-    public BatteryStatusProvider(Context applicationContext, EventBus eventBus) {
+    public BatteryStatusProvider(@ApplicationScope Context applicationContext, EventBus eventBus) {
         this.applicationContext = applicationContext;
         this.eventBus = eventBus;
         batteryStatusIntentFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);

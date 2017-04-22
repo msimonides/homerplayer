@@ -118,7 +118,7 @@ public class AnalyticsTracker {
         FlurryAgent.logEvent(FF_REWIND, data);
     }
 
-    public void onFfRewindFinished() {
+    public void onFfRewindFinished(long elapsedWallTimeMs) {
         FlurryAgent.endTimedEvent(FF_REWIND);
     }
 

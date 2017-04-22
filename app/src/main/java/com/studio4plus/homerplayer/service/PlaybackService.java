@@ -5,6 +5,7 @@ import android.content.Context;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -102,9 +103,19 @@ public class PlaybackService
         playbackInProgress.pauseForRewind();
     }
 
-    public void resumeFromRewind(long newTotalPositionMs) {
+    public void resumeFromRewind() {
         Preconditions.checkNotNull(playbackInProgress);
-        playbackInProgress.resumeFromRewind(newTotalPositionMs);
+        playbackInProgress.resumeFromRewind();
+    }
+
+    public long getCurrentTotalPositionMs() {
+        Preconditions.checkNotNull(playbackInProgress);
+        return playbackInProgress.getCurrentTotalPositionMs();
+    }
+
+    public AudioBook getAudioBookBeingPlayed() {
+        Preconditions.checkNotNull(playbackInProgress);
+        return playbackInProgress.audioBook;
     }
 
     public void stopPlayback() {
@@ -114,11 +125,6 @@ public class PlaybackService
             playbackInProgress.stop();
 
         onPlaybackEnded();
-    }
-
-    public void requestElapsedTimeSyncEvent() {
-        if (playbackInProgress != null)
-            playbackInProgress.requestElapsedTimeSyncEvent();
     }
 
     @Override
@@ -190,11 +196,10 @@ public class PlaybackService
 
     private class AudioBookPlayback implements PlaybackController.Observer {
 
-        private final AudioBook audioBook;
-        private final PlaybackController controller;
-        private boolean isPlaying;
+        final @NonNull AudioBook audioBook;
+        private final @NonNull PlaybackController controller;
 
-        private AudioBookPlayback(Player player, AudioBook audioBook, int jumpBackMs) {
+        private AudioBookPlayback(Player player, @NonNull AudioBook audioBook, int jumpBackMs) {
             this.audioBook = audioBook;
 
             controller = player.createPlayback();
@@ -212,22 +217,13 @@ public class PlaybackService
             controller.pause();
         }
 
-        public void resumeFromRewind(long newTotalPositionMs) {
-            audioBook.updateTotalPosition(newTotalPositionMs);
+        public void resumeFromRewind() {
             AudioBook.Position position = audioBook.getLastPosition();
             controller.start(position.file, position.seekPosition);
         }
 
-        public void requestElapsedTimeSyncEvent() {
-            if (isPlaying) {
-                eventBus.post(new PlaybackProgressedEvent(
-                        audioBook, audioBook.getLastPositionTime(controller.getCurrentPosition())));
-            }
-        }
-
-        @Override
-        public void onPlaybackStarted() {
-            isPlaying = true;
+        long getCurrentTotalPositionMs() {
+            return audioBook.getLastPositionTime(controller.getCurrentPosition());
         }
 
         @Override
@@ -237,13 +233,15 @@ public class PlaybackService
         }
 
         @Override
+        public void onPlaybackStarted() {}
+
+        @Override
         public void onDuration(File file, long durationMs) {
             audioBook.offerFileDuration(file, durationMs);
         }
 
         @Override
         public void onPlaybackEnded() {
-            isPlaying = false;
             boolean hasMoreToPlay = audioBook.advanceFile();
             if (hasMoreToPlay) {
                 AudioBook.Position position = audioBook.getLastPosition();
@@ -262,7 +260,6 @@ public class PlaybackService
 
         @Override
         public void onPlayerReleased() {
-            isPlaying = false;
             PlaybackService.this.onPlayerReleased();
         }
     }

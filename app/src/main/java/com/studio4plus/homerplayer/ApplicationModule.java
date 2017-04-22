@@ -30,7 +30,7 @@ public class ApplicationModule {
         this.samplesDownloadUrl = samplesDownloadUrl;
     }
 
-    @Provides
+    @Provides @ApplicationScope
     Context provideContext() {
         return application;
     }

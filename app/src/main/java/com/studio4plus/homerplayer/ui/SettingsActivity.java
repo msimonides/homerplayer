@@ -55,6 +55,7 @@ public class SettingsActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        HomerPlayerApplication.getComponent(this).inject(this);
 
         // Display the fragment as the main content.
         getFragmentManager().beginTransaction()
@@ -75,11 +76,6 @@ public class SettingsActivity extends BaseActivity {
     protected void onStop() {
         super.onStop();
         cancelBlockEventOnStart();
-    }
-
-    @Override
-    protected String getScreenName() {
-        return "Settings";
     }
 
     @Override

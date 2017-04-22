@@ -58,10 +58,6 @@ public class AudioBook {
         return lastPosition;
     }
 
-    public long getLastPositionTime() {
-        return getLastPositionTime(lastPosition.seekPosition);
-    }
-
     public long getLastPositionTime(long lastFileSeekPosition) {
         int fullFileCount = lastPosition.fileIndex;
 

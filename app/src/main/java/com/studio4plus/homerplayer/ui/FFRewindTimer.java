@@ -6,7 +6,7 @@ import android.os.SystemClock;
 import java.util.ArrayList;
 import java.util.List;
 
-class FFRewindTimer implements Runnable {
+public class FFRewindTimer implements Runnable {
 
     public interface Observer {
         void onTimerUpdated(long displayTimeMs);
@@ -22,7 +22,7 @@ class FFRewindTimer implements Runnable {
     private long displayTimeMs;
     private int speedMsPerS = 1000;
 
-    FFRewindTimer(Handler handler, long baseDisplayTimeMs, long maxTimeMs) {
+    public FFRewindTimer(Handler handler, long baseDisplayTimeMs, long maxTimeMs) {
         this.handler = handler;
         this.maxTimeMs = maxTimeMs;
         this.displayTimeMs = baseDisplayTimeMs;

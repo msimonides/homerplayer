@@ -20,7 +20,7 @@ import javax.inject.Inject;
 
 public class SoundBank {
 
-    enum SoundId {
+    public enum SoundId {
         FF_REWIND
     }
 

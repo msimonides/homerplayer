@@ -1,6 +1,7 @@
-package com.studio4plus.homerplayer.ui;
+package com.studio4plus.homerplayer.ui.classic;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -9,10 +10,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.model.AudioBook;
 import com.studio4plus.homerplayer.model.AudioBookManager;
+import com.studio4plus.homerplayer.ui.MainActivity;
+import com.studio4plus.homerplayer.ui.UiControllerBookList;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,6 +34,8 @@ public class FragmentBookItem extends BookListChildFragment {
     @Inject public AudioBookManager audioBookManager;
     @Inject @Named("AUDIOBOOKS_DIRECTORY") public String audioBooksDirectoryName;
 
+    private @Nullable UiControllerBookList controller;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater,
@@ -37,7 +43,7 @@ public class FragmentBookItem extends BookListChildFragment {
             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_book_item, container, false);
         HomerPlayerApplication.getComponent(view.getContext()).inject(this);
-        
+
         Bundle args = getArguments();
         final String bookId = args.getString(ARG_BOOK_ID);
         if (bookId != null) {
@@ -61,8 +67,8 @@ public class FragmentBookItem extends BookListChildFragment {
             startButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    MainActivity mainActivity = (MainActivity) getActivity();
-                    mainActivity.startPlayback(bookId);
+                    Preconditions.checkNotNull(controller);
+                    controller.playCurrentAudiobook();
                     startButton.setEnabled(false);
                 }
             });
@@ -73,6 +79,10 @@ public class FragmentBookItem extends BookListChildFragment {
 
     public String getAudioBookId() {
         return getArguments().getString(ARG_BOOK_ID);
+    }
+
+    void setController(@NonNull UiControllerBookList controller) {
+        this.controller = controller;
     }
 
     private static final String ARG_BOOK_ID = "bookId";
