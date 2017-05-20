@@ -16,7 +16,8 @@ public class HomerPlayerDeviceAdmin extends DeviceAdminReceiver {
 
     @Override
     public void onEnabled(Context context, Intent intent) {
-        API21.enableLockTask(context);
+        if (Build.VERSION.SDK_INT >= 21)
+            API21.enableLockTask(context);
         EventBus.getDefault().post(new DeviceAdminChangeEvent(true));
     }
 
