@@ -2,6 +2,7 @@ package com.studio4plus.homerplayer.ui;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -16,6 +17,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -306,9 +308,7 @@ public class SettingsActivity extends BaseActivity {
             preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(FAQ_URL));
-                    startActivity(i);
+                    openUrl(FAQ_URL);
                     return true;
                 }
             });
@@ -324,6 +324,19 @@ public class SettingsActivity extends BaseActivity {
                     (SwitchPreference) findPreference(GlobalSettings.KEY_KIOSK_MODE);
             kioskModePreference.setChecked(false);
             HomerPlayerDeviceAdmin.clearDeviceOwner(getActivity());
+        }
+
+        private void openUrl(@NonNull String url) {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            try {
+                startActivity(i);
+            }
+            catch(ActivityNotFoundException noActivity) {
+                Preconditions.checkNotNull(getView());
+                Toast.makeText(getView().getContext(),
+                        R.string.pref_no_browser_toast, Toast.LENGTH_LONG).show();
+            }
         }
 
         @SuppressLint("CommitPrefEdits")

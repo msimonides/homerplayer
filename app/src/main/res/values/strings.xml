@@ -23,6 +23,7 @@
     <string name="pref_kiosk_mode_unregister_device_owner_dialog_message">This action will disable the full kiosk mode and cannot be easily undone.\nProceed?</string>
     <string name="pref_kiosk_mode_unregister_device_owner_summary_off">Not a "device owner"</string>
     <string name="pref_kiosk_mode_unregister_device_owner_summary_on">Privilege granted</string>
+    <string name="pref_no_browser_toast">Cannot open website: no web browser found.</string>
     <string name="pref_playback_options_screen_title">Playback settings…</string>
     <string name="pref_playback_speed_title">Playback speed</string>
     <string name="pref_playback_speed_default_value" translatable="false">1.0</string>
