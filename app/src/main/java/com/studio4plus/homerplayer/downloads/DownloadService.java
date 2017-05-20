@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 
 import java.io.BufferedInputStream;
@@ -74,6 +75,7 @@ public class DownloadService extends Service {
         int action = intent.getIntExtra(ACTION_EXTRA, -1);
         switch(action) {
             case ACTION_START_DOWNLOAD: {
+                Crashlytics.log("DownloadService: starting download");
                 Preconditions.checkState(currentDownloadThread == null);
                 String downloadUri = intent.getDataString();
 
@@ -87,6 +89,7 @@ public class DownloadService extends Service {
                 break;
             }
             case ACTION_CANCEL_DOWNLOAD:
+                Crashlytics.log("DownloadService: cancelling download");
                 if (currentDownloadThread != null) {
                     currentDownloadThread.interrupt();
                     currentDownloadThread = null;
@@ -100,11 +103,13 @@ public class DownloadService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        Crashlytics.log("DownloadService: created");
         instance = this;
     }
 
     @Override
     public void onDestroy() {
+        Crashlytics.log("DownloadService: destroying");
         if (currentDownloadThread != null)
             currentDownloadThread.interrupt();
         instance = null;
@@ -118,6 +123,7 @@ public class DownloadService extends Service {
     }
 
     private void onFinished(@NonNull File destinationPath) {
+        Crashlytics.log("DownloadService: download finished");
         Intent intent = new Intent(BROADCAST_DOWNLOAD_FINISHED_ACTION);
         intent.putExtra(DOWNLOAD_FILE_EXTRA, destinationPath.getAbsolutePath());
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
@@ -125,6 +131,7 @@ public class DownloadService extends Service {
     }
 
     private void onFailed(@NonNull String errorMessage) {
+        Crashlytics.log("DownloadService: download failed");
         Intent intent = new Intent(BROADCAST_DOWNLOAD_FINISHED_ACTION);
         intent.putExtra(DOWNLOAD_ERROR_EXTRA, errorMessage);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
