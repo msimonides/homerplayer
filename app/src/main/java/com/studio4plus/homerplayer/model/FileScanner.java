@@ -120,6 +120,10 @@ public class FileScanner {
 
     private void addFilesRecursive(File directory, FileFilter filter, List<File> allFiles) {
         File[] files = directory.listFiles(filter);
+        // listFiles may return null. Skip such directories.
+        if (files == null)
+            return;
+
         Arrays.sort(files, new Comparator<File>() {
             @Override
             public int compare(File lhs, File rhs) {
