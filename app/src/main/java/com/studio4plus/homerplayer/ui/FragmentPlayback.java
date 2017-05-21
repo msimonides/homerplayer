@@ -225,6 +225,7 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
                     if (!isCancelled) {
                         FFRewindTimer timerTask = new FFRewindTimer(v.getHandler(), displayTimeMs, totalTimeMs);
                         timerTask.addObserver(FragmentPlayback.this);
+                        analyticsTracker.onFfRewindStarted(isFF);
                         speedController = new RewindFFSpeedController(timerTask, isFF, ffRewindSound);
                         speedController.start();
                     }
@@ -233,7 +234,6 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
                 @Override
                 public void onAnimationCancel(Animator animator) {
                     isCancelled = true;
-                    analyticsTracker.onFfRewindAborted(isFF);
                     resumeFromRewind();
                 }
             });
@@ -259,8 +259,6 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
                     }
                 });
                 currentAnimator.start();
-                analyticsTracker.onFfRewindFinished(
-                        speedController.runningTimeS(), speedController.isFf);
                 resumeFromRewind();
             }
         }
@@ -281,8 +279,13 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
         }
 
         private void resumeFromRewind() {
-            long newDisplayTimeMs = speedController != null ? speedController.getDisplayTimeMs()
-                    : displayTimeMs;
+            long newDisplayTimeMs = displayTimeMs;
+            if (speedController != null) {
+                newDisplayTimeMs = speedController.getDisplayTimeMs();
+                analyticsTracker.onFfRewindFinished();
+            } else {
+                analyticsTracker.onFfRewindAborted();
+            }
 
             // speedController is destroyed in stopRewind.
             stopRewind();
@@ -375,10 +378,6 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
 
         public long getDisplayTimeMs() {
             return timerTask.getDisplayTimeMs();
-        }
-
-        public long runningTimeS() {
-            return TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - startTimeNano);
         }
 
         private void setSpeedLevel(int speedLevelIndex) {

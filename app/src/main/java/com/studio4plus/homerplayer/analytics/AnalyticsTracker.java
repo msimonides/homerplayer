@@ -13,6 +13,8 @@ import com.studio4plus.homerplayer.model.AudioBook;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -24,7 +26,7 @@ public class AnalyticsTracker {
     private static final String BOOKS_INSTALLED_TYPE_KEY = "type";
     private static final String BOOK_PLAYED = "bookPlayed";
     private static final String BOOK_PLAYED_TYPE_KEY = "type";
-    private static final String BOOK_PLAYED_DURATION_KEY = "durationSec";
+    private static final String BOOK_PLAYED_DURATION_KEY = "durationBucket";
     private static final String BOOK_PLAYED_TYPE_SAMPLE = "sample";
     private static final String BOOK_PLAYED_TYPE_USER_CONTENT = "userContent";
     private static final String BOOK_SWIPED = "bookSwiped";
@@ -35,6 +37,8 @@ public class AnalyticsTracker {
     private static final String SAMPLES_DOWNLOAD_STARTED = "samplesDownloadStarted";
     private static final String SAMPLES_DOWNLOAD_SUCCESS = "samplesDownloadSuccess";
     private static final String SAMPLES_DOWNLOAD_FAILURE = "samplesDownloadFailure";
+
+    private static final NavigableMap<Long, String> PLAYBACK_DURATION_BUCKETS = new TreeMap<>();
 
     private final GlobalSettings globalSettings;
 
@@ -93,7 +97,8 @@ public class AnalyticsTracker {
                              : BOOK_PLAYED_TYPE_USER_CONTENT);
             long elapsedTimeS = TimeUnit.NANOSECONDS.toSeconds(
                     System.nanoTime() - currentlyPlayed.startTimeNano);
-            data.put(BOOK_PLAYED_DURATION_KEY, Long.toString(elapsedTimeS));
+            Map.Entry<Long, String> bucket = PLAYBACK_DURATION_BUCKETS.floorEntry(elapsedTimeS);
+            data.put(BOOK_PLAYED_DURATION_KEY, bucket.getValue());
             currentlyPlayed = null;
             FlurryAgent.logEvent(BOOK_PLAYED, data);
         }
@@ -103,17 +108,18 @@ public class AnalyticsTracker {
         FlurryAgent.logEvent(BOOK_SWIPED);
     }
 
-    public void onFfRewindFinished(long runningTimeS, boolean isFf) {
+    public void onFfRewindStarted(boolean isFf) {
         Map<String, String> data = new HashMap<>();
-        data.put(FF_REWIND_DURATION_KEY, Long.toString(runningTimeS));
         data.put(FF_REWIND_IS_FF_KEY, Boolean.toString(isFf));
         FlurryAgent.logEvent(FF_REWIND, data);
     }
 
-    public void onFfRewindAborted(boolean isFf) {
-        Map<String, String> data =
-                Collections.singletonMap(FF_REWIND_IS_FF_KEY, Boolean.toString(isFf));
-        FlurryAgent.logEvent(FF_REWIND_ABORTED, data);
+    public void onFfRewindFinished() {
+        FlurryAgent.endTimedEvent(FF_REWIND);
+    }
+
+    public void onFfRewindAborted() {
+        FlurryAgent.logEvent(FF_REWIND_ABORTED);
     }
 
     private static class CurrentlyPlayed {
@@ -124,5 +130,14 @@ public class AnalyticsTracker {
             this.audioBook = audioBook;
             this.startTimeNano = startTimeNano;
         }
+    }
+
+    static {
+        PLAYBACK_DURATION_BUCKETS.put(0L, "0 - 30s");
+        PLAYBACK_DURATION_BUCKETS.put(30L, "30 - 60s");
+        PLAYBACK_DURATION_BUCKETS.put(60L, "1 - 5m");
+        PLAYBACK_DURATION_BUCKETS.put(5 * 60L, "5 - 15m");
+        PLAYBACK_DURATION_BUCKETS.put(15 * 60L, "15 - 30m");
+        PLAYBACK_DURATION_BUCKETS.put(30 * 60L, "> 30m");
     }
 }
