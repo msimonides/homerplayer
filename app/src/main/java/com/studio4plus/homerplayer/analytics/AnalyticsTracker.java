@@ -32,7 +32,6 @@ public class AnalyticsTracker {
     private static final String BOOK_SWIPED = "bookSwiped";
     private static final String FF_REWIND = "ffRewind";
     private static final String FF_REWIND_ABORTED = "ffRewindAborted";
-    private static final String FF_REWIND_DURATION_KEY = "ffRewindDurationSec";
     private static final String FF_REWIND_IS_FF_KEY = "isFf";
     private static final String SAMPLES_DOWNLOAD_STARTED = "samplesDownloadStarted";
     private static final String SAMPLES_DOWNLOAD_SUCCESS = "samplesDownloadSuccess";

@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.ApplicationComponent;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
@@ -63,10 +62,11 @@ public class FragmentNoBooks extends Fragment {
         downloadSamplesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Crashlytics.log("Download: starting download on click");
-                eventBus.post(new DemoSamplesInstallationStartedEvent());
-                samplesDownloadController.startSamplesDownload();
-                showDownloadAndInstallationProgress();
+                if (progressDialog == null) {  // Prevents double-click from starting 2 downloads.
+                    eventBus.post(new DemoSamplesInstallationStartedEvent());
+                    samplesDownloadController.startSamplesDownload();
+                    showDownloadAndInstallationProgress();
+                }
             }
         });
 
@@ -92,15 +92,12 @@ public class FragmentNoBooks extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (samplesDownloadController.isDownloading()) {
-            Crashlytics.log("Download: showing dialog onStart");
+        if (samplesDownloadController.isDownloading())
             showDownloadAndInstallationProgress();
-        }
     }
 
     @Override
     public void onStop() {
-        Crashlytics.log("Download: dismissing dialog onStop");
         dismissDialog();
         super.onStop();
     }
@@ -114,7 +111,6 @@ public class FragmentNoBooks extends Fragment {
                     .setPositiveButton(android.R.string.ok, null)
                     .show();
         }
-        Crashlytics.log("Download: dismissing dialog on finish");
         dismissDialog();
     }
 
@@ -172,7 +168,6 @@ public class FragmentNoBooks extends Fragment {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Crashlytics.log("Download: dismissing dialog on cancel");
                         dismissDialog();
                         samplesDownloadController.cancelDownload();
                     }
