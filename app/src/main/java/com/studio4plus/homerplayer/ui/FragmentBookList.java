@@ -90,6 +90,7 @@ public class FragmentBookList extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        analyticsTracker.onBookListDisplayed();
         showHintsIfNecessary();
     }
 

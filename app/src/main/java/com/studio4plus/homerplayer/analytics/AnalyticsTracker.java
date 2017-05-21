@@ -30,6 +30,7 @@ public class AnalyticsTracker {
     private static final String BOOK_PLAYED_TYPE_SAMPLE = "sample";
     private static final String BOOK_PLAYED_TYPE_USER_CONTENT = "userContent";
     private static final String BOOK_SWIPED = "bookSwiped";
+    private static final String BOOK_LIST_DISPLAYED = "bookListDisplayed";
     private static final String FF_REWIND = "ffRewind";
     private static final String FF_REWIND_ABORTED = "ffRewindAborted";
     private static final String FF_REWIND_IS_FF_KEY = "isFf";
@@ -105,6 +106,10 @@ public class AnalyticsTracker {
 
     public void onBookSwiped() {
         FlurryAgent.logEvent(BOOK_SWIPED);
+    }
+
+    public void onBookListDisplayed() {
+        FlurryAgent.logEvent(BOOK_LIST_DISPLAYED);
     }
 
     public void onFfRewindStarted(boolean isFf) {
