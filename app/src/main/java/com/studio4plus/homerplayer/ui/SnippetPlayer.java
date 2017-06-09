@@ -1,5 +1,7 @@
 package com.studio4plus.homerplayer.ui;
 
+import android.content.Context;
+
 import com.studio4plus.homerplayer.model.AudioBook;
 import com.studio4plus.homerplayer.player.PlaybackController;
 import com.studio4plus.homerplayer.player.Player;
@@ -17,8 +19,8 @@ public class SnippetPlayer implements PlaybackController.Observer {
     private long startPositionMs = -1;
     private boolean isPlaying = false;
 
-    public SnippetPlayer(float playbackSpeed) {
-        Player player = new Player();
+    public SnippetPlayer(Context context, float playbackSpeed) {
+        Player player = new Player(context);
         player.setPlaybackSpeed(playbackSpeed);
         playbackController = player.createPlayback();
         playbackController.setObserver(this);

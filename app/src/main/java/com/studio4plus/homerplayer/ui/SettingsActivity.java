@@ -398,7 +398,7 @@ public class SettingsActivity extends BaseActivity {
 
             AudioBook book = audioBookManager.getCurrentBook();
             if (book != null) {
-                snippetPlayer = new SnippetPlayer(globalSettings.getPlaybackSpeed());
+                snippetPlayer = new SnippetPlayer(getActivity(), globalSettings.getPlaybackSpeed());
 
                 snippetPlayer.play(book);
             }

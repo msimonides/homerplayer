@@ -1,23 +1,20 @@
 package com.studio4plus.homerplayer.player;
 
-import android.annotation.TargetApi;
-import android.media.PlaybackParams;
+import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
-import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.Renderer;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.mediacodec.MediaCodecSelector;
+import com.google.android.exoplayer2.extractor.mp3.Mp3Extractor;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.FileDataSourceFactory;
 import com.google.common.base.Preconditions;
@@ -29,16 +26,11 @@ import java.util.List;
 public class Player {
 
     private final ExoPlayer exoPlayer;
-    private final Renderer audioRenderer;
 
     private float playbackSpeed = 1.0f;
 
-    public Player() {
-        TrackSelector trackSelector = new DefaultTrackSelector();
-        audioRenderer = new SonicMediaCodecAudioRenderer(MediaCodecSelector.DEFAULT);
-        Renderer renderers[] = { audioRenderer };
-
-        exoPlayer = ExoPlayerFactory.newInstance(renderers, trackSelector);
+    public Player(Context context) {
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(context, new DefaultTrackSelector());
     }
 
     public PlaybackController createPlayback() {
@@ -51,13 +43,8 @@ public class Player {
 
     public void setPlaybackSpeed(float speed) {
         this.playbackSpeed = speed;
-        if (Build.VERSION.SDK_INT < 23) {
-            ExoPlayer.ExoPlayerMessage message = new ExoPlayer.ExoPlayerMessage(
-                    audioRenderer, SonicMediaCodecAudioRenderer.MSG_SET_PLAYBACK_SPEED, speed);
-            exoPlayer.sendMessages(message);
-        } else {
-            API23.setPlaybackSpeed(exoPlayer, audioRenderer, speed);
-        }
+        PlaybackParameters params = new PlaybackParameters(speed, 1.0f);
+        exoPlayer.setPlaybackParameters(params);
     }
 
     private void prepareAudioFile(File file, long startPositionMs) {
@@ -228,17 +215,6 @@ public class Player {
                 prepareAudioFile(currentFile, 0);
             }
             return hasNext;
-        }
-    }
-
-    @TargetApi(23)
-    private static class API23 {
-        static void setPlaybackSpeed(ExoPlayer player, Renderer renderer, float speed) {
-            PlaybackParams params = new PlaybackParams();
-            params.setSpeed(speed);
-            ExoPlayer.ExoPlayerMessage message =
-                    new ExoPlayer.ExoPlayerMessage(renderer, C.MSG_SET_PLAYBACK_PARAMS, params);
-            player.sendMessages(message);
         }
     }
 }
