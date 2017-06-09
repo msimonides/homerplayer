@@ -51,8 +51,10 @@ public class Player {
         Uri fileUri = Uri.fromFile(file);
 
         DataSource.Factory dataSourceFactory = new FileDataSourceFactory();
+        DefaultExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+        extractorsFactory.setMp3ExtractorFlags(Mp3Extractor.FLAG_ENABLE_CONSTANT_BITRATE_SEEKING);
         MediaSource source = new ExtractorMediaSource(
-                fileUri, dataSourceFactory, new DefaultExtractorsFactory(), null, null);
+                fileUri, dataSourceFactory, extractorsFactory, null, null);
 
         exoPlayer.seekTo(startPositionMs);
         exoPlayer.prepare(source, false, true);
