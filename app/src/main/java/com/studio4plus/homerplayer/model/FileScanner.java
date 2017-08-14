@@ -65,10 +65,12 @@ public class FileScanner {
     private void scanAndAppendBooks(File audioBooksDir, List<FileSet> fileSets) {
         if (audioBooksDir.exists() && audioBooksDir.isDirectory() && audioBooksDir.canRead()) {
             File[] audioBookDirs = audioBooksDir.listFiles(new DirectoryFilter());
-            for (File directory : audioBookDirs) {
-                FileSet fileSet = createFileSet(directory);
-                if (fileSet != null && !fileSets.contains(fileSet))
-                    fileSets.add(fileSet);
+            if (audioBookDirs != null) {
+                for (File directory : audioBookDirs) {
+                    FileSet fileSet = createFileSet(directory);
+                    if (fileSet != null && !fileSets.contains(fileSet))
+                        fileSets.add(fileSet);
+                }
             }
         }
     }
