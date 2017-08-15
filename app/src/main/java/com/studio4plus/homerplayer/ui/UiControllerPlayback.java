@@ -59,8 +59,9 @@ public class UiControllerPlayback {
 
         eventBus.register(this);
 
-        if (playbackService.isInPlaybackMode())
+        if (playbackService.getState() == PlaybackService.State.PLAYBACK) {
             ui.onPlaybackProgressed(playbackService.getCurrentTotalPositionMs());
+        }
     }
 
     void shutdown() {

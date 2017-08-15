@@ -37,6 +37,12 @@ public class PlaybackService
         extends Service
         implements FaceDownDetector.Listener, AudioManager.OnAudioFocusChangeListener {
 
+    public enum State {
+        IDLE,
+        PREPARATION,
+        PLAYBACK
+    };
+
     private static final int NOTIFICATION = R.string.playback_service_notification;
     private static final PlaybackStoppingEvent PLAYBACK_STOPPING_EVENT = new PlaybackStoppingEvent();
     private static final PlaybackStoppedEvent PLAYBACK_STOPPED_EVENT = new PlaybackStoppedEvent();
@@ -94,8 +100,15 @@ public class PlaybackService
         }
     }
 
-    public boolean isInPlaybackMode() {
-        return player != null;
+    public State getState() {
+        if (player == null) {
+            return State.IDLE;
+        } else if (durationQueryInProgress != null) {
+            return State.PREPARATION;
+        } else {
+            Preconditions.checkNotNull(playbackInProgress);
+            return State.PLAYBACK;
+        }
     }
 
     public void pauseForRewind() {

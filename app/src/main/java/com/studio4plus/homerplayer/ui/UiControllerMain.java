@@ -110,7 +110,7 @@ public class UiControllerMain implements ServiceConnection {
 
     private void setInitialState() {
         Preconditions.checkNotNull(playbackService);
-        if (playbackService.isInPlaybackMode()) {
+        if (playbackService.getState() != PlaybackService.State.IDLE) {
             changeState(State.PLAYBACK);
         } else if (hasAnyBooks()) {
             changeState(State.BOOK_LIST);
