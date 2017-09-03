@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
@@ -41,7 +42,7 @@ public class PlaybackService
         IDLE,
         PREPARATION,
         PLAYBACK
-    };
+    }
 
     private static final int NOTIFICATION = R.string.playback_service_notification;
     private static final PlaybackStoppingEvent PLAYBACK_STOPPING_EVENT = new PlaybackStoppingEvent();
@@ -93,8 +94,10 @@ public class PlaybackService
         startForeground(NOTIFICATION, createNotification());
 
         if (book.getTotalDurationMs() == AudioBook.UNKNOWN_POSITION) {
+            Crashlytics.log("PlaybackService.startPlaybac: create DurationQuery");
             durationQueryInProgress = new DurationQuery(player, book);
         } else {
+            Crashlytics.log("PlaybackService.startPlaybac: create AudioBookPlayback");
             playbackInProgress = new AudioBookPlayback(
                     player, book, globalSettings.getJumpBackPreferenceMs());
         }
@@ -137,6 +140,7 @@ public class PlaybackService
         else if (playbackInProgress != null)
             playbackInProgress.stop();
 
+        Crashlytics.log("PlaybackService.stopPlayback");
         onPlaybackEnded();
     }
 
@@ -172,6 +176,7 @@ public class PlaybackService
     }
 
     private void onPlayerReleased() {
+        Crashlytics.log("PlaybackService.onPlayerReleased");
         if (playbackInProgress != null || durationQueryInProgress != null) {
             onPlaybackEnded();
         }
@@ -256,6 +261,8 @@ public class PlaybackService
         @Override
         public void onPlaybackEnded() {
             boolean hasMoreToPlay = audioBook.advanceFile();
+            Crashlytics.log("PlaybackService.AudioBookPlayback.onPlaybackEnded: " +
+                    (hasMoreToPlay ? "more to play" : "finished"));
             if (hasMoreToPlay) {
                 AudioBook.Position position = audioBook.getLastPosition();
                 controller.start(position.file, position.seekPosition);
@@ -301,6 +308,7 @@ public class PlaybackService
 
         @Override
         public void onFinished() {
+            Crashlytics.log("PlaybackService.DurationQuery.onFinished");
             Preconditions.checkState(durationQueryInProgress == this);
             durationQueryInProgress = null;
             playbackInProgress = new AudioBookPlayback(

@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
@@ -128,9 +129,11 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     private void changeState(State newState) {
+        Crashlytics.log("UI: leave state: " + currentState.name());
         currentState.onLeaveState();
         State previousState = currentState;
         currentState = newState;
+        Crashlytics.log("UI: enter state: " + currentState.name());
         currentState.onEnterState(this, previousState);
     }
 
