@@ -12,6 +12,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
@@ -109,7 +110,7 @@ public class ClassicBookList extends Fragment implements BookListUi {
     }
 
     private void showHintsIfNecessary() {
-        if (isResumed() && isVisible()) {
+        if (isResumed() && isVisible() && !isAnyHintVisible()) {
             if (!globalSettings.browsingHintShown()) {
                 HintOverlay overlay = new HintOverlay(
                         view, R.id.browseHintOverlayStub, R.string.hint_browsing, R.drawable.hint_horizontal_swipe);
@@ -122,6 +123,12 @@ public class ClassicBookList extends Fragment implements BookListUi {
                 globalSettings.setSettingsHintShown();
             }
         }
+    }
+
+    private boolean isAnyHintVisible() {
+        ViewStub browseHintStub = (ViewStub)view.findViewById(R.id.browseHintOverlayStub);
+        ViewStub settingsHintStub = (ViewStub) view.findViewById(R.id.settingsHintOverlayStub);
+        return  browseHintStub == null || settingsHintStub == null;
     }
 
     private class BookListPagerAdapter extends FragmentStatePagerAdapter {
