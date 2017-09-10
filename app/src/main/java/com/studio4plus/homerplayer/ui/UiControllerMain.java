@@ -64,6 +64,7 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     void onActivityStart() {
+        Crashlytics.log("activity start");
         if (playbackService != null)
             setInitialState();
     }
@@ -73,6 +74,7 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     void onActivityStop() {
+        Crashlytics.log("UI: leave state " + currentState + " (activity stop)");
         currentState.onLeaveState();
         currentState = State.INIT;
     }
@@ -99,6 +101,8 @@ public class UiControllerMain implements ServiceConnection {
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder service) {
+        Crashlytics.log("onServiceConnected");
+        Preconditions.checkState(playbackService == null);
         playbackService = ((PlaybackService.ServiceBinder) service).getService();
         if (currentState == State.INIT)
             setInitialState();
@@ -112,6 +116,7 @@ public class UiControllerMain implements ServiceConnection {
     private void setInitialState() {
         Preconditions.checkNotNull(playbackService);
         if (playbackService.getState() != PlaybackService.State.IDLE) {
+            Preconditions.checkState(hasAnyBooks());
             changeState(State.PLAYBACK);
         } else if (hasAnyBooks()) {
             changeState(State.BOOK_LIST);

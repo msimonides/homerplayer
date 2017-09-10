@@ -36,6 +36,7 @@ public class UiControllerBookList {
             this.speakerProvider = speakerProvider;
         }
 
+        @NonNull
         public UiControllerBookList create(
                 @NonNull UiControllerMain uiControllerMain, @NonNull BookListUi ui) {
             return new UiControllerBookList(
