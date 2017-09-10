@@ -171,6 +171,12 @@ public class UiControllerMain implements ServiceConnection {
             }
 
             @Override
+            void onPlaybackStop(@NonNull UiControllerMain mainController) {}
+
+            @Override
+            void onBooksChanged(@NonNull UiControllerMain mainController) {}
+
+            @Override
             void onLeaveState() {
             }
         },
