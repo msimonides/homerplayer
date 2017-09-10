@@ -29,6 +29,7 @@ import com.studio4plus.homerplayer.ui.MainActivity;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -55,6 +56,7 @@ public class PlaybackService
     private DurationQuery durationQueryInProgress;
     private AudioBookPlayback playbackInProgress;
     private FaceDownDetector faceDownDetector;
+    private Handler handler;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -67,9 +69,9 @@ public class PlaybackService
         HomerPlayerApplication.getComponent(getApplicationContext()).inject(this);
         // TODO: use Dagger to create FaceDownDetector?
         SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        handler = new Handler(getMainLooper());
         if (FaceDownDetector.hasSensors(sensorManager)) {
-            faceDownDetector =
-                    new FaceDownDetector(sensorManager, new Handler(getMainLooper()), this);
+            faceDownDetector = new FaceDownDetector(sensorManager, handler, this);
         }
     }
 
@@ -99,7 +101,7 @@ public class PlaybackService
         } else {
             Crashlytics.log("PlaybackService.startPlaybac: create AudioBookPlayback");
             playbackInProgress = new AudioBookPlayback(
-                    player, book, globalSettings.getJumpBackPreferenceMs());
+                    player, handler, book, globalSettings.getJumpBackPreferenceMs());
         }
     }
 
@@ -216,15 +218,31 @@ public class PlaybackService
 
         final @NonNull AudioBook audioBook;
         private final @NonNull PlaybackController controller;
+        private final @NonNull Handler handler;
+        private final @NonNull Runnable updatePosition = new Runnable() {
+            @Override
+            public void run() {
+                audioBook.updatePosition(controller.getCurrentPosition());
+                handler.postDelayed(updatePosition, UPDATE_TIME_MS);
+            }
+        };
 
-        private AudioBookPlayback(Player player, @NonNull AudioBook audioBook, int jumpBackMs) {
+        private final long UPDATE_TIME_MS = TimeUnit.SECONDS.toMillis(10);
+
+        private AudioBookPlayback(
+                @NonNull Player player,
+                @NonNull Handler handler,
+                @NonNull AudioBook audioBook,
+                int jumpBackMs) {
             this.audioBook = audioBook;
+            this.handler = handler;
 
             controller = player.createPlayback();
             controller.setObserver(this);
             AudioBook.Position position = audioBook.getLastPosition();
             long startPositionMs = Math.max(0, position.seekPosition - jumpBackMs);
             controller.start(position.file, startPositionMs);
+            handler.postDelayed(updatePosition, UPDATE_TIME_MS);
         }
 
         public void stop() {
@@ -232,12 +250,14 @@ public class PlaybackService
         }
 
         public void pauseForRewind() {
+            handler.removeCallbacks(updatePosition);
             controller.pause();
         }
 
         public void resumeFromRewind() {
             AudioBook.Position position = audioBook.getLastPosition();
             controller.start(position.file, position.seekPosition);
+            handler.postDelayed(updatePosition, UPDATE_TIME_MS);
         }
 
         long getCurrentTotalPositionMs() {
@@ -267,6 +287,7 @@ public class PlaybackService
                 AudioBook.Position position = audioBook.getLastPosition();
                 controller.start(position.file, position.seekPosition);
             } else {
+                handler.removeCallbacks(updatePosition);
                 audioBook.resetPosition();
                 PlaybackService.this.onPlaybackEnded();
                 controller.release();
@@ -275,6 +296,7 @@ public class PlaybackService
 
         @Override
         public void onPlaybackStopped(long currentPositionMs) {
+            handler.removeCallbacks(updatePosition);
             audioBook.updatePosition(currentPositionMs);
         }
 
@@ -312,7 +334,7 @@ public class PlaybackService
             Preconditions.checkState(durationQueryInProgress == this);
             durationQueryInProgress = null;
             playbackInProgress = new AudioBookPlayback(
-                    player, audioBook, globalSettings.getJumpBackPreferenceMs());
+                    player, handler, audioBook, globalSettings.getJumpBackPreferenceMs());
         }
 
         @Override
