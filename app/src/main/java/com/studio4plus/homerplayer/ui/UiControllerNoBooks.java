@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
@@ -60,7 +59,7 @@ public class UiControllerNoBooks {
 
         ui.initWithController(this);
 
-        if (samplesDownloadController.isDownloading())
+        if (samplesDownloadController.isDownloading() || samplesDownloadController.isInstalling())
             showInstallProgress();
     }
 
@@ -71,9 +70,12 @@ public class UiControllerNoBooks {
     }
 
     public void abortSamplesInstallation() {
-        Preconditions.checkState(samplesDownloadController.isDownloading());
-        samplesDownloadController.cancelDownload();
-        stopProgressReceiver();
+        Preconditions.checkState(samplesDownloadController.isDownloading() || samplesDownloadController.isInstalling());
+        // Can't cancel installation.
+        if (samplesDownloadController.isDownloading()) {
+            samplesDownloadController.cancelDownload();
+            stopProgressReceiver();
+        }
     }
 
     void shutdown() {

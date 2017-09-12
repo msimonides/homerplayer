@@ -158,6 +158,8 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            // Note: the dialog will dismiss itself even if the controller doesn't
+                            // abort the installation.
                             controller.abortSamplesInstallation();
                         }
                     });

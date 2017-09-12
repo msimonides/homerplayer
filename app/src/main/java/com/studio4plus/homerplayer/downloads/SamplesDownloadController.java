@@ -59,13 +59,18 @@ public class SamplesDownloadController {
 
     @MainThread
     public boolean isDownloading() {
-        return DownloadService.isDownloading() || isInstalling;
+        return DownloadService.isDownloading();
+    }
+
+    @MainThread
+    public boolean isInstalling() {
+        return isInstalling;
     }
 
     @MainThread
     public void cancelDownload() {
-        if (isDownloading())
-            context.startService(DownloadService.createCancelIntent(context));
+        Preconditions.checkState(isDownloading());
+        context.startService(DownloadService.createCancelIntent(context));
     }
 
     @MainThread
