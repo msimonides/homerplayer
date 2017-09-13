@@ -35,7 +35,7 @@ public class UiControllerMain implements ServiceConnection {
 
     private @Nullable PlaybackService playbackService;
 
-    private @NonNull State currentState = State.INIT;
+    private @NonNull State currentState = new InitState();
 
     @Inject
     UiControllerMain(@NonNull Activity activity,
@@ -76,7 +76,7 @@ public class UiControllerMain implements ServiceConnection {
     void onActivityStop() {
         Crashlytics.log("UI: leave state " + currentState + " (activity stop)");
         currentState.onLeaveState();
-        currentState = State.INIT;
+        currentState = new InitState();
     }
 
     void onActivityDestroy() {
@@ -96,7 +96,7 @@ public class UiControllerMain implements ServiceConnection {
 
     void playCurrentAudiobook() {
         Preconditions.checkNotNull(currentAudioBook());
-        changeState(State.PLAYBACK);
+        changeState(StateFactory.PLAYBACK);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class UiControllerMain implements ServiceConnection {
         Crashlytics.log("onServiceConnected");
         Preconditions.checkState(playbackService == null);
         playbackService = ((PlaybackService.ServiceBinder) service).getService();
-        if (currentState == State.INIT)
+        if (currentState instanceof InitState)
             setInitialState();
     }
 
@@ -117,11 +117,11 @@ public class UiControllerMain implements ServiceConnection {
         Preconditions.checkNotNull(playbackService);
         if (playbackService.getState() != PlaybackService.State.IDLE) {
             Preconditions.checkState(hasAnyBooks());
-            changeState(State.PLAYBACK);
+            changeState(StateFactory.PLAYBACK);
         } else if (hasAnyBooks()) {
-            changeState(State.BOOK_LIST);
+            changeState(StateFactory.BOOK_LIST);
         } else {
-            changeState(State.NO_BOOKS);
+            changeState(StateFactory.NO_BOOKS);
         }
     }
 
@@ -133,13 +133,11 @@ public class UiControllerMain implements ServiceConnection {
         return audioBookManager.getCurrentBook();
     }
 
-    private void changeState(State newState) {
-        Crashlytics.log("UI: leave state: " + currentState.name());
+    private void changeState(StateFactory newStateFactory) {
+        Crashlytics.log("UI: leave state: " + currentState.getClass().getSimpleName());
         currentState.onLeaveState();
-        State previousState = currentState;
-        currentState = newState;
-        Crashlytics.log("UI: enter state: " + currentState.name());
-        currentState.onEnterState(this, previousState);
+        Crashlytics.log("UI: create state: " + newStateFactory.name());
+        currentState = newStateFactory.create(this, currentState);
     }
 
     @NonNull
@@ -162,115 +160,7 @@ public class UiControllerMain implements ServiceConnection {
         return playbackControllerFactory.create(playbackService, playbackUi);
     }
 
-    private enum State {
-        INIT {
-            @Override
-            void onEnterState(@NonNull UiControllerMain mainController,
-                              @NonNull State previousState) {
-                Preconditions.checkState(false);  // Never called.
-            }
-
-            @Override
-            void onPlaybackStop(@NonNull UiControllerMain mainController) {}
-
-            @Override
-            void onBooksChanged(@NonNull UiControllerMain mainController) {}
-
-            @Override
-            void onLeaveState() {
-            }
-        },
-        NO_BOOKS {
-            private @Nullable UiControllerNoBooks controller;
-
-            @Override
-            public void onEnterState(@NonNull UiControllerMain mainController,
-                                     @NonNull State previousState) {
-                controller = mainController.showNoBooks(previousState != INIT);
-            }
-
-            @Override
-            public void onLeaveState() {
-                Preconditions.checkNotNull(controller);
-                controller.shutdown();
-                controller = null;
-            }
-
-            @Override
-            public void onBooksChanged(@NonNull UiControllerMain mainController) {
-                if (mainController.hasAnyBooks())
-                    mainController.changeState(BOOK_LIST);
-            }
-        },
-        BOOK_LIST {
-            private @Nullable UiControllerBookList controller;
-
-            @Override
-            void onEnterState(@NonNull UiControllerMain mainController,
-                              @NonNull State previousState) {
-                controller = mainController.showBookList(previousState != INIT);
-            }
-
-            @Override
-            void onLeaveState() {
-                Preconditions.checkNotNull(controller);
-                controller.shutdown();
-                controller = null;
-            }
-
-            @Override
-            void onBooksChanged(@NonNull UiControllerMain mainController) {
-                if (!mainController.hasAnyBooks())
-                    mainController.changeState(NO_BOOKS);
-            }
-        },
-        PLAYBACK {
-            private @Nullable UiControllerPlayback controller;
-            private @Nullable AudioBook playingAudioBook;
-
-            @Override
-            void onEnterState(@NonNull UiControllerMain mainController,
-                              @NonNull State previousState) {
-                controller = mainController.showPlayback(previousState != INIT);
-                playingAudioBook = mainController.currentAudioBook();
-                if (previousState != INIT) {
-                    Preconditions.checkNotNull(mainController.currentAudioBook());
-                    controller.startPlayback(mainController.currentAudioBook());
-                }
-            }
-
-            @Override
-            void onActivityPause() {
-                Preconditions.checkNotNull(controller);
-                controller.stopRewindIfActive();
-            }
-
-            @Override
-            void onLeaveState() {
-                Preconditions.checkNotNull(controller);
-                controller.shutdown();
-                controller = null;
-                playingAudioBook = null;
-            }
-
-            @Override
-            void onPlaybackStop(@NonNull UiControllerMain mainController) {
-                mainController.changeState(mainController.hasAnyBooks() ? BOOK_LIST : NO_BOOKS);
-            }
-
-            @Override
-            void onBooksChanged(@NonNull UiControllerMain mainController) {
-                Preconditions.checkNotNull(controller);
-                if (playingAudioBook != null &&
-                        playingAudioBook != mainController.currentAudioBook()) {
-                    controller.stopPlayback();
-                    playingAudioBook = null;
-                }
-            }
-        };
-
-        abstract void onEnterState(@NonNull UiControllerMain mainController,
-                                   @NonNull State previousState);
+    private static abstract class State {
         abstract void onLeaveState();
 
         void onPlaybackStop(@NonNull UiControllerMain mainController) {
@@ -282,6 +172,121 @@ public class UiControllerMain implements ServiceConnection {
         }
 
         void onActivityPause() {}
+    }
+
+    private static class InitState extends State {
+        @Override
+        void onPlaybackStop(@NonNull UiControllerMain mainController) {}
+
+        @Override
+        void onBooksChanged(@NonNull UiControllerMain mainController) {}
+
+        @Override
+        void onLeaveState() {}
+    }
+
+    private static class NoBooksState extends State {
+        private @NonNull UiControllerNoBooks controller;
+
+        NoBooksState(@NonNull UiControllerMain mainController, @NonNull State previousState) {
+            this.controller = mainController.showNoBooks(!(previousState instanceof InitState));
+        }
+
+        @Override
+        public void onLeaveState() {
+            controller.shutdown();
+        }
+
+        @Override
+        public void onBooksChanged(@NonNull UiControllerMain mainController) {
+            if (mainController.hasAnyBooks())
+                mainController.changeState(StateFactory.BOOK_LIST);
+        }
+    }
+
+    private enum StateFactory {
+        NO_BOOKS {
+            @Override
+            State create(@NonNull UiControllerMain mainController, @NonNull State previousState) {
+                return new NoBooksState(mainController, previousState);
+            }
+        },
+        BOOK_LIST {
+            @Override
+            State create(@NonNull UiControllerMain mainController, @NonNull State previousState) {
+                return new BookListState(mainController, previousState);
+            }
+        },
+        PLAYBACK {
+            @Override
+            State create(@NonNull UiControllerMain mainController, @NonNull State previousState) {
+                return new PlaybackState(mainController, previousState);
+            }
+        };
+
+        abstract State create(
+                @NonNull UiControllerMain mainController, @NonNull State previousState);
+    }
+
+    private static class BookListState extends State {
+        private @NonNull UiControllerBookList controller;
+
+        BookListState(@NonNull UiControllerMain mainController, @NonNull State previousState) {
+            controller = mainController.showBookList(!(previousState instanceof InitState));
+        }
+
+        @Override
+        void onLeaveState() {
+            controller.shutdown();
+        }
+
+        @Override
+        void onBooksChanged(@NonNull UiControllerMain mainController) {
+            if (!mainController.hasAnyBooks())
+                mainController.changeState(StateFactory.NO_BOOKS);
+        }
+    }
+
+    private static class PlaybackState extends State {
+        private @NonNull UiControllerPlayback controller;
+        private @Nullable AudioBook playingAudioBook;
+
+        PlaybackState(@NonNull UiControllerMain mainController, @NonNull State previousState) {
+            controller = mainController.showPlayback(!(previousState instanceof InitState));
+            playingAudioBook = mainController.currentAudioBook();
+            if (!(previousState instanceof InitState)) {
+                Preconditions.checkNotNull(playingAudioBook);
+                controller.startPlayback(playingAudioBook);
+            }
+        }
+
+        @Override
+        void onActivityPause() {
+            Preconditions.checkNotNull(controller);
+            controller.stopRewindIfActive();
+        }
+
+        @Override
+        void onLeaveState() {
+            Preconditions.checkNotNull(controller);
+            controller.shutdown();
+        }
+
+        @Override
+        void onPlaybackStop(@NonNull UiControllerMain mainController) {
+            mainController.changeState(mainController.hasAnyBooks()
+                    ? StateFactory.BOOK_LIST
+                    : StateFactory.NO_BOOKS);
+        }
+
+        @Override
+        void onBooksChanged(@NonNull UiControllerMain mainController) {
+            if (playingAudioBook != null &&
+                    playingAudioBook != mainController.currentAudioBook()) {
+                controller.stopPlayback();
+                playingAudioBook = null;
+            }
+        }
     }
 
 }
