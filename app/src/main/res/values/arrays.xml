@@ -14,6 +14,22 @@
         <item>30</item>
         <item>45</item>
     </string-array>
+    <string-array name="sleep_timer_entries" translatable="false">
+        <item>@string/pref_sleep_timer_entry_disabled</item>
+        <item>30s</item>
+        <item>5 min</item>
+        <item>10 min</item>
+        <item>15 min</item>
+        <item>20 min</item>
+    </string-array>
+    <string-array name="sleep_timer_values" translatable="false">
+        <item>0</item>
+        <item>30</item>
+        <item>300</item>
+        <item>600</item>
+        <item>900</item>
+        <item>1200</item>
+    </string-array>
     <string-array name="screen_orientation_entries">
         <item>Landscape Auto</item>
         <item>Locked Landscape</item>

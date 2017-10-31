@@ -30,6 +30,7 @@ public class GlobalSettings {
     public static final String KEY_KIOSK_MODE = "kiosk_mode_preference";
     public static final String KEY_SIMPLE_KIOSK_MODE = "simple_kiosk_mode_preference";
     public static final String KEY_JUMP_BACK = "jump_back_preference";
+    public static final String KEY_SLEEP_TIMER = "sleep_timer_preference";
     public static final String KEY_SCREEN_ORIENTATION = "screen_orientation_preference";
     public static final String KEY_FF_REWIND_SOUND = "ff_rewind_sound_preference";
     public static final String KEY_PLAYBACK_SPEED = "playback_speed_preference";
@@ -54,6 +55,12 @@ public class GlobalSettings {
         String valueString = sharedPreferences.getString(
                 KEY_JUMP_BACK, resources.getString(R.string.pref_jump_back_default_value));
         return (int) TimeUnit.SECONDS.toMillis(Integer.parseInt(valueString));
+    }
+
+    public long getSleepTimerMs() {
+        String valueString = sharedPreferences.getString(
+                KEY_SLEEP_TIMER, resources.getString(R.string.pref_sleep_timer_default_value));
+        return (long) TimeUnit.SECONDS.toMillis(Long.parseLong(valueString));
     }
 
     public int getScreenOrientation() {

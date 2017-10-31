@@ -14,6 +14,10 @@
     <string name="pref_jump_back_entry_disabled">Wyłączone</string>
     <string name="pref_jump_back_summary">Cofnij o %d sekund</string>
     <string name="pref_screen_orientation">Orientacja ekranu</string>
+    <string name="pref_sleep_timer_entry_disabled">Wyłącz</string>
+    <string name="pref_sleep_timer_title">Wyłącznik czasowy</string>
+    <string name="pref_sleep_timer_summary">Wstrzymaj po %s braku aktywności</string>
+    <string name="pref_sleep_timer_summary_disabled">Wyłączone</string>
     <string name="pref_kiosk_mode_screen_title">Zablokuj wyjście z aplikacji (tryb kiosku)…</string>
     <string name="pref_kiosk_mode_full_title">Tryb pełny - zablokuj wyjście z aplikacji (zalecane)</string>
     <string name="pref_kiosk_mode_simple_title">Tryb prosty - ukryj przyciski nawigacji</string>

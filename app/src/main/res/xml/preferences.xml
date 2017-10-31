@@ -16,6 +16,12 @@
             android:entryValues="@array/jump_back_values"
             android:defaultValue="@string/pref_jump_back_default_value"/>
         <ListPreference
+            android:key="sleep_timer_preference"
+            android:title="@string/pref_sleep_timer_title"
+            android:entries="@array/sleep_timer_entries"
+            android:entryValues="@array/sleep_timer_values"
+            android:defaultValue="0"/>
+        <ListPreference
             android:key="playback_speed_preference"
             android:title="@string/pref_playback_speed_title"
             android:entries="@array/playback_speed_entries"

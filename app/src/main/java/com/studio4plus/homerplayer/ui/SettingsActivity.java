@@ -108,6 +108,7 @@ public class SettingsActivity extends BaseActivity {
             updateScreenOrientationSummary(sharedPreferences);
             updatePlaybackSpeedSummary(sharedPreferences);
             updateJumpBackSummary(sharedPreferences);
+            updateSleepTimerSummary();
 
             if (Build.VERSION.SDK_INT < 21) {
                 Preference kioskModePreference = findPreference(GlobalSettings.KEY_KIOSK_MODE);
@@ -205,6 +206,9 @@ public class SettingsActivity extends BaseActivity {
                 case GlobalSettings.KEY_JUMP_BACK:
                     updateJumpBackSummary(sharedPreferences);
                     break;
+                case GlobalSettings.KEY_SLEEP_TIMER:
+                    updateSleepTimerSummary();
+                    break;
                 case GlobalSettings.KEY_SCREEN_ORIENTATION:
                     updateScreenOrientationSummary(sharedPreferences);
                     break;
@@ -256,6 +260,18 @@ public class SettingsActivity extends BaseActivity {
             } else {
                 preference.setSummary(String.format(
                         getString(R.string.pref_jump_back_summary), value));
+            }
+        }
+
+        private void updateSleepTimerSummary() {
+            ListPreference preference = (ListPreference) findPreference(GlobalSettings.KEY_SLEEP_TIMER);
+            int index = preference.findIndexOfValue(preference.getValue());
+            if (index == 0) {
+                preference.setSummary(getString(R.string.pref_sleep_timer_summary_disabled));
+            } else {
+                CharSequence entry = preference.getEntries()[index];
+                preference.setSummary(String.format(
+                        getString(R.string.pref_sleep_timer_summary), entry));
             }
         }
 

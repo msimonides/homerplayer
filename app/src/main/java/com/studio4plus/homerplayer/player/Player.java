@@ -4,12 +4,12 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.mp3.Mp3Extractor;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -25,7 +25,7 @@ import java.util.List;
 
 public class Player {
 
-    private final ExoPlayer exoPlayer;
+    private final SimpleExoPlayer exoPlayer;
 
     private float playbackSpeed = 1.0f;
 
@@ -45,6 +45,10 @@ public class Player {
         this.playbackSpeed = speed;
         PlaybackParameters params = new PlaybackParameters(speed, 1.0f);
         exoPlayer.setPlaybackParameters(params);
+    }
+
+    public void setPlaybackVolume(float volume) {
+        exoPlayer.setVolume(volume);
     }
 
     private void prepareAudioFile(File file, long startPositionMs) {

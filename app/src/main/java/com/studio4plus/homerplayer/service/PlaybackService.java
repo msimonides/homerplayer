@@ -37,13 +37,15 @@ import de.greenrobot.event.EventBus;
 
 public class PlaybackService
         extends Service
-        implements FaceDownDetector.Listener, AudioManager.OnAudioFocusChangeListener {
+        implements DeviceMotionDetector.Listener, AudioManager.OnAudioFocusChangeListener {
 
     public enum State {
         IDLE,
         PREPARATION,
         PLAYBACK
     }
+
+    private static final long FADE_OUT_DURATION_MS = TimeUnit.SECONDS.toMillis(10);
 
     private static final int NOTIFICATION = R.string.playback_service_notification;
     private static final PlaybackStoppingEvent PLAYBACK_STOPPING_EVENT = new PlaybackStoppingEvent();
@@ -55,8 +57,9 @@ public class PlaybackService
     private Player player;
     private DurationQuery durationQueryInProgress;
     private AudioBookPlayback playbackInProgress;
-    private FaceDownDetector faceDownDetector;
+    private DeviceMotionDetector motionDetector;
     private Handler handler;
+    private final SleepFadeOut sleepFadeOut = new SleepFadeOut();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -67,11 +70,11 @@ public class PlaybackService
     public void onCreate() {
         super.onCreate();
         HomerPlayerApplication.getComponent(getApplicationContext()).inject(this);
-        // TODO: use Dagger to create FaceDownDetector?
+        // TODO: use Dagger to create DeviceMotionDetector?
         SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         handler = new Handler(getMainLooper());
-        if (FaceDownDetector.hasSensors(sensorManager)) {
-            faceDownDetector = new FaceDownDetector(sensorManager, handler, this);
+        if (sensorManager != null && DeviceMotionDetector.hasSensors(sensorManager)) {
+            motionDetector = new DeviceMotionDetector(sensorManager, this);
         }
     }
 
@@ -90,8 +93,8 @@ public class PlaybackService
         player = HomerPlayerApplication.getComponent(getApplicationContext()).createAudioBookPlayer();
         player.setPlaybackSpeed(globalSettings.getPlaybackSpeed());
 
-        if (faceDownDetector != null)
-            faceDownDetector.enable();
+        if (motionDetector != null)
+            motionDetector.enable();
 
         startForeground(NOTIFICATION, createNotification());
 
@@ -147,8 +150,13 @@ public class PlaybackService
     }
 
     @Override
-    public void onDeviceFaceDown() {
+    public void onFaceDownStill() {
         stopPlayback();
+    }
+
+    @Override
+    public void onSignificantMotion() {
+        resetSleepTimer();
     }
 
     @Override
@@ -170,9 +178,10 @@ public class PlaybackService
     private void onPlaybackEnded() {
         durationQueryInProgress = null;
         playbackInProgress = null;
-         if (faceDownDetector != null)
-            faceDownDetector.disable();
+         if (motionDetector != null)
+             motionDetector.disable();
 
+        stopSleepTimer();
         dropAudioFocus();
         eventBus.post(PLAYBACK_STOPPING_EVENT);
     }
@@ -214,6 +223,17 @@ public class PlaybackService
         audioManager.abandonAudioFocus(this);
     }
 
+    private void resetSleepTimer() {
+        stopSleepTimer();
+        long timerMs = globalSettings.getSleepTimerMs();
+        if (timerMs > 0)
+            sleepFadeOut.scheduleStart(timerMs);
+    }
+
+    private void stopSleepTimer() {
+        sleepFadeOut.reset();
+    }
+
     private class AudioBookPlayback implements PlaybackController.Observer {
 
         final @NonNull AudioBook audioBook;
@@ -251,6 +271,7 @@ public class PlaybackService
 
         public void pauseForRewind() {
             handler.removeCallbacks(updatePosition);
+            stopSleepTimer();
             controller.pause();
         }
 
@@ -258,6 +279,7 @@ public class PlaybackService
             AudioBook.Position position = audioBook.getLastPosition();
             controller.start(position.file, position.seekPosition);
             handler.postDelayed(updatePosition, UPDATE_TIME_MS);
+            resetSleepTimer();
         }
 
         long getCurrentTotalPositionMs() {
@@ -271,7 +293,9 @@ public class PlaybackService
         }
 
         @Override
-        public void onPlaybackStarted() {}
+        public void onPlaybackStarted() {
+            resetSleepTimer();
+        }
 
         @Override
         public void onDuration(File file, long durationMs) {
@@ -340,6 +364,32 @@ public class PlaybackService
         @Override
         public void onPlayerReleased() {
             PlaybackService.this.onPlayerReleased();
+        }
+    }
+
+    private class SleepFadeOut implements Runnable {
+        private float currentVolume = 1.0f;
+        private final long STEP_INTERVAL_MS = 100;
+        private final float VOLUME_DOWN_STEP =  (float) STEP_INTERVAL_MS / FADE_OUT_DURATION_MS;
+
+        public void scheduleStart(long delay) {
+            handler.postDelayed(this, delay);
+        }
+
+        public void reset() {
+            handler.removeCallbacks(this);
+            currentVolume = 1.0f;
+            player.setPlaybackVolume(currentVolume);
+        }
+
+        @Override
+        public void run() {
+            currentVolume -= VOLUME_DOWN_STEP;
+            player.setPlaybackVolume(currentVolume);
+            if (currentVolume <= 0)
+                stopPlayback();
+            else
+                handler.postDelayed(this, STEP_INTERVAL_MS);
         }
     }
 }
