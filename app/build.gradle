@@ -13,9 +13,8 @@ apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" } // For CircularReveal
+    google()
 }
-
-apply plugin: 'com.neenbedankt.android-apt'
 
 def getVersionName = { ->
     def stdout = new ByteArrayOutputStream()
@@ -30,7 +29,7 @@ android {
     useLibrary 'org.apache.http.legacy'
 
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "26.0.2"
 
     defaultConfig {
         applicationId "com.studio4plus.homerplayer"
@@ -54,18 +53,18 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'de.greenrobot:eventbus:2.4.1'
 
-    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:appcompat-v7:25.4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.android.support:support-v13:25.3.1'
+    compile 'com.android.support:support-v13:25.4.0'
 
     compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') { transitive = true }
     compile 'com.flurry.android:analytics:6.9.2'
     compile 'com.google.guava:guava:18.0'
-    compile 'com.google.code.findbugs:jsr305:2.0.2'
-    compile 'com.google.android.exoplayer:exoplayer:r2.4.1'
+    compile 'com.google.code.findbugs:jsr305:3.0.1'
+    compile 'com.google.android.exoplayer:exoplayer:r2.5.4'
 
-    compile 'com.google.dagger:dagger:2.10'
-    apt 'com.google.dagger:dagger-compiler:2.10'
+    compile 'com.google.dagger:dagger:2.11'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
     compile 'com.github.ozodrukh:CircularReveal:2.0.1@aar'
