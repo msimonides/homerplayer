@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <ListPreference
-        android:key="screen_orientation_preference"
-        android:title="@string/pref_screen_orientation"
-        android:entries="@array/screen_orientation_entries"
-        android:entryValues="@array/screen_orientation_values"
-        android:defaultValue="@string/pref_screen_orientation_default_value"/>
     <PreferenceScreen
         android:key="playback_options_screen"
         android:title="@string/pref_playback_options_screen_title">
@@ -34,6 +28,12 @@
             android:summaryOff="@string/pref_ff_rewind_sound_summary_off"
             android:defaultValue="true"/>
     </PreferenceScreen>
+    <ListPreference
+        android:key="screen_orientation_preference"
+        android:title="@string/pref_screen_orientation"
+        android:entries="@array/screen_orientation_entries"
+        android:entryValues="@array/screen_orientation_values"
+        android:defaultValue="@string/pref_screen_orientation_default_value"/>
     <PreferenceScreen
         android:key="kiosk_mode_screen"
         android:title="@string/pref_kiosk_mode_screen_title">
