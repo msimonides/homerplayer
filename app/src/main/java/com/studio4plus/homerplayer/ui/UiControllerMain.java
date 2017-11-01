@@ -134,7 +134,7 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     private void changeState(StateFactory newStateFactory) {
-        Crashlytics.log("UI: leave state: " + currentState.getClass().getSimpleName());
+        Crashlytics.log("UI: leave state: " + currentState.debugName());
         currentState.onLeaveState();
         Crashlytics.log("UI: create state: " + newStateFactory.name());
         currentState = newStateFactory.create(this, currentState);
@@ -158,50 +158,6 @@ public class UiControllerMain implements ServiceConnection {
         Preconditions.checkNotNull(playbackService);
         PlaybackUi playbackUi = mainUi.switchToPlayback(animate);
         return playbackControllerFactory.create(playbackService, playbackUi);
-    }
-
-    private static abstract class State {
-        abstract void onLeaveState();
-
-        void onPlaybackStop(@NonNull UiControllerMain mainController) {
-            Preconditions.checkState(false);
-        }
-
-        void onBooksChanged(@NonNull UiControllerMain mainController) {
-            Preconditions.checkState(false);
-        }
-
-        void onActivityPause() {}
-    }
-
-    private static class InitState extends State {
-        @Override
-        void onPlaybackStop(@NonNull UiControllerMain mainController) {}
-
-        @Override
-        void onBooksChanged(@NonNull UiControllerMain mainController) {}
-
-        @Override
-        void onLeaveState() {}
-    }
-
-    private static class NoBooksState extends State {
-        private @NonNull UiControllerNoBooks controller;
-
-        NoBooksState(@NonNull UiControllerMain mainController, @NonNull State previousState) {
-            this.controller = mainController.showNoBooks(!(previousState instanceof InitState));
-        }
-
-        @Override
-        public void onLeaveState() {
-            controller.shutdown();
-        }
-
-        @Override
-        public void onBooksChanged(@NonNull UiControllerMain mainController) {
-            if (mainController.hasAnyBooks())
-                mainController.changeState(StateFactory.BOOK_LIST);
-        }
     }
 
     private enum StateFactory {
@@ -228,6 +184,58 @@ public class UiControllerMain implements ServiceConnection {
                 @NonNull UiControllerMain mainController, @NonNull State previousState);
     }
 
+    private static abstract class State {
+        abstract void onLeaveState();
+
+        void onPlaybackStop(@NonNull UiControllerMain mainController) {
+            Preconditions.checkState(false);
+        }
+
+        void onBooksChanged(@NonNull UiControllerMain mainController) {
+            Preconditions.checkState(false);
+        }
+
+        void onActivityPause() {}
+
+        abstract @NonNull String debugName();
+    }
+
+    private static class InitState extends State {
+        @Override
+        void onPlaybackStop(@NonNull UiControllerMain mainController) {}
+
+        @Override
+        void onBooksChanged(@NonNull UiControllerMain mainController) {}
+
+        @Override
+        void onLeaveState() {}
+
+        @Override
+        @NonNull String debugName() { return "InitState"; }
+    }
+
+    private static class NoBooksState extends State {
+        private @NonNull UiControllerNoBooks controller;
+
+        NoBooksState(@NonNull UiControllerMain mainController, @NonNull State previousState) {
+            this.controller = mainController.showNoBooks(!(previousState instanceof InitState));
+        }
+
+        @Override
+        public void onLeaveState() {
+            controller.shutdown();
+        }
+
+        @Override
+        public void onBooksChanged(@NonNull UiControllerMain mainController) {
+            if (mainController.hasAnyBooks())
+                mainController.changeState(StateFactory.BOOK_LIST);
+        }
+
+        @Override
+        @NonNull String debugName() { return "NoBooksState"; }
+    }
+
     private static class BookListState extends State {
         private @NonNull UiControllerBookList controller;
 
@@ -245,6 +253,10 @@ public class UiControllerMain implements ServiceConnection {
             if (!mainController.hasAnyBooks())
                 mainController.changeState(StateFactory.NO_BOOKS);
         }
+
+        @Override
+        @NonNull String debugName() { return "BookListState"; }
+
     }
 
     private static class PlaybackState extends State {
@@ -287,6 +299,9 @@ public class UiControllerMain implements ServiceConnection {
                 playingAudioBook = null;
             }
         }
+
+        @Override
+        @NonNull String debugName() { return "PlaybackState"; }
     }
 
 }
