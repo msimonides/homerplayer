@@ -18,17 +18,21 @@ class DeviceMotionDetector implements SensorEventListener {
         void onFaceDownStill();
     }
 
-    private static final float GRAVITY = 9.81f;
-    // The tolerance is quite large due to sensor imprecision.
-    private static final float MAX_STILL_TOLERANCE_SQR = 4f;
-    private static final float MAX_FACEDOWN_DEVIATION_SQR = 4f;
-    private static final float MIN_SIGNIFICATN_MOTION_SQR = 9f;
+    private static final float MAX_STILL_TOLERANCE = 1f;
+    private static final float MAX_FACEDOWN_DEVIATION = 2f;
+    private static final float MIN_SIGNIFICANT_MOTION = 5f;
     private static final long MIN_TIME_WINDOW = TimeUnit.MILLISECONDS.toNanos(500);
 
     private final @NonNull SensorManager sensorManager;
     private final @NonNull Sensor accelerometer;
     private final @NonNull Listener listener;
     private @NonNull SamplesQueue queue;
+
+    private long AVG_SMOOTH_TIME_NANOS = TimeUnit.SECONDS.toNanos(3);
+    private float avgAcceleration[] = new float[3];
+
+    private long previousTimestamp = 0;
+    private float previousValues[] = new float[3];
 
     enum MotionType {
         FACE_DOWN,
@@ -62,13 +66,27 @@ class DeviceMotionDetector implements SensorEventListener {
         final float y = event.values[1];
         final float z = event.values[2];
 
-        final float accelerationSquared = x * x + y * y + z * z;
-        final float linearAccelerationSquared =
-                Math.abs(accelerationSquared - GRAVITY * GRAVITY);
-        boolean isAccelerating = linearAccelerationSquared > MIN_SIGNIFICATN_MOTION_SQR;
-        boolean isStill = linearAccelerationSquared < MAX_STILL_TOLERANCE_SQR;
+        float sampleDeltaSum = 0f;
+        float accDeltaSum = 0f;
+        if (previousTimestamp > 0) {
+            long deltaTimeNano = event.timestamp - previousTimestamp;
+            float alpha = (float) deltaTimeNano / AVG_SMOOTH_TIME_NANOS;
+            for (int i = 0; i < avgAcceleration.length; ++i) {
+                avgAcceleration[i] = alpha * event.values[i] + (1f - alpha) * avgAcceleration[i];
+                final float a = Math.abs(event.values[i]);
+                accDeltaSum += Math.abs(a - Math.abs(avgAcceleration[i]));
+                sampleDeltaSum += Math.abs(a - Math.abs(previousValues[i]));
+            }
+
+            System.arraycopy(event.values, 0, previousValues, 0, event.values.length);
+        }
+        previousTimestamp = event.timestamp;
+
+        boolean isAccelerating = accDeltaSum > MIN_SIGNIFICANT_MOTION;
+        final float acceleration = (float) Math.sqrt(x * x + y * y + z * z);
+        boolean isStill = sampleDeltaSum < MAX_STILL_TOLERANCE;
         boolean isFaceDown = isStill && z < 0 &&
-                Math.abs(accelerationSquared - z * z) < MAX_FACEDOWN_DEVIATION_SQR;
+                Math.abs(acceleration - Math.abs(z)) < MAX_FACEDOWN_DEVIATION;
 
         MotionType sampleType = isFaceDown ? MotionType.FACE_DOWN :
                 isAccelerating ? MotionType.ACCELERATING : MotionType.OTHER;
