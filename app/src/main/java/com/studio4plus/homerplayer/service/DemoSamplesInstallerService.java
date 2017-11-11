@@ -1,5 +1,7 @@
 package com.studio4plus.homerplayer.service;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +18,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
+import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.events.DemoSamplesInstallationFinishedEvent;
 import com.studio4plus.homerplayer.events.MediaStoreUpdateEvent;
 import com.studio4plus.homerplayer.model.DemoSamplesInstaller;
@@ -45,6 +48,7 @@ public class DemoSamplesInstallerService extends Service {
 
     private static final int DOWNLOAD_BUFFER_SIZE = 32767;
     private static final long MIN_PROGRESS_UPDATE_INTERVAL_NANOS = TimeUnit.MILLISECONDS.toNanos(100);
+    private static final int NOTIFICATION_ID = R.string.demo_samples_service_notification_download;
 
     public static final String BROADCAST_DOWNLOAD_PROGRESS_ACTION =
             DemoSamplesInstallerService.class.getName() + ".PROGRESS";
@@ -93,6 +97,12 @@ public class DemoSamplesInstallerService extends Service {
                 Preconditions.checkState(downloadAndInstallThread == null);
                 String downloadUri = intent.getDataString();
 
+                Notification notification = NotificationUtil.createForegroundServiceNotification(
+                        getApplicationContext(),
+                        R.string.demo_samples_service_notification_download,
+                        android.R.drawable.stat_sys_download);
+                startForeground(NOTIFICATION_ID, notification);
+
                 try {
                     ResultHandler result = new ResultHandler(this, getMainLooper());
                     isDownloading = true;
@@ -109,6 +119,7 @@ public class DemoSamplesInstallerService extends Service {
                     isDownloading = false;
                     downloadAndInstallThread.interrupt();
                     downloadAndInstallThread = null;
+                    stopForeground(true);
                 }
                 break;
         }
@@ -151,6 +162,14 @@ public class DemoSamplesInstallerService extends Service {
         isDownloading = false;
         Intent intent = new Intent(BROADCAST_INSTALL_STARTED_ACTION);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Notification notification = NotificationUtil.createForegroundServiceNotification(
+                getApplicationContext(),
+                R.string.demo_samples_service_notification_install,
+                android.R.drawable.stat_sys_download_done);
+        notificationManager.notify(NOTIFICATION_ID, notification);
     }
 
     private void onInstallFinished() {

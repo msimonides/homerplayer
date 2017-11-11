@@ -6,7 +6,6 @@ import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -25,7 +24,6 @@ import com.studio4plus.homerplayer.model.AudioBook;
 import com.studio4plus.homerplayer.player.DurationQueryController;
 import com.studio4plus.homerplayer.player.PlaybackController;
 import com.studio4plus.homerplayer.player.Player;
-import com.studio4plus.homerplayer.ui.MainActivity;
 
 import java.io.File;
 import java.util.List;
@@ -47,7 +45,7 @@ public class PlaybackService
 
     private static final long FADE_OUT_DURATION_MS = TimeUnit.SECONDS.toMillis(10);
 
-    private static final int NOTIFICATION = R.string.playback_service_notification;
+    private static final int NOTIFICATION_ID = R.string.playback_service_notification;
     private static final PlaybackStoppingEvent PLAYBACK_STOPPING_EVENT = new PlaybackStoppingEvent();
     private static final PlaybackStoppedEvent PLAYBACK_STOPPED_EVENT = new PlaybackStoppedEvent();
 
@@ -96,7 +94,11 @@ public class PlaybackService
         if (motionDetector != null)
             motionDetector.enable();
 
-        startForeground(NOTIFICATION, createNotification());
+        Notification notification = NotificationUtil.createForegroundServiceNotification(
+                getApplicationContext(),
+                R.string.playback_service_notification,
+                android.R.drawable.ic_media_play);
+        startForeground(NOTIFICATION_ID, notification);
 
         if (book.getTotalDurationMs() == AudioBook.UNKNOWN_POSITION) {
             Crashlytics.log("PlaybackService.startPlaybac: create DurationQuery");
@@ -194,20 +196,6 @@ public class PlaybackService
         player = null;
         stopForeground(true);
         eventBus.post(PLAYBACK_STOPPED_EVENT);
-    }
-
-    private Notification createNotification() {
-        Intent activityIntent = new Intent(getApplicationContext(), MainActivity.class);
-        activityIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent intent = PendingIntent.getActivity(
-                getApplicationContext(), 0, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        return new NotificationCompat.Builder(getApplicationContext())
-                .setContentTitle(getResources().getString(R.string.playback_service_notification))
-                .setContentIntent(intent)
-                .setSmallIcon(android.R.drawable.ic_media_play)
-                .setOngoing(true)
-                .build();
     }
 
     private void requestAudioFocus() {

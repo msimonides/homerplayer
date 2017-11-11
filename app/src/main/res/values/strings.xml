@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">Homer Player</string>
-    <string name="playback_service_notification">Audio Book Playing</string>
+    <string name="demo_samples_service_notification_download">Downloading sample audiobooks</string>
+    <string name="demo_samples_service_notification_install">Installing sample audiobooks</string>
+    <string name="playback_service_notification">Audiobook playing</string>
     <string name="noBooksMessage">There are no audio books on the device.</string>
     <string name="copyBooksInstructionMessage">Copy audio books to folder &lt;b>/%s&lt;/b></string>
     <string name="device_admin_label" translatable="false">Homer Player</string>
