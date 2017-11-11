@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
 
+import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.battery.BatteryStatusProvider;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.model.DemoSamplesInstaller;
@@ -15,7 +16,6 @@ import com.studio4plus.homerplayer.service.PlaybackService;
 import com.studio4plus.homerplayer.ui.BaseActivity;
 import com.studio4plus.homerplayer.ui.BatteryStatusIndicator;
 import com.studio4plus.homerplayer.ui.classic.ClassicPlaybackUi;
-import com.studio4plus.homerplayer.ui.classic.ClassicPlaybackUi_MembersInjector;
 import com.studio4plus.homerplayer.ui.classic.FragmentBookItem;
 import com.studio4plus.homerplayer.ui.classic.ClassicBookList;
 import com.studio4plus.homerplayer.ui.classic.ClassicNoBooksUi;
@@ -48,6 +48,7 @@ public interface ApplicationComponent {
     Player createAudioBookPlayer();
     DemoSamplesInstaller createDemoSamplesInstaller();
 
+    AnalyticsTracker getAnalyticsTracker();
     AudioBookManager getAudioBookManager();
     Context getContext();
     EventBus getEventBus();
