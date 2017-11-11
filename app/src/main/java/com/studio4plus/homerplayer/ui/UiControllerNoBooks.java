@@ -12,9 +12,7 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.service.DemoSamplesInstallerService;
-import com.studio4plus.homerplayer.events.DemoSamplesInstallationFinishedEvent;
 import com.studio4plus.homerplayer.events.DemoSamplesInstallationStartedEvent;
-import com.studio4plus.homerplayer.events.MediaStoreUpdateEvent;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -102,17 +100,6 @@ public class UiControllerNoBooks {
         LocalBroadcastManager.getInstance(activity).registerReceiver(progressReceiver, filter);
     }
 
-    private void onSamplesInstallationFinished(boolean success, String error) {
-        Preconditions.checkNotNull(progressReceiver);
-        Preconditions.checkNotNull(progressReceiver.observer);
-        eventBus.post(new DemoSamplesInstallationFinishedEvent(success, error));
-        stopProgressReceiver();
-
-        // MediaStoreUpdateEvent may change the state of the UI, send it as the last action.
-        if (success)
-            eventBus.post(new MediaStoreUpdateEvent());
-    }
-
     private void stopProgressReceiver() {
         Preconditions.checkState(progressReceiver != null);
         LocalBroadcastManager.getInstance(activity).unregisterReceiver(progressReceiver);
@@ -152,12 +139,11 @@ public class UiControllerNoBooks {
                 observer.onInstallStarted();
             } else if (DemoSamplesInstallerService.BROADCAST_INSTALL_FINISHED_ACTION.equals(
                     intent.getAction())) {
-                onSamplesInstallationFinished(true, null);
+                stopProgressReceiver();
             } else if (DemoSamplesInstallerService.BROADCAST_FAILED_ACTION.equals(
                     intent.getAction())) {
                 observer.onFailure();
-                onSamplesInstallationFinished(false,
-                        intent.getStringExtra(DemoSamplesInstallerService.FAILURE_ERROR_EXTRA));
+                stopProgressReceiver();
             } else {
                 Preconditions.checkState(false,
                         "Unexpected intent action: " + intent.getAction());

@@ -16,6 +16,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
+import com.studio4plus.homerplayer.events.DemoSamplesInstallationFinishedEvent;
+import com.studio4plus.homerplayer.events.MediaStoreUpdateEvent;
 import com.studio4plus.homerplayer.model.DemoSamplesInstaller;
 
 import java.io.BufferedInputStream;
@@ -29,6 +31,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
+import de.greenrobot.event.EventBus;
 
 @MainThread
 public class DemoSamplesInstallerService extends Service {
@@ -50,7 +56,6 @@ public class DemoSamplesInstallerService extends Service {
             DemoSamplesInstallerService.class.getName() + ".INSTALL_FINISHED";
     public static final String BROADCAST_FAILED_ACTION =
             DemoSamplesInstallerService.class.getName() + ".FAILED";
-    public static final String FAILURE_ERROR_EXTRA = "error";
 
     public static Intent createDownloadIntent(Context context, Uri downloadUri) {
         Intent intent = new Intent(context, DemoSamplesInstallerService.class);
@@ -65,6 +70,9 @@ public class DemoSamplesInstallerService extends Service {
         return intent;
     }
 
+    // It's a bit ugly the the service communicates with other components both via
+    // a LocalBroadcastManager and an EventBus.
+    @Inject public EventBus eventBus;
     private DownloadAndInstallThread downloadAndInstallThread;
     private boolean isDownloading = false;
     private long lastProgressUpdateNanos = 0;
@@ -112,6 +120,7 @@ public class DemoSamplesInstallerService extends Service {
     public void onCreate() {
         super.onCreate();
         Crashlytics.log("DemoSamplesInstallerService: created");
+        HomerPlayerApplication.getComponent(getApplicationContext()).inject(this);
         instance = this;
     }
 
@@ -147,15 +156,19 @@ public class DemoSamplesInstallerService extends Service {
     private void onInstallFinished() {
         Crashlytics.log("DemoSamplesInstallerService: install finished");
         Intent intent = new Intent(BROADCAST_INSTALL_FINISHED_ACTION);
+        eventBus.post(new DemoSamplesInstallationFinishedEvent(true, null));
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+
+        // MediaStoreUpdateEvent may change the state of the UI, send it as the last action.
+        eventBus.post(new MediaStoreUpdateEvent());
         stopSelf();
     }
 
     private void onFailed(@NonNull String errorMessage) {
         Crashlytics.log("DemoSamplesInstallerService: download or install failed");
         isDownloading = false;
+        eventBus.post(new DemoSamplesInstallationFinishedEvent(true, errorMessage));
         Intent intent = new Intent(BROADCAST_FAILED_ACTION);
-        intent.putExtra(FAILURE_ERROR_EXTRA, errorMessage);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         stopSelf();
     }
