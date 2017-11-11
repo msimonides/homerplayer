@@ -5,18 +5,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.google.common.base.Preconditions;
-import com.studio4plus.homerplayer.downloads.DownloadService;
-import com.studio4plus.homerplayer.downloads.SamplesDownloadController;
+import com.studio4plus.homerplayer.service.DemoSamplesInstallerService;
 import com.studio4plus.homerplayer.events.DemoSamplesInstallationFinishedEvent;
 import com.studio4plus.homerplayer.events.DemoSamplesInstallationStartedEvent;
 import com.studio4plus.homerplayer.events.MediaStoreUpdateEvent;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import de.greenrobot.event.EventBus;
 
@@ -24,56 +25,60 @@ public class UiControllerNoBooks {
 
     public static class Factory {
         private final @NonNull Activity activity;
-        private final @NonNull SamplesDownloadController samplesDownloadController;
+        private final @NonNull Uri samplesDownloadUrl;
         private final @NonNull EventBus eventBus;
 
         @Inject
         public Factory(@NonNull Activity activity,
-                       @NonNull SamplesDownloadController samplesDownloadController,
+                       @NonNull @Named("SAMPLES_DOWNLOAD_URL") Uri samplesDownloadUrl,
                        @NonNull EventBus eventBus) {
             this.activity = activity;
-            this.samplesDownloadController = samplesDownloadController;
+            this.samplesDownloadUrl = samplesDownloadUrl;
             this.eventBus = eventBus;
         }
 
         public UiControllerNoBooks create(@NonNull NoBooksUi ui) {
-            return new UiControllerNoBooks(activity, ui, samplesDownloadController, eventBus);
+            return new UiControllerNoBooks(activity, ui, samplesDownloadUrl, eventBus);
         }
     }
 
     private final @NonNull Activity activity;
     private final @NonNull NoBooksUi ui;
-    private final @NonNull SamplesDownloadController samplesDownloadController;
+    private final @NonNull Uri samplesDownloadUrl;
     private final @NonNull EventBus eventBus;
 
     private @Nullable DownloadProgressReceiver progressReceiver;
 
     private UiControllerNoBooks(@NonNull Activity activity,
                                 @NonNull NoBooksUi ui,
-                                @NonNull SamplesDownloadController samplesDownloadController,
+                                @NonNull Uri samplesDownloadUrl,
                                 @NonNull EventBus eventBus) {
         this.activity = activity;
         this.ui = ui;
-        this.samplesDownloadController = samplesDownloadController;
+        this.samplesDownloadUrl = samplesDownloadUrl;
         this.eventBus = eventBus;
 
         ui.initWithController(this);
 
-        if (samplesDownloadController.isDownloading() || samplesDownloadController.isInstalling())
-            showInstallProgress();
+        boolean isInstalling = DemoSamplesInstallerService.isInstalling();
+        if (DemoSamplesInstallerService.isDownloading() || isInstalling)
+            showInstallProgress(isInstalling);
     }
 
     public void startSamplesInstallation() {
         eventBus.post(new DemoSamplesInstallationStartedEvent());
-        samplesDownloadController.startSamplesDownload();
-        showInstallProgress();
+        showInstallProgress(false);
+        activity.startService(DemoSamplesInstallerService.createDownloadIntent(
+                activity, samplesDownloadUrl));
     }
 
     public void abortSamplesInstallation() {
-        Preconditions.checkState(samplesDownloadController.isDownloading() || samplesDownloadController.isInstalling());
+        Preconditions.checkState(DemoSamplesInstallerService.isDownloading()
+                || DemoSamplesInstallerService.isInstalling());
         // Can't cancel installation.
-        if (samplesDownloadController.isDownloading()) {
-            samplesDownloadController.cancelDownload();
+        if (DemoSamplesInstallerService.isDownloading()) {
+            activity.startService(DemoSamplesInstallerService.createCancelIntent(
+                    activity));
             stopProgressReceiver();
         }
     }
@@ -84,38 +89,38 @@ public class UiControllerNoBooks {
         ui.shutdown();
     }
 
-    @SuppressWarnings("unused")
-    public void onEvent(DemoSamplesInstallationFinishedEvent event) {
-        Preconditions.checkNotNull(progressReceiver);
-        Preconditions.checkNotNull(progressReceiver.observer);
-        if (event.success) {
-            eventBus.post(new MediaStoreUpdateEvent());
-            stopProgressReceiver();
-        } else {
-            progressReceiver.observer.onFailure();
-            stopProgressReceiver();
-        }
+    private void showInstallProgress(boolean isAlreadyInstalling) {
+        Preconditions.checkState(progressReceiver == null);
+        NoBooksUi.InstallProgressObserver uiProgressObserver =
+                ui.showInstallProgress(isAlreadyInstalling);
+        progressReceiver = new DownloadProgressReceiver(uiProgressObserver);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(DemoSamplesInstallerService.BROADCAST_DOWNLOAD_PROGRESS_ACTION);
+        filter.addAction(DemoSamplesInstallerService.BROADCAST_INSTALL_STARTED_ACTION);
+        filter.addAction(DemoSamplesInstallerService.BROADCAST_FAILED_ACTION);
+        filter.addAction(DemoSamplesInstallerService.BROADCAST_INSTALL_FINISHED_ACTION);
+        LocalBroadcastManager.getInstance(activity).registerReceiver(progressReceiver, filter);
     }
 
-    private void showInstallProgress() {
-        Preconditions.checkState(progressReceiver == null);
+    private void onSamplesInstallationFinished(boolean success, String error) {
+        Preconditions.checkNotNull(progressReceiver);
+        Preconditions.checkNotNull(progressReceiver.observer);
+        eventBus.post(new DemoSamplesInstallationFinishedEvent(success, error));
+        stopProgressReceiver();
 
-        NoBooksUi.InstallProgressObserver uiProgressObserver = ui.showInstallProgress();
-        progressReceiver = new DownloadProgressReceiver(uiProgressObserver);
-        IntentFilter filter = new IntentFilter(DownloadService.BROADCAST_DOWNLOAD_PROGRESS_ACTION);
-        LocalBroadcastManager.getInstance(activity).registerReceiver(progressReceiver, filter);
-        eventBus.register(this);
+        // MediaStoreUpdateEvent may change the state of the UI, send it as the last action.
+        if (success)
+            eventBus.post(new MediaStoreUpdateEvent());
     }
 
     private void stopProgressReceiver() {
         Preconditions.checkState(progressReceiver != null);
         LocalBroadcastManager.getInstance(activity).unregisterReceiver(progressReceiver);
         progressReceiver.stop();
-        eventBus.unregister(this);
         progressReceiver = null;
     }
 
-    private static class DownloadProgressReceiver extends BroadcastReceiver {
+    private class DownloadProgressReceiver extends BroadcastReceiver {
 
         private @Nullable NoBooksUi.InstallProgressObserver observer;
 
@@ -129,18 +134,33 @@ public class UiControllerNoBooks {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Preconditions.checkArgument(
-                    DownloadService.BROADCAST_DOWNLOAD_PROGRESS_ACTION.equals(intent.getAction()));
+            Preconditions.checkNotNull(intent.getAction());
             // Workaround for intents being sent after the receiver is unregistered:
             // https://code.google.com/p/android/issues/detail?id=191546
             if (observer == null)
                 return;
-            int transferredBytes = intent.getIntExtra(DownloadService.PROGRESS_BYTES_EXTRA, 0);
-            int totalBytes = intent.getIntExtra(DownloadService.TOTAL_BYTES_EXTRA, -1);
-            if (transferredBytes == totalBytes && totalBytes > -1) {
-                observer.onInstallStarted();
-            } else {
+
+            if (DemoSamplesInstallerService.BROADCAST_DOWNLOAD_PROGRESS_ACTION.equals(
+                    intent.getAction())) {
+                int transferredBytes = intent.getIntExtra(
+                        DemoSamplesInstallerService.PROGRESS_BYTES_EXTRA, 0);
+                int totalBytes = intent.getIntExtra(
+                        DemoSamplesInstallerService.TOTAL_BYTES_EXTRA, -1);
                 observer.onDownloadProgress(transferredBytes, totalBytes);
+            } else if (DemoSamplesInstallerService.BROADCAST_INSTALL_STARTED_ACTION.equals(
+                    intent.getAction())) {
+                observer.onInstallStarted();
+            } else if (DemoSamplesInstallerService.BROADCAST_INSTALL_FINISHED_ACTION.equals(
+                    intent.getAction())) {
+                onSamplesInstallationFinished(true, null);
+            } else if (DemoSamplesInstallerService.BROADCAST_FAILED_ACTION.equals(
+                    intent.getAction())) {
+                observer.onFailure();
+                onSamplesInstallationFinished(false,
+                        intent.getStringExtra(DemoSamplesInstallerService.FAILURE_ERROR_EXTRA));
+            } else {
+                Preconditions.checkState(false,
+                        "Unexpected intent action: " + intent.getAction());
             }
         }
     }

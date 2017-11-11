@@ -53,7 +53,7 @@
         </activity>
 
         <service android:name=".service.PlaybackService" android:exported="false"/>
-        <service android:name=".downloads.DownloadService" android:exported="false"/>
+        <service android:name=".service.DemoSamplesInstallerService" android:exported="false"/>
 
         <receiver android:name=".HomerPlayerDeviceAdmin"
             android:label="@string/device_admin_label"

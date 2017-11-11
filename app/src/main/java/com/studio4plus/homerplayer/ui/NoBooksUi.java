@@ -11,6 +11,6 @@ public interface NoBooksUi {
     }
 
     void initWithController(@NonNull UiControllerNoBooks controller);
-    @NonNull InstallProgressObserver showInstallProgress();
+    @NonNull InstallProgressObserver showInstallProgress(boolean isAlreadyInstalling);
     void shutdown();
 }

@@ -1,4 +1,4 @@
-package com.studio4plus.homerplayer.downloads;
+package com.studio4plus.homerplayer.service;
 
 import android.app.Service;
 import android.content.Context;
@@ -15,6 +15,8 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
+import com.studio4plus.homerplayer.HomerPlayerApplication;
+import com.studio4plus.homerplayer.model.DemoSamplesInstaller;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -29,7 +31,7 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 @MainThread
-public class DownloadService extends Service {
+public class DemoSamplesInstallerService extends Service {
 
     private static final String ACTION_EXTRA = "action";
     private static final int ACTION_START_DOWNLOAD = 0;
@@ -39,30 +41,34 @@ public class DownloadService extends Service {
     private static final long MIN_PROGRESS_UPDATE_INTERVAL_NANOS = TimeUnit.MILLISECONDS.toNanos(100);
 
     public static final String BROADCAST_DOWNLOAD_PROGRESS_ACTION =
-            DownloadService.class.getName() + ".PROGRESS";
+            DemoSamplesInstallerService.class.getName() + ".PROGRESS";
     public static final String PROGRESS_BYTES_EXTRA = "progressBytes";
     public static final String TOTAL_BYTES_EXTRA = "totalBytes";
-    public static final String BROADCAST_DOWNLOAD_FINISHED_ACTION =
-            DownloadService.class.getName() + ".FINISHED";
-    public static final String DOWNLOAD_FILE_EXTRA = "file";
-    public static final String DOWNLOAD_ERROR_EXTRA = "error";
+    public static final String BROADCAST_INSTALL_STARTED_ACTION =
+            DemoSamplesInstallerService.class.getName() + ".INSTALL_STARTED";
+    public static final String BROADCAST_INSTALL_FINISHED_ACTION =
+            DemoSamplesInstallerService.class.getName() + ".INSTALL_FINISHED";
+    public static final String BROADCAST_FAILED_ACTION =
+            DemoSamplesInstallerService.class.getName() + ".FAILED";
+    public static final String FAILURE_ERROR_EXTRA = "error";
 
     public static Intent createDownloadIntent(Context context, Uri downloadUri) {
-        Intent intent = new Intent(context, DownloadService.class);
+        Intent intent = new Intent(context, DemoSamplesInstallerService.class);
         intent.setData(downloadUri);
         intent.putExtra(ACTION_EXTRA, ACTION_START_DOWNLOAD);
         return intent;
     }
 
     public static Intent createCancelIntent(Context context) {
-        Intent intent = new Intent(context, DownloadService.class);
+        Intent intent = new Intent(context, DemoSamplesInstallerService.class);
         intent.putExtra(ACTION_EXTRA, ACTION_CANCEL_DOWNLOAD);
         return intent;
     }
 
-    private DownloadThread currentDownloadThread;
+    private DownloadAndInstallThread downloadAndInstallThread;
+    private boolean isDownloading = false;
     private long lastProgressUpdateNanos = 0;
-    private static DownloadService instance;
+    private static DemoSamplesInstallerService instance;
 
     @Nullable
     @Override
@@ -75,24 +81,26 @@ public class DownloadService extends Service {
         int action = intent.getIntExtra(ACTION_EXTRA, -1);
         switch(action) {
             case ACTION_START_DOWNLOAD: {
-                Crashlytics.log("DownloadService: starting download");
-                Preconditions.checkState(currentDownloadThread == null);
+                Crashlytics.log("DemoSamplesInstallerService: starting download");
+                Preconditions.checkState(downloadAndInstallThread == null);
                 String downloadUri = intent.getDataString();
 
                 try {
                     ResultHandler result = new ResultHandler(this, getMainLooper());
-                    currentDownloadThread = new DownloadThread(this, result, downloadUri);
-                    currentDownloadThread.start();
+                    isDownloading = true;
+                    downloadAndInstallThread = new DownloadAndInstallThread(this, result, downloadUri);
+                    downloadAndInstallThread.start();
                 } catch (MalformedURLException e) {
                     onFailed(e.getMessage());
                 }
                 break;
             }
             case ACTION_CANCEL_DOWNLOAD:
-                Crashlytics.log("DownloadService: cancelling download");
-                if (currentDownloadThread != null) {
-                    currentDownloadThread.interrupt();
-                    currentDownloadThread = null;
+                Crashlytics.log("DemoSamplesInstallerService: cancelling download");
+                if (downloadAndInstallThread != null) {
+                    isDownloading = false;
+                    downloadAndInstallThread.interrupt();
+                    downloadAndInstallThread = null;
                 }
                 break;
         }
@@ -103,15 +111,15 @@ public class DownloadService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Crashlytics.log("DownloadService: created");
+        Crashlytics.log("DemoSamplesInstallerService: created");
         instance = this;
     }
 
     @Override
     public void onDestroy() {
-        Crashlytics.log("DownloadService: destroying");
-        if (currentDownloadThread != null)
-            currentDownloadThread.interrupt();
+        Crashlytics.log("DemoSamplesInstallerService: destroying");
+        if (downloadAndInstallThread != null)
+            downloadAndInstallThread.interrupt();
         instance = null;
         super.onDestroy();
     }
@@ -119,21 +127,35 @@ public class DownloadService extends Service {
     public static boolean isDownloading() {
         // This is a hack relying on the fact that only one service instance may be started
         // and that the service is local.
-        return instance != null && instance.currentDownloadThread != null;
+        return instance != null && instance.isDownloading;
     }
 
-    private void onFinished(@NonNull File destinationPath) {
-        Crashlytics.log("DownloadService: download finished");
-        Intent intent = new Intent(BROADCAST_DOWNLOAD_FINISHED_ACTION);
-        intent.putExtra(DOWNLOAD_FILE_EXTRA, destinationPath.getAbsolutePath());
+    public static boolean isInstalling() {
+        // This is a hack relying on the fact that only one service instance may be started
+        // and that the service is local.
+        return instance != null && instance.downloadAndInstallThread != null
+                && !instance.isDownloading;
+    }
+
+    private void onInstallStarted() {
+        Crashlytics.log("DemoSamplesInstallerService: install started");
+        isDownloading = false;
+        Intent intent = new Intent(BROADCAST_INSTALL_STARTED_ACTION);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    private void onInstallFinished() {
+        Crashlytics.log("DemoSamplesInstallerService: install finished");
+        Intent intent = new Intent(BROADCAST_INSTALL_FINISHED_ACTION);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         stopSelf();
     }
 
     private void onFailed(@NonNull String errorMessage) {
-        Crashlytics.log("DownloadService: download failed");
-        Intent intent = new Intent(BROADCAST_DOWNLOAD_FINISHED_ACTION);
-        intent.putExtra(DOWNLOAD_ERROR_EXTRA, errorMessage);
+        Crashlytics.log("DemoSamplesInstallerService: download or install failed");
+        isDownloading = false;
+        Intent intent = new Intent(BROADCAST_FAILED_ACTION);
+        intent.putExtra(FAILURE_ERROR_EXTRA, errorMessage);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         stopSelf();
     }
@@ -152,19 +174,19 @@ public class DownloadService extends Service {
 
     private static class ResultHandler {
 
-        private final DownloadService service;
+        private final DemoSamplesInstallerService service;
         private final Handler handler;
 
-        private ResultHandler(DownloadService service, Looper looper) {
+        private ResultHandler(DemoSamplesInstallerService service, Looper looper) {
             this.service = service;
             this.handler = new Handler(looper);
         }
 
-        void onFinished(final @NonNull File downloadPath) {
+        void onInstallFinished() {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    service.onFinished(downloadPath);
+                    service.onInstallFinished();
                 }
             });
         }
@@ -178,7 +200,7 @@ public class DownloadService extends Service {
             });
         }
 
-        void onProgress(final int progress, final int total) {
+        void onDownloadProgress(final int progress, final int total) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -186,15 +208,24 @@ public class DownloadService extends Service {
                 }
             });
         }
+
+        void onInstallStarted() {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    service.onInstallStarted();
+                }
+            });
+        }
     }
 
-    private static class DownloadThread extends Thread {
+    private static class DownloadAndInstallThread extends Thread {
 
         private final Context context;
         private final ResultHandler resultHandler;
         private final URL downloadUrl;
 
-        DownloadThread(Context context, ResultHandler resultHandler, String downloadUrl)
+        DownloadAndInstallThread(Context context, ResultHandler resultHandler, String downloadUrl)
                 throws MalformedURLException {
             super("DownloadThread");
             this.context = context;
@@ -206,35 +237,47 @@ public class DownloadService extends Service {
         @Override
         public void run() {
             try {
-                byte[] inputBuffer = new byte[DOWNLOAD_BUFFER_SIZE];
-                File tmpFile = File.createTempFile("download", null, context.getExternalCacheDir());
-                tmpFile.deleteOnExit();
-
-                OutputStream output = new BufferedOutputStream(new FileOutputStream(tmpFile));
-                HttpURLConnection connection = (HttpURLConnection) downloadUrl.openConnection();
-                InputStream input = new BufferedInputStream(connection.getInputStream());
-
-                int totalBytesRead = 0;
-                int bytesRead;
-                while((bytesRead = input.read(inputBuffer, 0, inputBuffer.length)) > 0) {
-                    output.write(inputBuffer, 0, bytesRead);
-                    totalBytesRead += bytesRead;
-                    resultHandler.onProgress(totalBytesRead, connection.getContentLength());
-
-                    if (isInterrupted())
-                        break;
-                }
-                output.close();
-
-                connection.disconnect();
+                File tmpFile = downloadSamples();
 
                 if (isInterrupted())
                     return;  // No result expected.
 
-                resultHandler.onFinished(tmpFile);
+                resultHandler.onInstallStarted();
+                DemoSamplesInstaller installer =
+                        HomerPlayerApplication.getComponent(context).createDemoSamplesInstaller();
+                installer.installBooksFromZip(tmpFile);
+
+                resultHandler.onInstallFinished();
             } catch (IOException e) {
                 resultHandler.onFailed(e.getMessage());
             }
+        }
+
+        @WorkerThread
+        private File downloadSamples() throws IOException {
+            byte[] inputBuffer = new byte[DOWNLOAD_BUFFER_SIZE];
+            File tmpFile = File.createTempFile("download", null, context.getExternalCacheDir());
+            tmpFile.deleteOnExit();
+
+            OutputStream output = new BufferedOutputStream(new FileOutputStream(tmpFile));
+            HttpURLConnection connection = (HttpURLConnection) downloadUrl.openConnection();
+            InputStream input = new BufferedInputStream(connection.getInputStream());
+
+            int totalBytesRead = 0;
+            int bytesRead;
+            while((bytesRead = input.read(inputBuffer, 0, inputBuffer.length)) > 0) {
+                output.write(inputBuffer, 0, bytesRead);
+                totalBytesRead += bytesRead;
+                resultHandler.onDownloadProgress(totalBytesRead, connection.getContentLength());
+
+                if (isInterrupted())
+                    break;
+            }
+            output.close();
+
+            connection.disconnect();
+
+            return tmpFile;
         }
     }
 }

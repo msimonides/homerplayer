@@ -95,8 +95,8 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
     }
 
     @Override @NonNull
-    public InstallProgressObserver showInstallProgress() {
-        progressUi = new ProgressUi(view.getContext(), controller);
+    public InstallProgressObserver showInstallProgress(boolean isAlreadyInstalling) {
+        progressUi = new ProgressUi(view.getContext(), controller, isAlreadyInstalling);
         return progressUi;
     }
 
@@ -106,12 +106,16 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
         UiControllerNoBooks controller;
         private final @NonNull ProgressDialog progressDialog;
 
-        ProgressUi(@NonNull Context context, @NonNull UiControllerNoBooks controller) {
+        ProgressUi(@NonNull Context context,
+                   @NonNull UiControllerNoBooks controller,
+                   boolean isAlreadyInstalling) {
             this.context = context;
             this.controller = controller;
             this.progressDialog = createProgressDialog();
             progressDialog.show();
             progressDialog.setIndeterminate(true);
+            if (isAlreadyInstalling)
+                onInstallStarted();
         }
 
         @Override
@@ -129,6 +133,7 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
         @Override
         public void onInstallStarted() {
             progressDialog.setIndeterminate(true);
+            progressDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setVisibility(View.INVISIBLE);
         }
 
         @Override
