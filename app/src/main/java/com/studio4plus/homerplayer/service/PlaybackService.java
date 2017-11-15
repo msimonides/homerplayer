@@ -367,7 +367,10 @@ public class PlaybackService
         public void reset() {
             handler.removeCallbacks(this);
             currentVolume = 1.0f;
-            player.setPlaybackVolume(currentVolume);
+
+            // The player may have been released already.
+            if (player != null)
+              player.setPlaybackVolume(currentVolume);
         }
 
         @Override
