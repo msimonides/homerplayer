@@ -1,7 +1,8 @@
 header-img: img/header-default.jpg
 baseurl: /homerplayer
-gems:
+plugins:
  - jekyll-sitemap
+ - jekyll-redirect-from
 defaults:
   -
     scope:
