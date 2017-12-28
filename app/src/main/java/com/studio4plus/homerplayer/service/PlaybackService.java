@@ -6,7 +6,6 @@ import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
@@ -101,10 +100,10 @@ public class PlaybackService
         startForeground(NOTIFICATION_ID, notification);
 
         if (book.getTotalDurationMs() == AudioBook.UNKNOWN_POSITION) {
-            Crashlytics.log("PlaybackService.startPlaybac: create DurationQuery");
+            Crashlytics.log("PlaybackService.startPlayback: create DurationQuery");
             durationQueryInProgress = new DurationQuery(player, book);
         } else {
-            Crashlytics.log("PlaybackService.startPlaybac: create AudioBookPlayback");
+            Crashlytics.log("PlaybackService.startPlayback: create AudioBookPlayback");
             playbackInProgress = new AudioBookPlayback(
                     player, handler, book, globalSettings.getJumpBackPreferenceMs());
         }
@@ -180,7 +179,7 @@ public class PlaybackService
     private void onPlaybackEnded() {
         durationQueryInProgress = null;
         playbackInProgress = null;
-         if (motionDetector != null)
+        if (motionDetector != null)
              motionDetector.disable();
 
         stopSleepTimer();
