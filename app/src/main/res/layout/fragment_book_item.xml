@@ -24,9 +24,10 @@
         android:visibility="gone"
         android:layout_alignParentTop="true"/>
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/startButton"
-        style="@style/buttonStart"
+        style="@style/buttonStartStop"
+        android:theme="@style/buttonStartOverlay"
         android:text="@string/button_start"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"/>

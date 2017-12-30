@@ -1,19 +1,16 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppThemeBase" parent="android:Theme.DeviceDefault">
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="AppTheme" parent="AppThemeBase">
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
+    <style name="SettingsTheme" parent="AppTheme">
+        <item name="android:windowActionBar">true</item>
+        <item name="android:windowNoTitle">false</item>
     </style>
 
-    <style name="SettingsTheme" parent="AppThemeBase">
-    </style>
-
-    <style name="buttonStartStop">
+    <style name="buttonStartStop" parent="ThemeOverlay.AppCompat">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAllCaps">true</item>

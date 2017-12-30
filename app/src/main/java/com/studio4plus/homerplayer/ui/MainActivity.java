@@ -8,6 +8,7 @@ import android.os.PersistableBundle;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,7 +27,7 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
-public class MainActivity extends BaseActivity implements SpeakerProvider {
+public class MainActivity extends AppCompatActivity implements SpeakerProvider {
 
     private static final int TTS_CHECK_CODE = 1;
 
@@ -35,6 +36,7 @@ public class MainActivity extends BaseActivity implements SpeakerProvider {
 
     private BatteryStatusIndicator batteryStatusIndicator;
     private @Nullable SimpleDeferred<Speaker> ttsDeferred;
+    private OrientationActivityDelegate orientationDelegate;
 
     @Inject public UiControllerMain controller;
     @Inject public BatteryStatusProvider batteryStatusProvider;
@@ -57,6 +59,8 @@ public class MainActivity extends BaseActivity implements SpeakerProvider {
         batteryStatusIndicator = new BatteryStatusIndicator(
                 (ImageView) findViewById(R.id.batteryStatusIndicator), EventBus.getDefault());
 
+        orientationDelegate = new OrientationActivityDelegate(this, globalSettings);
+
         View touchEventEater = findViewById(R.id.touchEventEater);
         touchEventEater.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -70,6 +74,7 @@ public class MainActivity extends BaseActivity implements SpeakerProvider {
     @Override
     protected void onStart() {
         controller.onActivityStart();
+        orientationDelegate.onStart();
         batteryStatusProvider.start();
         super.onStart();
     }
@@ -93,6 +98,7 @@ public class MainActivity extends BaseActivity implements SpeakerProvider {
     @Override
     protected void onStop() {
         controller.onActivityStop();
+        orientationDelegate.onStop();
         super.onStop();
         batteryStatusProvider.stop();
     }

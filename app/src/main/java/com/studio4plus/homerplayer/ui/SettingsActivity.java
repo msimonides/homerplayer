@@ -1,6 +1,7 @@
 package com.studio4plus.homerplayer.ui;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -37,7 +38,7 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
-public class SettingsActivity extends BaseActivity {
+public class SettingsActivity extends Activity {
 
     // Pseudo preferences that don't change any preference values directly.
     private static final String KEY_FAQ = "faq_preference";
@@ -51,11 +52,17 @@ public class SettingsActivity extends BaseActivity {
 
     private Handler mainThreadHandler;
     private Runnable unblockEventsTask;
+    private OrientationActivityDelegate orientationDelegate;
+
+    @Inject public EventBus eventBus;
+    @Inject public GlobalSettings globalSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         HomerPlayerApplication.getComponent(this).inject(this);
+
+        orientationDelegate = new OrientationActivityDelegate(this, globalSettings);
 
         // Display the fragment as the main content.
         getFragmentManager().beginTransaction()
@@ -68,6 +75,7 @@ public class SettingsActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        orientationDelegate.onStart();
         blockEventsOnStart();
         eventBus.post(new SettingsEnteredEvent());
     }
@@ -75,6 +83,7 @@ public class SettingsActivity extends BaseActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        orientationDelegate.onStop();
         cancelBlockEventOnStart();
     }
 

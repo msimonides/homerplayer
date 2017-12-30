@@ -23,7 +23,7 @@
         android:layout_marginBottom="@dimen/copyBooksInstructionTextSize"
         android:text="@string/noBooksOrMessage"/>
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/downloadSamplesButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

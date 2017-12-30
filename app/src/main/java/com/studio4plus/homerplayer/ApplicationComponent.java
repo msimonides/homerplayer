@@ -13,7 +13,6 @@ import com.studio4plus.homerplayer.player.Player;
 import com.studio4plus.homerplayer.service.AudioBookPlayerModule;
 import com.studio4plus.homerplayer.service.DemoSamplesInstallerService;
 import com.studio4plus.homerplayer.service.PlaybackService;
-import com.studio4plus.homerplayer.ui.BaseActivity;
 import com.studio4plus.homerplayer.ui.BatteryStatusIndicator;
 import com.studio4plus.homerplayer.ui.classic.ClassicPlaybackUi;
 import com.studio4plus.homerplayer.ui.classic.FragmentBookItem;
@@ -32,7 +31,7 @@ import de.greenrobot.event.EventBus;
 @ApplicationScope
 @Component(modules = { ApplicationModule.class, AudioBookManagerModule.class, AudioBookPlayerModule.class })
 public interface ApplicationComponent {
-    void inject(BaseActivity baseActivity);
+    void inject(SettingsActivity settingsActivity);
     void inject(FragmentBookItem fragment);
     void inject(ClassicBookList fragment);
     void inject(ClassicNoBooksUi fragment);
