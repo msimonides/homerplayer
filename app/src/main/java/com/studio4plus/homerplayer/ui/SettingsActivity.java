@@ -21,6 +21,7 @@ import android.preference.SwitchPreference;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.BaseAdapter;
 import android.widget.Toast;
 
 import com.google.common.base.Preconditions;
@@ -313,6 +314,18 @@ public class SettingsActivity extends Activity {
                 simpleModePreference.setSummary(summaryStringId);
                 simpleModePreference.setEnabled(!fullModePreference.isChecked());
             }
+
+            {
+                Preference kioskModeScreen =
+                        findPreference(GlobalSettings.KEY_KIOSK_MODE_SCREEN);
+                int summaryStringId = R.string.pref_kiosk_mode_screen_summary_disabled;
+                if (fullModePreference.isChecked())
+                    summaryStringId = R.string.pref_kiosk_mode_screen_summary_full;
+                else if (simpleModePreference.isChecked())
+                    summaryStringId = R.string.pref_kiosk_mode_screen_summary_simple;
+
+                kioskModeScreen.setSummary(summaryStringId);
+            }
         }
 
         private void updateUnregisterDeviceOwner(boolean isEnabled) {
@@ -394,9 +407,17 @@ public class SettingsActivity extends Activity {
 
         private void onAnyKioskModeSwitched(boolean enable) {
             updateKioskModeSummaries();
+            // The main screen needs to be refreshed explicitly to update the summary for
+            // KEY_KIOSK_MODE_SCREEN.
+            refreshMainSettingsUI();
+
             HomeActivity.setEnabled(getActivity(), enable);
             if (enable)
                 triggerHomeAppSelectionIfNecessary();
+        }
+
+        private void refreshMainSettingsUI() {
+            ((BaseAdapter) getPreferenceScreen().getRootAdapter()).notifyDataSetChanged();
         }
 
         private void triggerHomeAppSelectionIfNecessary() {
