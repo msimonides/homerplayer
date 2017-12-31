@@ -35,7 +35,7 @@ android {
         applicationId "com.studio4plus.homerplayer"
         minSdkVersion 17
         targetSdkVersion 22
-        versionCode 38
+        versionCode 39
         versionName getVersionName()
     }
     buildTypes {
