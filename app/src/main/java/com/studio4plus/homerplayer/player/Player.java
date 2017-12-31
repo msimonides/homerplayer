@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -128,16 +127,16 @@ public class Player {
             lastPlaybackState = playbackState;
 
             switch(playbackState) {
-                case ExoPlayer.STATE_READY:
+                case com.google.android.exoplayer2.Player.STATE_READY:
                     observer.onPlaybackStarted();
                     observer.onDuration(currentFile, exoPlayer.getDuration());
                     updateProgress();
                     break;
-                case ExoPlayer.STATE_ENDED:
+                case com.google.android.exoplayer2.Player.STATE_ENDED:
                     handler.removeCallbacks(updateProgressTask);
                     observer.onPlaybackEnded();
                     break;
-                case ExoPlayer.STATE_IDLE:
+                case com.google.android.exoplayer2.Player.STATE_IDLE:
                     handler.removeCallbacks(updateProgressTask);
                     exoPlayer.release();
                     exoPlayer.removeListener(this);
@@ -191,13 +190,13 @@ public class Player {
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             switch(playbackState) {
-                case ExoPlayer.STATE_READY:
+                case com.google.android.exoplayer2.Player.STATE_READY:
                     observer.onDuration(currentFile, exoPlayer.getDuration());
                     boolean hasNext = processNextFile();
                     if (!hasNext)
                         exoPlayer.stop();
                     break;
-                case ExoPlayer.STATE_IDLE:
+                case com.google.android.exoplayer2.Player.STATE_IDLE:
                     exoPlayer.removeListener(this);
                     if (releaseOnIdle) {
                         exoPlayer.release();

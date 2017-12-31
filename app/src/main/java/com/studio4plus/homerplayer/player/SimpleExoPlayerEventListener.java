@@ -1,13 +1,13 @@
 package com.studio4plus.homerplayer.player;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 
-public class SimpleExoPlayerEventListener implements ExoPlayer.EventListener {
+public class SimpleExoPlayerEventListener implements Player.EventListener {
 
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
@@ -34,7 +34,15 @@ public class SimpleExoPlayerEventListener implements ExoPlayer.EventListener {
     }
 
     @Override
-    public void onPositionDiscontinuity() {
+    public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+    }
+
+    @Override
+    public void onPositionDiscontinuity(int reason) {
+    }
+
+    @Override
+    public void onSeekProcessed() {
     }
 
     @Override

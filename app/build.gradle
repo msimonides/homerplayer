@@ -61,7 +61,7 @@ dependencies {
     compile 'com.flurry.android:analytics:6.9.2'
     compile 'com.google.guava:guava:18.0'
     compile 'com.google.code.findbugs:jsr305:3.0.1'
-    compile 'com.google.android.exoplayer:exoplayer:r2.5.4'
+    compile 'com.google.android.exoplayer:exoplayer-core:2.6.0'
 
     compile 'com.google.dagger:dagger:2.11'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
