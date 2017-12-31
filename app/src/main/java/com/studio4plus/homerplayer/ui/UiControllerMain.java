@@ -74,7 +74,7 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     void onActivityStop() {
-        Crashlytics.log("UI: leave state " + currentState + " (activity stop)");
+        Crashlytics.log("UI: leave state " + currentState.debugName() + " (activity stop)");
         currentState.onLeaveState();
         currentState = new InitState();
     }

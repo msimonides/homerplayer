@@ -28,7 +28,7 @@ def getVersionName = { ->
 android {
     useLibrary 'org.apache.http.legacy'
 
-    compileSdkVersion 25
+    compileSdkVersion 27
     buildToolsVersion "26.0.2"
 
     defaultConfig {
@@ -53,9 +53,9 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'de.greenrobot:eventbus:2.4.1'
 
-    compile 'com.android.support:appcompat-v7:25.4.0'
+    compile 'com.android.support:appcompat-v7:27.0.2'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.android.support:support-v13:25.4.0'
+    compile 'com.android.support:support-v13:27.0.2'
 
     compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') { transitive = true }
     compile 'com.flurry.android:analytics:6.9.2'
