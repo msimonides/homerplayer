@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
@@ -22,6 +23,8 @@ import com.studio4plus.homerplayer.ui.classic.ClassicMainUiModule;
 import com.studio4plus.homerplayer.ui.classic.DaggerClassicMainUiComponent;
 import com.studio4plus.homerplayer.util.SimpleDeferred;
 import com.studio4plus.homerplayer.util.SimpleFuture;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -41,6 +44,10 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
     @Inject public UiControllerMain controller;
     @Inject public BatteryStatusProvider batteryStatusProvider;
     @Inject public GlobalSettings globalSettings;
+
+    private final static long SUPPRESSED_BACK_MESSAGE_DELAY_NANO = TimeUnit.SECONDS.toNanos(2);
+    private long lastSuppressedBackTimeNano = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +108,20 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
         orientationDelegate.onStop();
         super.onStop();
         batteryStatusProvider.stop();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (globalSettings.isAnyKioskModeEnabled()) {
+            long now = System.nanoTime();
+            if (now - lastSuppressedBackTimeNano < SUPPRESSED_BACK_MESSAGE_DELAY_NANO) {
+                Toast.makeText(this, R.string.back_suppressed_by_kiosk, Toast.LENGTH_SHORT)
+                        .show();
+            }
+            lastSuppressedBackTimeNano = now;
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
