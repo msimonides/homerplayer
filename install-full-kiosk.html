@@ -1,0 +1,215 @@
+---
+layout: page
+meta_title: "Homer Player: setting up full kiosk mode"
+title: "Make a Dedicated Player - Full Kiosk Mode"
+heading: "Making a Dedicated Player"
+header-img: img/header-install.jpg
+description: "Full kiosk mode"
+extra_css:
+ - lightview.min.css
+extra_js:
+ - lightview.js
+ - video.js
+---
+
+<h2>Simple vs Full kiosk mode</h2>
+
+<p>
+Both modes aim at confining the user to within the app to protect him or
+her from the complexity of the Android system and other apps.
+</p>
+
+<p>
+The full kiosk mode is much more robust than
+<a href="install-configure.html#enable-kiosk-mode">the simple one</a> (see the
+video below) but it is also more difficult to set up, the exact steps are
+described below.
+</p>
+
+<div class="center-block img-responsive video-poster">
+<a href="https://www.youtube.com/embed/7ZaA-sfsL0w?vq=hd720&autoplay=1&autohide=1&border=0&egm=0&showinfo=0"
+    class="overlay"><i class="fa fa-play-circle fa-5x"></i></a>
+<img class="img-responsive" src="img/gallery/kiosk mode.png">
+</div>
+
+<div class="additional-info info"><strong>Requirements:</strong>
+The full kiosk mode requires Android version 5.0 or newer and it cannot be
+enabled on a Kindle Fire. Older devices and Kindle Fire are limited to the
+<a href="install-configure.html#enable-kiosk-mode">simple mode</a> only.
+</div>
+
+<h2>Preparation</h2>
+
+<p>
+You will need:
+
+<ol>
+<li>A tablet or smartphone with Homer Player already installed and
+<a href="install-configure.html">configured</a>.
+<li>A PC or Mac computer with Internet access.
+<li>A USB cable to connect the Homer Player tablet to your computer.
+</ol>
+
+Let's start!
+</p>
+
+<h2>1. Remove all accounts</h2>
+
+<p>
+In order for step 4 to succeed, you need to remove all the accounts registered
+in the system.
+</p>
+
+<p>
+Go to <strong>Settings</strong> &rarr; <strong>Accounts</strong> and remove all
+the accounts.
+</p>
+
+<img src="img/remove-accounts.png" class="center-block img-responsive">
+
+<h2>2. Enable USB debugging</h2>
+
+<p>
+You need to enable USB debugging on the tablet so that it accepts commands from
+your computer.
+
+<ol>
+<li>Go to <strong>Settings</strong> &rarr; <strong>About tablet</strong> and
+tap on the <strong>Build number</strong> 7 times.
+<li>Go back, enter the newly added <strong>Developer options</strong> and
+activate <strong>USB debugging</strong>.
+</ol>
+</p>
+
+<img src="img/debugging.png" class="center-block img-responsive">
+
+<p>You are a hacker now ;)</p>
+
+<h2>3. Install ADB</h2>
+
+<p>
+The <code>adb</code> command is needed on your computer to perform the next
+step. The software installed here can be uninstalled later.
+</p>
+
+<ul id="adb-install-tabs" class="nav nav-tabs" data-tabs="adb-install-tab-content">
+  <li class="active"><a href="#adb-install-windows" data-toggle="tab">Windows</a></li>
+  <li><a href="#adb-install-mac" data-toggle="tab">Mac</a></li>
+  <li><a href="#adb-install-ubuntu" data-toggle="tab">Ubuntu</a></li>
+</ul>
+<div class="tab-content tab-content-framed">
+  <div id="adb-install-windows" class="tab-pane active">
+  <p>
+  Download and install the (unofficial) package from
+  <a href="http://forum.xda-developers.com/showthread.php?t=2588979" target="_blank">this post</a>.
+  </p>
+  <p>
+  If you prefer, you can of course install the
+  <a href="https://developer.android.com/sdk/index.html#Other" target="_blank">Android SDK Tools</a>
+  or even Android Studio but it's a bigger download and more work.
+  </p>
+  </div>
+  
+  <div id="adb-install-ubuntu" class="tab-pane">
+  <p>
+  Install <code>adb</code> with the following command:
+  </p>
+  <blockquote><code>sudo apt-get install android-tools-adb</code></blockquote>
+  </div>
+
+  <div id="adb-install-mac" class="tab-pane">
+  <ol>
+    <li>Open the <strong>Terminal</strong> app.</li>
+    <li>Copy and execute the following command to install <a href="http://brew.sh" target="_blank">Homebrew</a> (on one line):
+    <blockquote><code>/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"</code></blockquote>
+    </li>
+    <li>Copy and execute the following command to install the <code>adb</code> command:
+    <blockquote><code>brew cask install android-platform-tools</code></blockquote>
+    </li>
+  </ol>
+  </div>
+</div>
+
+
+<h2>4. Make Homer Player a privileged application</h2>
+
+<p>
+In order for Homer Player to take full control of the UI it needs to be given
+special privilege - it needs to be made a so-called <em>device owner</em>.
+This doesn't change the software in any way, it does <strong>not</strong>
+void the warranty and it can be easily reversed.
+</p>
+
+<ol>
+<li>Attach the device with a USB cable to your computer.
+<li>On your computer start a terminal (Linux/Mac) or the command prompt
+(Windows).
+<li>Execute the following command (on one line):
+<blockquote>
+<code>adb shell dpm set-device-owner com.studio4plus.homerplayer/.HomerPlayerDeviceAdmin</code>
+</blockquote>
+</ol>
+
+<p>
+You should see:
+<pre>
+Success: Device owner set to package com.studio4plus.homerplayer
+</pre>
+
+In case of errors see
+<a role="button" data-toggle="modal"
+    data-target="#adb-troubleshooting-modal">troubleshooting</a>.
+</p>
+
+<div class="modal fade" id="adb-troubleshooting-modal" tabindex="-1"
+    role="dialog" aria-labelledby="adb-troubleshooting-label">
+<div class="modal-dialog modal-lg" role="document">
+  <div class="modal-content">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <h3 class="modal-title" id="adb-troubleshooting-label">
+      ADB Troubleshooting Help
+    </h3>
+  </div>
+  <div class="modal-body">
+  <dl>
+    <dt>Error: <code>device not found</code></dt>
+    <dd>
+    If you get this error on a Windows computer then it's probably a problem
+    with a driver for your tablet. <a
+        href="http://www.makeuseof.com/tag/android-wont-connect-windows-adb-fix-it-three-steps/">Installing a universal ADB driver should help.</a>
+    </dd>
+    <dt>Error: <code>Trying to set device owner but device is already provisioned.</code></dt>
+    <dd>
+    This means that there are some accounts still configured on the device.
+    Make sure you have performed step "1. Remove all accounts" correctly.
+    </dd>
+  </dl>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+  </div>
+  </div>
+</div>
+</div>
+
+<h2>5. Enable the full kiosk mode</h2>
+
+<p>
+Now you can enable and disable the full kiosk mode at will.
+
+<ol>
+<li>Start Homer Player.
+<li>Tap 5 times on the screen to enter settings.
+<li>Tap <strong>Prevent from exiting the application (kiosk mode)</strong>.
+<li>Enable <strong>Full mode...</strong>
+<li>Go back to leave the settings screen.
+</ol>
+
+<img class="img-responsive center-block" src="img/full-kiosk-mode.png">
+
+Now it's impossible to leave the player application (you can revert this by
+disabling the "Full mode..." option).
+</p>

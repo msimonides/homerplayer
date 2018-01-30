@@ -1,5 +1,5 @@
-$('.faq-toc a').click(highlightOnEvent);
-$('.faq a.self').click(highlightOnEvent);
+$('.faq.toc a').click(highlightOnEvent);
+$('.faq.questions a.self').click(highlightOnEvent);
 
 function highlightOnEvent(event) {
 	var targetHref = this.getAttribute('href');

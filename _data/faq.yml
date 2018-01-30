@@ -30,30 +30,6 @@
       answer: >
         <p>Yes, you can use a Mac or a PC with Windows or Linux.</p>
 
-    - question: When I browse books, the titles are not read aloud. How do I fix it?
-      answer: >
-        <p>The Text-to-Speech (TTS) module isn't working correctly.<br>
-        There may be a number of reasons:</p>
-        <ul>
-        <li>voice data for your language is not installed,
-        <li>your language is not supported by your TTS module,
-        <li>no TTS is installed on your device.
-        </ul>
-
-        <p>Go to <strong>Settings &rarr; Language &amp; input &rarr;
-        Text-to-speech output</strong><br>
-        Here you can choose the preferred engine, change its settings (e.g.
-        download more voices) and play an example sentence.</p>
-
-        <img src="img/tts-settings.png" class="img-responsive center-block single-screenshot">
-
-        <p>Most devices come with the Google Text-to-Speech Engine installed.
-        It supports a number of popular languages. If your language is missing
-        (or you don't like the voice) you can install other TTS engines from
-        the Play Store.<br>
-        One engine with a large number of supported languages is Vocalizer (paid). You
-        can also find TTS apps for specific languages.<p>
-
     - question: How can I start a book from the beginning? While I was testing the book advanced 10 minutes and now I want it to play from start when I give the tablet to my uncle.
       answer: >
         <p>There is a function to reset progress on <strong>all</strong> audiobooks to the beginning.</p>
@@ -121,20 +97,68 @@
         </p>
         <p>See the previous question on some tips where to get books.</b>
 
-- section: Installation on a dedicated device
+- section: Troubleshooting
   questions:
-    - question: "When executing the <tt>adb shell</tt> command (step 8 of the instruction) I get the following error: <tt>device not found</tt>"
+    - question: When I browse books, the titles are not read aloud. How do I fix it?
+      answer: >
+        <p>The Text-to-Speech (TTS) module isn't working correctly.<br>
+        There may be a number of reasons:</p>
+        <ul>
+        <li>voice data for your language is not installed,
+        <li>your language is not supported by your TTS module,
+        <li>no TTS is installed on your device.
+        </ul>
+
+        <p>Go to <strong>Settings &rarr; Language &amp; input &rarr;
+        Text-to-speech output</strong><br>
+        Here you can choose the preferred engine, change its settings (e.g.
+        download more voices) and play an example sentence.</p>
+
+        <img src="img/tts-settings.png" class="img-responsive center-block single-screenshot">
+
+        <p>Most devices come with the Google Text-to-Speech Engine installed.
+        It supports a number of popular languages. If your language is missing
+        (or you don't like the voice) you can install other TTS engines from
+        the Play Store.<br>
+        One engine with a large number of supported languages is Vocalizer (paid). You
+        can also find TTS apps for specific languages.<p>
+
+    - question: Copying books to the device doesn't work or aborts during the process.
       answer: >
         <p>
-        If you get this error on a Windows computer then it's probably a problem with a
-        driver for your tablet. <a
-        href="http://www.makeuseof.com/tag/android-wont-connect-windows-adb-fix-it-three-steps/">Installing a universal ADB driver should help.</a>
+        A small number of users have reported issues with copying files to their devices.
+        Here are a few things to try:
+        <ul>
+        <li>disable the kiosk mode for the time of copying files,
+        <li>if the device doesn't show up in your computer after it is
+        connected, swipe down the top of the screen (with kiosk mode disabled). There
+        should be a notification about the USB connection. If it says "USB for
+        charging" then tap it and choose "Transfer files".
+        <li>if copying stops at a certain moment, try keeping the screen on
+        until all files are copied.
+        </ul>
         </p>
-    - question: "When executing the <tt>adb shell</tt> command (step 8 of the instruction) I get the following error: <tt>java.lang.IllegalStateException: Trying to set device owner but device is already provisioned.</tt>"
+
+    - question: I want to disable screen lock on my device but the "None" option is not available.
       answer: >
+        <p>There may be a numbr of reasons for the <strong>None</strong> option to not be
+        available.</p>
         <p>
-        This means that there are some accounts still configured on the device.
-        Make sure you have performed step "5. Remove all accounts" correctly.
+        The most common is that there is more than one account set up on the device, usually
+        a guest account. Delete the account to bring back the "None" screen lock option.
+        </p>
+        <p>
+        Removing a user account differs slightly between devices, but usually one needs
+        to switch to the account to delete, go to <strong>Settings</strong> &rarr;
+        <strong>Users</strong> and remove the current account.<br>
+        If you need more specific information for your device Google for: <a
+        href="https://www.google.com/search?q=android+remove+guest+account" target="_blank">Android
+        remove guest account <em>your phone make</em></a>.
+        </p>
+        <p>
+        If the issue is not caused by multiple user accounts check out the following
+        <a href="https://appuals.com/disabled-by-administrator-encryption-policy-or-credential-storage/">
+        article about other ways of fixing the problem</a>.
         </p>
 
 - section: Supporting the project

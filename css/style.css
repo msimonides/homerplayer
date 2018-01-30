@@ -59,9 +59,22 @@ blockquote {
 	overflow-x: auto;
 }
 
+dd {
+	margin-bottom: 0.7em;
+}
+
+.install-dedicated-sections dd {
+	padding-left: 1em;
+}
+
 .content a:not(.btn),
+.content .toc a:hover,
 footer a {
 	text-decoration: underline;
+}
+
+.content .toc a {
+	text-decoration: none;
 }
 
 .content img.center-block {
@@ -186,13 +199,65 @@ ul.social a:hover {
 	color: #666;
 }
 
-.gallery img {
-	border: 1px solid #000;
-	margin-bottom: 0.7em;
-}
-.gallery .photo {
+.photo {
 	text-align: center;
+	margin-bottom: 2em;
+	font-size: 90%;
+}
+
+.photo img {
+	border: 1px solid #000;
+	margin-bottom: 0.5em;
+}
+
+.gallery .photo {
 	margin-bottom: 2.5em;
+	font-size: 100%;
+}
+
+.additional-info {
+	font-size: 80%;
+	padding: 5px 10px;
+	margin-bottom: 2em;
+	border-left: 4px solid;
+	border-radius: 4px;
+}
+
+.info {
+	border-color: #aaa;
+	background-color: #eee;
+	color: #222;
+}
+
+.video-poster {
+	position: relative;
+	cursor: pointer;
+	width: 60%;
+	margin-bottom: 1.5em;
+}
+
+.video-poster a.overlay,
+.video-poster a.overlay:visited {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	z-index: 1;
+	color: #fff;
+	background-color: rgba(0, 0, 0, 0.4);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-decoration: none;
+}
+
+.video-poster .overlay i {
+	text-shadow: 0px 0px 20px #000;
+}
+
+.video-poster a.overlay:hover {
+	color: #ddd;
 }
 
 footer {
