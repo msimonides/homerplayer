@@ -12,7 +12,10 @@ $(document).ready(function() {
       height: VIDEO_HEIGHT,
       initialDimensions: { width: VIDEO_WIDTH, height: VIDEO_HEIGHT }
     };
-    const url = event.currentTarget.href;
+    const target = event.currentTarget;
+    const url = target.href;
+    if (target.dataset.eventLabel)
+      gaVideoStart(target.dataset.eventLabel);
 
     Lightview.show({
         url: url, type: 'iframe', options: lightview_options });

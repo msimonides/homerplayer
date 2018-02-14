@@ -19,6 +19,10 @@ function gaLinkClick(label) {
   ga('send', 'event', 'link', 'click', label);
 }
 
+function gaVideoStart(label) {
+  ga('send', 'event', 'video', 'click', label);
+}
+
 function gaVirtualPageView(page, title) {
   ga('send', { 'hitType': 'pageview', 'page': page, 'title': title });
 }
