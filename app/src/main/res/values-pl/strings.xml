@@ -52,6 +52,7 @@
     <string name="multi_tap_prompt">Jeszcze %d</string>
     <string name="noBooksDownloadSamplesButton">Pobierz przykładowe ksiązki</string>
     <string name="noBooksOrMessage">lub</string>
+    <string name="playbackErrorToast">Nie można odtworzyć pliku:\n%s</string>
     <string name="samplesDownloadErrorMessage">Nie udało się pobrać i zainstalować przykładowych audiobooków.</string>
     <string name="samplesDownloadErrorTitle">Błąd</string>
     <string name="samplesDownloadProgressTitle">Pobieranie…</string>

@@ -25,6 +25,12 @@ public interface PlaybackController {
         void onPlaybackStopped(long currentPositionMs);
 
         /**
+         * Error playing file.
+         * @param path
+         */
+        void onPlaybackError(File path);
+
+        /**
          * The player has been released.
          */
         void onPlayerReleased();

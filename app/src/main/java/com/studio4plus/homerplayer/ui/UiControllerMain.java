@@ -13,6 +13,7 @@ import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
+import com.studio4plus.homerplayer.events.PlaybackErrorEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppedEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
 import com.studio4plus.homerplayer.model.AudioBookManager;
@@ -93,6 +94,11 @@ public class UiControllerMain implements ServiceConnection {
     @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
     public void onEvent(PlaybackStoppedEvent event) {
         currentState.onPlaybackStop(this);
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    public void onEvent(PlaybackErrorEvent event) {
+        mainUi.onPlaybackError(event.path);
     }
 
     void playCurrentAudiobook() {

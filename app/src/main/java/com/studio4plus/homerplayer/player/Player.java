@@ -145,6 +145,11 @@ public class Player {
             }
         }
 
+        @Override
+        public void onPlayerError(ExoPlaybackException error) {
+            observer.onPlaybackError(currentFile);
+        }
+
         private void updateProgress() {
             long positionMs = exoPlayer.getCurrentPosition();
             observer.onPlaybackProgressed(positionMs);
@@ -211,6 +216,7 @@ public class Player {
         @Override
         public void onPlayerError(ExoPlaybackException error) {
             releaseOnIdle = true;
+            observer.onPlayerError(currentFile);
         }
 
         private boolean processNextFile() {
