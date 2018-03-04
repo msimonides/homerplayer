@@ -1,5 +1,7 @@
 package com.studio4plus.homerplayer.model;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -30,13 +33,13 @@ public class AudioBookManager {
     private final Storage storage;
     private AudioBook currentBook;
     private boolean isInitialized = false;
+    private boolean isFirstScan = true;
 
     @Inject
     @MainThread
     public AudioBookManager(EventBus eventBus, FileScanner fileScanner, Storage storage) {
         this.fileScanner = fileScanner;
         this.storage = storage;
-        scanFiles();
         eventBus.register(this);
     }
 
@@ -109,6 +112,19 @@ public class AudioBookManager {
 
     @MainThread
     private void processScanResult(@NonNull List<FileSet> fileSets) {
+        if (isFirstScan && fileSets.isEmpty()) {
+            // The first scan may fail if it is just after booting and the SD card is not yet
+            // mounted. Retry in a while.
+            Handler handler = new Handler(Looper.myLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    scanFiles();
+                }
+            }, TimeUnit.SECONDS.toMillis(10));
+        }
+        isFirstScan = false;
+
         // This isn't very efficient but there shouldn't be more than a dozen audio books on the
         // device.
         List<AudioBook> booksToRemove = new ArrayList<>();

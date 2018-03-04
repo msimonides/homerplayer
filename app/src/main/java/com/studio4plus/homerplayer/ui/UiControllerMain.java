@@ -65,6 +65,7 @@ public class UiControllerMain implements ServiceConnection {
 
     void onActivityStart() {
         Crashlytics.log("activity start");
+        audioBookManager.scanFiles();
         maybeSetInitialState();
     }
 
