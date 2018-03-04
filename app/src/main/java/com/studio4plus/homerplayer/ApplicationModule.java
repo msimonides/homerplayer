@@ -5,9 +5,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.preference.PreferenceManager;
 
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
+import com.studio4plus.homerplayer.concurrency.BackgroundExecutor;
 
 import java.util.Locale;
 
@@ -63,5 +66,13 @@ public class ApplicationModule {
     @Provides @Singleton
     AnalyticsTracker provideAnalyticsTracker(GlobalSettings globalSettings, EventBus eventBus) {
         return new AnalyticsTracker(globalSettings, eventBus);
+    }
+
+    @Provides @Singleton @Named("IO_EXECUTOR")
+    BackgroundExecutor provideIoExecutor(Context applicationContext) {
+        HandlerThread ioThread = new HandlerThread("IO");
+        ioThread.start();
+        Handler ioHandler = new Handler(ioThread.getLooper());
+        return new BackgroundExecutor(new Handler(applicationContext.getMainLooper()), ioHandler);
     }
 }

@@ -1,10 +1,16 @@
 package com.studio4plus.homerplayer.model;
 
 import android.support.annotation.MainThread;
+import android.support.annotation.NonNull;
 
+import com.crashlytics.android.Crashlytics;
+import com.studio4plus.homerplayer.ApplicationScope;
+import com.studio4plus.homerplayer.concurrency.SimpleFuture;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
 import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
 import com.studio4plus.homerplayer.events.MediaStoreUpdateEvent;
+import com.studio4plus.homerplayer.filescanner.FileScanner;
+import com.studio4plus.homerplayer.filescanner.FileSet;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,17 +19,17 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import de.greenrobot.event.EventBus;
 
-@Singleton
+@ApplicationScope
 public class AudioBookManager {
 
     private final List<AudioBook> audioBooks = new ArrayList<>();
     private final FileScanner fileScanner;
     private final Storage storage;
     private AudioBook currentBook;
+    private boolean isInitialized = false;
 
     @Inject
     @MainThread
@@ -78,10 +84,31 @@ public class AudioBookManager {
     }
 
     @MainThread
-    public void scanFiles() {
-        boolean audioBooksChanged;
-        List<FileSet> fileSets = fileScanner.scanAudioBooksDirectories();
+    public boolean isInitialized() {
+        return isInitialized;
+    }
 
+    @MainThread
+    public void scanFiles() {
+        SimpleFuture<List<FileSet>> future = fileScanner.scanAudioBooksDirectories();
+        future.addListener(new SimpleFuture.Listener<List<FileSet>>() {
+            @Override
+            public void onResult(@NonNull List<FileSet> result) {
+                isInitialized = true;
+                processScanResult(result);
+            }
+
+            @Override
+            public void onException(@NonNull Throwable t) {
+                isInitialized = true;
+                // TODO: clear the list of books?
+                Crashlytics.logException(t);
+            }
+        });
+    }
+
+    @MainThread
+    private void processScanResult(@NonNull List<FileSet> fileSets) {
         // This isn't very efficient but there shouldn't be more than a dozen audio books on the
         // device.
         List<AudioBook> booksToRemove = new ArrayList<>();
@@ -99,23 +126,21 @@ public class AudioBookManager {
         }
         if (booksToRemove.contains(currentBook))
             currentBook = null;
-        audioBooksChanged = audioBooks.removeAll(booksToRemove);
+        boolean audioBooksChanged = audioBooks.removeAll(booksToRemove);
         LibraryContentType contentType = LibraryContentType.EMPTY;
 
-        if (fileSets != null) {
-            for (FileSet fileSet : fileSets) {
-                if (getById(fileSet.id) == null) {
-                    AudioBook audioBook = new AudioBook(fileSet);
-                    storage.readAudioBookState(audioBook);
-                    audioBook.setUpdateObserver(storage);
-                    audioBooks.add(audioBook);
-                    audioBooksChanged = true;
-                }
-                LibraryContentType newContentType = fileSet.isDemoSample
-                        ? LibraryContentType.SAMPLES_ONLY : LibraryContentType.USER_CONTENT;
-                if (newContentType.supersedes(contentType))
-                    contentType = newContentType;
+        for (FileSet fileSet : fileSets) {
+            if (getById(fileSet.id) == null) {
+                AudioBook audioBook = new AudioBook(fileSet);
+                storage.readAudioBookState(audioBook);
+                audioBook.setUpdateObserver(storage);
+                audioBooks.add(audioBook);
+                audioBooksChanged = true;
             }
+            LibraryContentType newContentType = fileSet.isDemoSample
+                    ? LibraryContentType.SAMPLES_ONLY : LibraryContentType.USER_CONTENT;
+            if (newContentType.supersedes(contentType))
+                contentType = newContentType;
         }
 
         if (audioBooks.size() > 0) {

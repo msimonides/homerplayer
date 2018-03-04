@@ -1,6 +1,7 @@
 package com.studio4plus.homerplayer.model;
 
 import com.google.common.base.Preconditions;
+import com.studio4plus.homerplayer.filescanner.FileSet;
 import com.studio4plus.homerplayer.util.DebugUtil;
 
 import java.io.File;

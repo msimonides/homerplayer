@@ -19,10 +19,10 @@ import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.battery.BatteryStatusProvider;
+import com.studio4plus.homerplayer.concurrency.SimpleDeferred;
 import com.studio4plus.homerplayer.ui.classic.ClassicMainUiModule;
 import com.studio4plus.homerplayer.ui.classic.DaggerClassicMainUiComponent;
-import com.studio4plus.homerplayer.util.SimpleDeferred;
-import com.studio4plus.homerplayer.util.SimpleFuture;
+import com.studio4plus.homerplayer.concurrency.SimpleFuture;
 
 import java.util.concurrent.TimeUnit;
 
@@ -38,7 +38,8 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
     private MainUiComponent mainUiComponent;
 
     private BatteryStatusIndicator batteryStatusIndicator;
-    private @Nullable SimpleDeferred<Speaker> ttsDeferred;
+    private @Nullable
+    SimpleDeferred<Speaker> ttsDeferred;
     private OrientationActivityDelegate orientationDelegate;
 
     @Inject public UiControllerMain controller;

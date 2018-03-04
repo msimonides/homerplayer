@@ -65,8 +65,7 @@ public class UiControllerMain implements ServiceConnection {
 
     void onActivityStart() {
         Crashlytics.log("activity start");
-        if (playbackService != null)
-            setInitialState();
+        maybeSetInitialState();
     }
 
     void onActivityPause() {
@@ -87,6 +86,7 @@ public class UiControllerMain implements ServiceConnection {
     @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
     public void onEvent(AudioBooksChangedEvent event) {
         currentState.onBooksChanged(this);
+        maybeSetInitialState();
     }
 
     @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
@@ -104,8 +104,7 @@ public class UiControllerMain implements ServiceConnection {
         Crashlytics.log("onServiceConnected");
         Preconditions.checkState(playbackService == null);
         playbackService = ((PlaybackService.ServiceBinder) service).getService();
-        if (currentState instanceof InitState)
-            setInitialState();
+        maybeSetInitialState();
     }
 
     @Override
@@ -113,15 +112,18 @@ public class UiControllerMain implements ServiceConnection {
         playbackService = null;
     }
 
-    private void setInitialState() {
-        Preconditions.checkNotNull(playbackService);
-        if (playbackService.getState() != PlaybackService.State.IDLE) {
-            Preconditions.checkState(hasAnyBooks());
-            changeState(StateFactory.PLAYBACK);
-        } else if (hasAnyBooks()) {
-            changeState(StateFactory.BOOK_LIST);
-        } else {
-            changeState(StateFactory.NO_BOOKS);
+    private void  maybeSetInitialState() {
+        if (currentState instanceof InitState && playbackService != null &&
+                audioBookManager.isInitialized()) {
+
+            if (playbackService.getState() != PlaybackService.State.IDLE) {
+                Preconditions.checkState(hasAnyBooks());
+                changeState(StateFactory.PLAYBACK);
+            } else if (hasAnyBooks()) {
+                changeState(StateFactory.BOOK_LIST);
+            } else {
+                changeState(StateFactory.NO_BOOKS);
+            }
         }
     }
 

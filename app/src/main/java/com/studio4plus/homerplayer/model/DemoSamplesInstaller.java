@@ -8,6 +8,7 @@ import android.support.annotation.WorkerThread;
 import com.crashlytics.android.Crashlytics;
 import com.github.saturngod.Decompress;
 import com.google.common.io.Files;
+import com.studio4plus.homerplayer.filescanner.FileScanner;
 
 import org.json.JSONException;
 import org.json.JSONObject;

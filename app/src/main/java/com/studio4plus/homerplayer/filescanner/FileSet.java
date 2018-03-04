@@ -1,4 +1,4 @@
-package com.studio4plus.homerplayer.model;
+package com.studio4plus.homerplayer.filescanner;
 
 import com.google.common.base.Preconditions;
 

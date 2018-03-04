@@ -11,7 +11,7 @@ import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
 import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
 import com.studio4plus.homerplayer.model.AudioBookManager;
-import com.studio4plus.homerplayer.util.SimpleFuture;
+import com.studio4plus.homerplayer.concurrency.SimpleFuture;
 
 import javax.inject.Inject;
 
