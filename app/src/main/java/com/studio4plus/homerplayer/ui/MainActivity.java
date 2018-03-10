@@ -2,7 +2,6 @@ package com.studio4plus.homerplayer.ui;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.speech.tts.TextToSpeech;
@@ -38,13 +37,13 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
     private MainUiComponent mainUiComponent;
 
     private BatteryStatusIndicator batteryStatusIndicator;
-    private @Nullable
-    SimpleDeferred<Speaker> ttsDeferred;
+    private @Nullable SimpleDeferred<Speaker> ttsDeferred;
     private OrientationActivityDelegate orientationDelegate;
 
     @Inject public UiControllerMain controller;
     @Inject public BatteryStatusProvider batteryStatusProvider;
     @Inject public GlobalSettings globalSettings;
+    @Inject public KioskModeHandler kioskModeHandler;
 
     private final static long SUPPRESSED_BACK_MESSAGE_DELAY_NANO = TimeUnit.SECONDS.toNanos(2);
     private long lastSuppressedBackTimeNano = 0;
@@ -62,7 +61,6 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
         mainUiComponent.inject(this);
 
         controller.onActivityCreated();
-        ApplicationLocker.onActivityCreated(this);
 
         batteryStatusIndicator = new BatteryStatusIndicator(
                 (ImageView) findViewById(R.id.batteryStatusIndicator), EventBus.getDefault());
@@ -84,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
         controller.onActivityStart();
         orientationDelegate.onStart();
         batteryStatusProvider.start();
+        kioskModeHandler.onActivityStart();
         super.onStart();
     }
 
@@ -107,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
     protected void onStop() {
         controller.onActivityStop();
         orientationDelegate.onStop();
+        kioskModeHandler.onActivityStop();
         super.onStop();
         batteryStatusProvider.stop();
     }
@@ -132,18 +132,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
             // Start animations.
             batteryStatusIndicator.startAnimations();
 
-            // Set fullscreen mode.
-            int visibilitySetting =
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-            if (globalSettings.isAnyKioskModeEnabled() &&
-                    Build.VERSION.SDK_INT >= 19) {
-                visibilitySetting |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                        View.SYSTEM_UI_FLAG_FULLSCREEN |
-                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-            }
-            getWindow().getDecorView().setSystemUiVisibility(visibilitySetting);
+            kioskModeHandler.onFocusGained();
         }
     }
 

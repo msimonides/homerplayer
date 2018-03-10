@@ -6,9 +6,7 @@ import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
+ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,6 +27,7 @@ import com.studio4plus.homerplayer.BuildConfig;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.HomerPlayerDeviceAdmin;
+import com.studio4plus.homerplayer.KioskModeSwitcher;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.events.DeviceAdminChangeEvent;
 import com.studio4plus.homerplayer.events.SettingsEnteredEvent;
@@ -103,6 +102,7 @@ public class SettingsActivity extends Activity {
 
         @Inject public AudioBookManager audioBookManager;
         @Inject public GlobalSettings globalSettings;
+        @Inject public KioskModeSwitcher kioskModeSwitcher;
 
         private SnippetPlayer snippetPlayer = null;
 
@@ -211,7 +211,8 @@ public class SettingsActivity extends Activity {
                     onKioskModeSwitched(sharedPreferences);
                     break;
                 case GlobalSettings.KEY_SIMPLE_KIOSK_MODE:
-                    onAnyKioskModeSwitched(sharedPreferences.getBoolean(key, false));
+                    kioskModeSwitcher.onSimpleKioskModeEnabled(sharedPreferences.getBoolean(key, false));
+                    onAnyKioskModeSwitched();
                     break;
                 case GlobalSettings.KEY_JUMP_BACK:
                     updateJumpBackSummary(sharedPreferences);
@@ -375,61 +376,41 @@ public class SettingsActivity extends Activity {
 
         @SuppressLint("CommitPrefEdits")
         private void onKioskModeSwitched(SharedPreferences sharedPreferences) {
-            boolean isTaskLocked = ApplicationLocker.isTaskLocked(getActivity());
             boolean newKioskModeEnabled =
                     sharedPreferences.getBoolean(GlobalSettings.KEY_KIOSK_MODE, false);
-            if (newKioskModeEnabled && !isTaskLocked) {
-                boolean isLocked = ApplicationLocker.lockApplication(getActivity());
-                if (!isLocked) {
-                    AlertDialog dialog = new AlertDialog.Builder(getActivity())
-                            .setMessage(getResources().getString(
-                                    R.string.settings_device_owner_required_alert))
-                            .setNeutralButton(android.R.string.ok, null)
-                            .create();
-                    dialog.show();
+            boolean isLockedPermitted = kioskModeSwitcher.isLockTaskPermitted();
 
-                    SwitchPreference switchPreference =
-                            (SwitchPreference) findPreference(GlobalSettings.KEY_KIOSK_MODE);
-                    switchPreference.setChecked(false);
-                    // Beware: the code below causes this function to be recursively entered again.
-                    // It should be the last thing the function does.
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putBoolean(GlobalSettings.KEY_KIOSK_MODE, false);
-                    editor.commit();
-                } else {
-                    onAnyKioskModeSwitched(true);
-                }
-            } else if (!newKioskModeEnabled && isTaskLocked) {
-                ApplicationLocker.unlockApplication(getActivity());
-                onAnyKioskModeSwitched(false);
+            if (newKioskModeEnabled && !isLockedPermitted) {
+                AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                        .setMessage(getResources().getString(
+                                R.string.settings_device_owner_required_alert))
+                        .setNeutralButton(android.R.string.ok, null)
+                        .create();
+                dialog.show();
+
+                SwitchPreference switchPreference =
+                        (SwitchPreference) findPreference(GlobalSettings.KEY_KIOSK_MODE);
+                switchPreference.setChecked(false);
+                // Beware: the code below causes this function to be recursively entered again.
+                // It should be the last thing the function does.
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(GlobalSettings.KEY_KIOSK_MODE, false);
+                editor.commit();
+                return;
             }
+            kioskModeSwitcher.onFullKioskModeEnabled(newKioskModeEnabled);
+            onAnyKioskModeSwitched();
         }
 
-        private void onAnyKioskModeSwitched(boolean enable) {
+        private void onAnyKioskModeSwitched() {
             updateKioskModeSummaries();
             // The main screen needs to be refreshed explicitly to update the summary for
             // KEY_KIOSK_MODE_SCREEN.
             refreshMainSettingsUI();
-
-            HomeActivity.setEnabled(getActivity(), enable);
-            if (enable)
-                triggerHomeAppSelectionIfNecessary();
         }
 
         private void refreshMainSettingsUI() {
             ((BaseAdapter) getPreferenceScreen().getRootAdapter()).notifyDataSetChanged();
-        }
-
-        private void triggerHomeAppSelectionIfNecessary() {
-            final Intent homeIntent = new Intent(Intent.ACTION_MAIN);
-            homeIntent.addCategory(Intent.CATEGORY_HOME);
-            homeIntent.addCategory(Intent.CATEGORY_DEFAULT);
-
-            PackageManager pm = getActivity().getPackageManager();
-            ResolveInfo resolveInfo = pm.resolveActivity(homeIntent, 0);
-            if (resolveInfo.activityInfo.name.equals("com.android.internal.app.ResolverActivity")) {
-                getActivity().startActivity(homeIntent);
-            }
         }
 
         private void playSnippet() {

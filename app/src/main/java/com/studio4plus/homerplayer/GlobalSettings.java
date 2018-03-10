@@ -131,6 +131,10 @@ public class GlobalSettings {
         sharedPreferences.edit().putBoolean(KEY_FLIPTOSTOP_HINT_SHOWN, true).apply();
     }
 
+    public boolean isFullKioskModeEnabled() {
+        return sharedPreferences.getBoolean(KEY_KIOSK_MODE, false);
+    }
+
     public boolean isSimpleKioskModeEnabled() {
         return sharedPreferences.getBoolean(KEY_SIMPLE_KIOSK_MODE, false);
     }
