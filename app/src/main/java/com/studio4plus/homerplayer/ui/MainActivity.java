@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
 
         mainUiComponent = DaggerClassicMainUiComponent.builder()
                 .applicationComponent(HomerPlayerApplication.getComponent(this))
+                .activityModule(new ActivityModule(this))
                 .classicMainUiModule(new ClassicMainUiModule(this))
                 .build();
         mainUiComponent.inject(this);

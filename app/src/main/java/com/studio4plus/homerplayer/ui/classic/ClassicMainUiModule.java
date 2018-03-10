@@ -24,11 +24,6 @@ public class ClassicMainUiModule {
     }
 
     @Provides @ActivityScope
-    Activity activity() {
-        return activity;
-    }
-
-    @Provides @ActivityScope
     SpeakerProvider speakProvider() {
         return activity;
     }

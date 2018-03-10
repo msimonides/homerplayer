@@ -22,12 +22,17 @@ public class KioskModeHandler {
     private final Activity activity;
     private final GlobalSettings globalSettings;
     private final EventBus eventBus;
+    private boolean keepNavigation = false;
 
     @Inject
     KioskModeHandler(Activity activity, GlobalSettings settings, EventBus eventBus) {
         this.activity = activity;
         this.globalSettings = settings;
         this.eventBus = eventBus;
+    }
+
+    void setKeepNavigation(Boolean keepNavigation) {
+        this.keepNavigation = keepNavigation;
     }
 
     void onActivityStart() {
@@ -54,6 +59,7 @@ public class KioskModeHandler {
             lockTask(true);
     }
 
+    @SuppressWarnings("unused")
     public void onEvent(KioskModeChanged event) {
         if (event.type == KioskModeChanged.Type.FULL) {
             if (event.isEnabled)
@@ -65,7 +71,7 @@ public class KioskModeHandler {
     }
 
     private void setNavigationVisibility(boolean show) {
-        if (Build.VERSION.SDK_INT < 19)
+        if (Build.VERSION.SDK_INT < 19 || keepNavigation)
             return;
 
         int flags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |

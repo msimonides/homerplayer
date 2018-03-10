@@ -56,12 +56,18 @@ public class SettingsActivity extends Activity {
 
     @Inject public EventBus eventBus;
     @Inject public GlobalSettings globalSettings;
+    @Inject public KioskModeHandler kioskModeHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        HomerPlayerApplication.getComponent(this).inject(this);
+        ActivityComponent activityComponent = DaggerActivityComponent.builder()
+                .applicationComponent(HomerPlayerApplication.getComponent(this))
+                .activityModule(new ActivityModule(this))
+                .build();
+        activityComponent.inject(this);
 
+        kioskModeHandler.setKeepNavigation(true);
         orientationDelegate = new OrientationActivityDelegate(this, globalSettings);
 
         // Display the fragment as the main content.
@@ -78,6 +84,7 @@ public class SettingsActivity extends Activity {
         orientationDelegate.onStart();
         blockEventsOnStart();
         eventBus.post(new SettingsEnteredEvent());
+        kioskModeHandler.onActivityStart();
     }
 
     @Override
@@ -85,6 +92,7 @@ public class SettingsActivity extends Activity {
         super.onStop();
         orientationDelegate.onStop();
         cancelBlockEventOnStart();
+        kioskModeHandler.onActivityStop();
     }
 
     @Override
@@ -93,6 +101,8 @@ public class SettingsActivity extends Activity {
         if (hasFocus) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+
+            kioskModeHandler.onFocusGained();
         }
     }
 
@@ -379,7 +389,6 @@ public class SettingsActivity extends Activity {
             boolean newKioskModeEnabled =
                     sharedPreferences.getBoolean(GlobalSettings.KEY_KIOSK_MODE, false);
             boolean isLockedPermitted = kioskModeSwitcher.isLockTaskPermitted();
-
             if (newKioskModeEnabled && !isLockedPermitted) {
                 AlertDialog dialog = new AlertDialog.Builder(getActivity())
                         .setMessage(getResources().getString(

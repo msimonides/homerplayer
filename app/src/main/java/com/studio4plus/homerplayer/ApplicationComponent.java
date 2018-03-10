@@ -31,7 +31,6 @@ import de.greenrobot.event.EventBus;
 @ApplicationScope
 @Component(modules = { ApplicationModule.class, AudioBookManagerModule.class, AudioBookPlayerModule.class })
 public interface ApplicationComponent {
-    void inject(SettingsActivity settingsActivity);
     void inject(FragmentBookItem fragment);
     void inject(ClassicBookList fragment);
     void inject(ClassicNoBooksUi fragment);
