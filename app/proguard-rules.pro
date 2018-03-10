@@ -23,6 +23,16 @@
 
 # Guava
 -dontwarn sun.misc.Unsafe
+## https://github.com/google/guava/issues/2926#issuecomment-325455128
+## https://stackoverflow.com/questions/9120338/proguard-configuration-for-guava-with-obfuscation-and-optimization
+-dontwarn com.google.common.base.**
+-dontwarn com.google.errorprone.annotations.**
+-dontwarn com.google.j2objc.annotations.**
+-dontwarn java.lang.ClassValue
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+# Added for guava 23.5-android
+-dontwarn afu.org.checkerframework.**
+-dontwarn org.checkerframework.**
 
 # Required to preserve the Flurry SDK
 -keep class com.flurry.** { *; }

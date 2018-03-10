@@ -1,5 +1,6 @@
 package com.studio4plus.homerplayer.ui;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
 
         View touchEventEater = findViewById(R.id.touchEventEater);
         touchEventEater.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 // Tell the other views that the event has been handled.
@@ -87,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
         super.onStart();
     }
 
+    @SuppressLint("MissingSuperCall")
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         // Do nothing, this activity takes state from the PlayerService and the AudioBookManager.
