@@ -5,3 +5,7 @@
 /.idea/*
 .DS_Store
 /build
+
+*~
+*.swp
+*.swo
