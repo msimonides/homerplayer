@@ -407,7 +407,8 @@ public class SettingsActivity extends Activity {
                 editor.commit();
                 return;
             }
-            kioskModeSwitcher.onFullKioskModeEnabled(newKioskModeEnabled);
+            if (isLockedPermitted)
+                kioskModeSwitcher.onFullKioskModeEnabled(newKioskModeEnabled);
             onAnyKioskModeSwitched();
         }
 
