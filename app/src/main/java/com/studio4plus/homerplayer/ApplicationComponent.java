@@ -7,6 +7,7 @@ import android.net.Uri;
 
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.battery.BatteryStatusProvider;
+import com.studio4plus.homerplayer.content.ConfigurationContentProvider;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.model.DemoSamplesInstaller;
 import com.studio4plus.homerplayer.player.Player;
@@ -36,6 +37,7 @@ public interface ApplicationComponent {
     void inject(ClassicNoBooksUi fragment);
     void inject(ClassicPlaybackUi playbackUi);
     void inject(FragmentPlayback fragment);
+    void inject(ConfigurationContentProvider provider);
     void inject(HomerPlayerApplication application);
     void inject(SettingsActivity.SettingsFragment fragment);
     void inject(BatteryStatusProvider batteryStatusProvider);
