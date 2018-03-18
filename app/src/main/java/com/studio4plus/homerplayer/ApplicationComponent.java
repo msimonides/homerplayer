@@ -53,7 +53,7 @@ public interface ApplicationComponent {
     Context getContext();
     EventBus getEventBus();
     GlobalSettings getGlobalSettings();
+    KioskModeSwitcher getKioskModeSwitcher();
     Resources getResources();
-    SharedPreferences getSharedPreferences();
     @Named("SAMPLES_DOWNLOAD_URL") Uri getSamplesUrl();
 }

@@ -41,15 +41,15 @@ public class KioskModeSwitcher {
     public void onFullKioskModeEnabled(boolean fullKioskEnabled) {
         Preconditions.checkState(!fullKioskEnabled || isLockTaskPermitted());
 
-        if (fullKioskEnabled)
-            API21.setPreferredHomeActivity(context, MainActivity.class);
-        else
-            API21.clearPreferredHomeActivity(context);
-
         if (globalSettings.isSimpleKioskModeEnabled())
             onSimpleKioskModeEnabled(!fullKioskEnabled);
 
         eventBus.post(new KioskModeChanged(KioskModeChanged.Type.FULL, fullKioskEnabled));
+
+        if (fullKioskEnabled)
+            API21.setPreferredHomeActivity(context, MainActivity.class);
+        else
+            API21.clearPreferredHomeActivity(context);
     }
 
     public void onSimpleKioskModeEnabled(boolean enable) {

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PersistableBundle;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
+import com.studio4plus.homerplayer.KioskModeSwitcher;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.battery.BatteryStatusProvider;
 import com.studio4plus.homerplayer.concurrency.SimpleDeferred;
@@ -33,6 +35,8 @@ import de.greenrobot.event.EventBus;
 public class MainActivity extends AppCompatActivity implements SpeakerProvider {
 
     private static final int TTS_CHECK_CODE = 1;
+    private static final String KIOSK_MODE_ENABLE_ACTION = "KioskModeEnable";
+    private static final String ENABLE_EXTRA = "Enable";
 
     @SuppressWarnings("FieldCanBeLocal")
     private MainUiComponent mainUiComponent;
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
     @Inject public BatteryStatusProvider batteryStatusProvider;
     @Inject public GlobalSettings globalSettings;
     @Inject public KioskModeHandler kioskModeHandler;
+    @Inject public KioskModeSwitcher kioskModeSwitcher;
 
     private final static long SUPPRESSED_BACK_MESSAGE_DELAY_NANO = TimeUnit.SECONDS.toNanos(2);
     private long lastSuppressedBackTimeNano = 0;
@@ -87,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
         batteryStatusProvider.start();
         kioskModeHandler.onActivityStart();
         super.onStart();
+        handleIntent(getIntent());
     }
 
     @SuppressLint("MissingSuperCall")
@@ -193,5 +199,30 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
             }
         }
         return result;
+    }
+
+    private void handleIntent(Intent intent) {
+        if (intent != null && KIOSK_MODE_ENABLE_ACTION.equals(intent.getAction())) {
+            if (kioskModeSwitcher.isLockTaskPermitted()) {
+                boolean enable = intent.getBooleanExtra(ENABLE_EXTRA, false);
+                if (globalSettings.isFullKioskModeEnabled() != enable) {
+                    globalSettings.setFullKioskModeEnabledNow(enable);
+                    kioskModeSwitcher.onFullKioskModeEnabled(enable);
+
+                    // For some reason clearing the preferred Home activity only takes effect if the
+                    // application exits (finishing the activity doesn't help).
+                    // This issue doesn't happen when disabling the kiosk mode from the settings
+                    // screen and I'm out of ideas.
+                    if (!enable) {
+                        new Handler(getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                System.exit(0);
+                            }
+                        }, 500);
+                    }
+                }
+            }
+        }
     }
 }

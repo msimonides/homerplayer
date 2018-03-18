@@ -61,12 +61,8 @@ public class KioskModeHandler {
 
     @SuppressWarnings("unused")
     public void onEvent(KioskModeChanged event) {
-        if (event.type == KioskModeChanged.Type.FULL) {
-            if (event.isEnabled)
-                API21.startLockTask(activity);
-            else
-                API21.stopLockTask(activity);
-        }
+        if (event.type == KioskModeChanged.Type.FULL)
+            lockTask(event.isEnabled);
         setNavigationVisibility(!event.isEnabled);
     }
 

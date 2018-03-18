@@ -1,5 +1,6 @@
 package com.studio4plus.homerplayer;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
@@ -133,6 +134,11 @@ public class GlobalSettings {
 
     public boolean isFullKioskModeEnabled() {
         return sharedPreferences.getBoolean(KEY_KIOSK_MODE, false);
+    }
+
+    @SuppressLint("ApplySharedPref")
+    public void setFullKioskModeEnabledNow(boolean enabled) {
+        sharedPreferences.edit().putBoolean(KEY_KIOSK_MODE, enabled).commit();
     }
 
     public boolean isSimpleKioskModeEnabled() {
