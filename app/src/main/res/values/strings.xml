@@ -13,6 +13,11 @@
     <string name="back_suppressed_by_kiosk">Exit blocked (kiosk mode is enabled)</string>
     <string name="settings_title">Settings</string>
     <string name="settings_device_owner_required_alert">The application must be a "device owner". See http://goo.gl/46gevp</string>
+    <string name="permission_rationale_title">Permission needed</string>
+    <string name="permission_rationale_try_again">Try again</string>
+    <string name="permission_rationale_settings">Open settings</string>
+    <string name="permission_rationale_exit">Exit</string>
+    <string name="permission_rationale_scan_audiobooks">Storage permission is needed by Homer Player to access the audiobook files.</string>
     <string name="pref_help_faq_title">Help: Frequently Asked Questions</string>
     <string name="pref_help_faq_summary">Go to website: %s</string>
     <string name="pref_kiosk_mode_screen_title">Prevent exiting the application (kiosk mode)…</string>

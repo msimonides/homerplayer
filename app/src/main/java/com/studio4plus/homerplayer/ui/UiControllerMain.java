@@ -1,16 +1,23 @@
 package com.studio4plus.homerplayer.ui;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
+import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
 import com.studio4plus.homerplayer.events.PlaybackErrorEvent;
@@ -33,6 +40,8 @@ public class UiControllerMain implements ServiceConnection {
     private final @NonNull UiControllerNoBooks.Factory noBooksControllerFactory;
     private final @NonNull UiControllerBookList.Factory bookListControllerFactory;
     private final @NonNull UiControllerPlayback.Factory playbackControllerFactory;
+
+    private static final int PERMISSION_REQUEST_FOR_BOOK_SCAN = 1;
 
     private @Nullable PlaybackService playbackService;
 
@@ -66,7 +75,7 @@ public class UiControllerMain implements ServiceConnection {
 
     void onActivityStart() {
         Crashlytics.log("activity start");
-        audioBookManager.scanFiles();
+        scanAudioBookFiles();
         maybeSetInitialState();
     }
 
@@ -117,6 +126,61 @@ public class UiControllerMain implements ServiceConnection {
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
         playbackService = null;
+    }
+
+    public void onRequestPermissionResult(int code, @NonNull int[] grantResults) {
+        switch(code) {
+            case PERMISSION_REQUEST_FOR_BOOK_SCAN:
+                if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    scanAudioBookFiles();
+                } else {
+                    boolean canRetry = ActivityCompat.shouldShowRequestPermissionRationale(
+                            activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+                    AlertDialog.Builder dialogBuilder = PermissionUtils.permissionRationaleDialogBuilder(
+                            activity, R.string.permission_rationale_scan_audiobooks);
+                    if (canRetry) {
+                        dialogBuilder.setPositiveButton(
+                                R.string.permission_rationale_try_again,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        PermissionUtils.checkAndRequestPermissionForAudiobooksScan(
+                                                activity,
+                                                Manifest.permission.READ_EXTERNAL_STORAGE,
+                                                PERMISSION_REQUEST_FOR_BOOK_SCAN);
+                                    }
+                                });
+                    } else {
+                        dialogBuilder.setPositiveButton(
+                                R.string.permission_rationale_settings,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        activity.startActivity(new Intent(
+                                                android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                                Uri.parse("package:" + activity.getApplication().getPackageName())));
+                                    }
+                                });
+                    }
+                    dialogBuilder.setNegativeButton(
+                            R.string.permission_rationale_exit, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    activity.finish();
+                                }
+                            })
+                    .create().show();
+                }
+                break;
+        }
+    }
+
+    private void scanAudioBookFiles() {
+        if (PermissionUtils.checkAndRequestPermissionForAudiobooksScan(
+                activity,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                PERMISSION_REQUEST_FOR_BOOK_SCAN))
+            audioBookManager.scanFiles();
     }
 
     private void  maybeSetInitialState() {

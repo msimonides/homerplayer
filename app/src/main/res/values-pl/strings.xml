@@ -11,6 +11,7 @@
     <string name="back_suppressed_by_kiosk">Wyjście zablokowane (tryb kiosku włączony)</string>
     <string name="settings_title">Ustawienia</string>
     <string name="settings_device_owner_required_alert">Aplikacja musi być ustawiona jako "device owner". Szczegóły: http://goo.gl/46gevp</string>
+    <string name="permission_rationale_scan_audiobooks">Pozwolenie na dostęp do pamięci jest potrzebne aby Homer Player mógł odczytać pliki audiobooków.</string>
     <string name="pref_help_faq_title">Pomoc: FAQ</string>
     <string name="pref_help_faq_summary">Otwórz stronę: %s</string>
     <string name="pref_jump_back_title">Cofnij przy wznawianiu odtwarzania</string>

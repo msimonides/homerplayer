@@ -123,7 +123,6 @@ public class AudioBookManager {
                 }
             }, TimeUnit.SECONDS.toMillis(10));
         }
-        isFirstScan = false;
 
         // This isn't very efficient but there shouldn't be more than a dozen audio books on the
         // device.
@@ -178,8 +177,10 @@ public class AudioBookManager {
                 setCurrentBook(id);
         }
 
-        if (audioBooksChanged)
+        if (audioBooksChanged || isFirstScan)
             EventBus.getDefault().post(new AudioBooksChangedEvent(contentType));
+
+        isFirstScan = false;
     }
 
     @MainThread

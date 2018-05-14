@@ -153,6 +153,11 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
         super.onDestroy();
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        controller.onRequestPermissionResult(requestCode, grantResults);
+    }
+
     protected void onActivityResult(
             int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
