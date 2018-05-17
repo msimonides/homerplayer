@@ -11,7 +11,6 @@ import com.studio4plus.homerplayer.events.SettingsEnteredEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -34,6 +33,8 @@ public class AnalyticsTracker {
     private static final String FF_REWIND = "ffRewind";
     private static final String FF_REWIND_ABORTED = "ffRewindAborted";
     private static final String FF_REWIND_IS_FF_KEY = "isFf";
+    private static final String PERMISSION_RATIONALE_SHOWN = "permissionRationaleShown";
+    private static final String PERMISSION_RATIONALE_REQUEST_KEY = "permissionRequest";
     private static final String SAMPLES_DOWNLOAD_STARTED = "samplesDownloadStarted";
     private static final String SAMPLES_DOWNLOAD_SUCCESS = "samplesDownloadSuccess";
     private static final String SAMPLES_DOWNLOAD_FAILURE = "samplesDownloadFailure";
@@ -90,7 +91,7 @@ public class AnalyticsTracker {
     @SuppressWarnings("unused")
     public void onEvent(PlaybackStoppingEvent event) {
         if (currentlyPlayed != null) {
-            Map<String, String> data = new HashMap<>();
+            Map<String, String> data = new TreeMap<>();
             data.put(BOOK_PLAYED_TYPE_KEY,
                      currentlyPlayed.audioBook.isDemoSample()
                              ? BOOK_PLAYED_TYPE_SAMPLE
@@ -113,9 +114,7 @@ public class AnalyticsTracker {
     }
 
     public void onFfRewindStarted(boolean isFf) {
-        Map<String, String> data = new HashMap<>();
-        data.put(FF_REWIND_IS_FF_KEY, Boolean.toString(isFf));
-        FlurryAgent.logEvent(FF_REWIND, data);
+        FlurryAgent.logEvent(FF_REWIND, Collections.singletonMap(FF_REWIND_IS_FF_KEY, Boolean.toString(isFf)));
     }
 
     public void onFfRewindFinished(long elapsedWallTimeMs) {
@@ -126,9 +125,15 @@ public class AnalyticsTracker {
         FlurryAgent.logEvent(FF_REWIND_ABORTED);
     }
 
+    public void onPermissionRationaleShown(String permissionRequest) {
+        FlurryAgent.logEvent(
+                PERMISSION_RATIONALE_SHOWN,
+                Collections.singletonMap(PERMISSION_RATIONALE_REQUEST_KEY, permissionRequest));
+    }
+
     private static class CurrentlyPlayed {
-        public final AudioBook audioBook;
-        public final long startTimeNano;
+        final AudioBook audioBook;
+        final long startTimeNano;
 
         private CurrentlyPlayed(AudioBook audioBook, long startTimeNano) {
             this.audioBook = audioBook;

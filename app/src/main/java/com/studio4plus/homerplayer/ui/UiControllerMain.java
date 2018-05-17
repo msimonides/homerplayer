@@ -150,6 +150,7 @@ public class UiControllerMain implements ServiceConnection {
                                     }
                                 });
                     } else {
+                        analyticsTracker.onPermissionRationaleShown("audiobooksScan");
                         dialogBuilder.setPositiveButton(
                                 R.string.permission_rationale_settings,
                                 new DialogInterface.OnClickListener() {

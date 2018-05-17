@@ -17,6 +17,7 @@ import android.support.v7.app.AlertDialog;
 
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.service.DemoSamplesInstallerService;
 import com.studio4plus.homerplayer.events.DemoSamplesInstallationStartedEvent;
 
@@ -31,18 +32,21 @@ public class UiControllerNoBooks {
         private final @NonNull Activity activity;
         private final @NonNull Uri samplesDownloadUrl;
         private final @NonNull EventBus eventBus;
+        private final @NonNull AnalyticsTracker analyticsTracker;
 
         @Inject
         public Factory(@NonNull Activity activity,
                        @NonNull @Named("SAMPLES_DOWNLOAD_URL") Uri samplesDownloadUrl,
-                       @NonNull EventBus eventBus) {
+                       @NonNull EventBus eventBus,
+                       @NonNull AnalyticsTracker analyticsTracker) {
             this.activity = activity;
             this.samplesDownloadUrl = samplesDownloadUrl;
             this.eventBus = eventBus;
+            this.analyticsTracker = analyticsTracker;
         }
 
         public UiControllerNoBooks create(@NonNull NoBooksUi ui) {
-            return new UiControllerNoBooks(activity, ui, samplesDownloadUrl, eventBus);
+            return new UiControllerNoBooks(activity, ui, samplesDownloadUrl, eventBus, analyticsTracker);
         }
     }
 
@@ -52,17 +56,20 @@ public class UiControllerNoBooks {
     private final @NonNull NoBooksUi ui;
     private final @NonNull Uri samplesDownloadUrl;
     private final @NonNull EventBus eventBus;
+    private final @NonNull AnalyticsTracker analyticsTracker;
 
     private @Nullable DownloadProgressReceiver progressReceiver;
 
     private UiControllerNoBooks(@NonNull Activity activity,
                                 @NonNull NoBooksUi ui,
                                 @NonNull Uri samplesDownloadUrl,
-                                @NonNull EventBus eventBus) {
+                                @NonNull EventBus eventBus,
+                                @NonNull AnalyticsTracker analyticsTracker) {
         this.activity = activity;
         this.ui = ui;
         this.samplesDownloadUrl = samplesDownloadUrl;
         this.eventBus = eventBus;
+        this.analyticsTracker = analyticsTracker;
 
         ui.initWithController(this);
 
@@ -121,6 +128,7 @@ public class UiControllerNoBooks {
                     }
                 });
             } else {
+                analyticsTracker.onPermissionRationaleShown("downloadSamples");
                 dialogBuilder.setPositiveButton(
                         R.string.permission_rationale_settings, new DialogInterface.OnClickListener() {
                     @Override
