@@ -29,7 +29,7 @@ android {
     useLibrary 'org.apache.http.legacy'
 
     compileSdkVersion 27
-    buildToolsVersion "26.0.2"
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "com.studio4plus.homerplayer"
@@ -50,23 +50,23 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'de.greenrobot:eventbus:2.4.1'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'de.greenrobot:eventbus:2.4.1'
 
-    compile 'com.android.support:appcompat-v7:27.1.1'
-    compile 'com.android.support.constraint:constraint-layout:1.1.0'
-    compile 'com.android.support:support-v13:27.1.1'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.android.support:support-v13:27.1.1'
 
-    compile('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') { transitive = true }
-    compile 'com.flurry.android:analytics:6.9.2'
-    compile 'com.google.guava:guava:24.0-android'
-    compile 'com.google.code.findbugs:jsr305:3.0.1'
-    compile 'com.google.android.exoplayer:exoplayer-core:2.7.0'
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') { transitive = true }
+    implementation 'com.flurry.android:analytics:6.9.2'
+    implementation 'com.google.guava:guava:24.0-android'
+    implementation 'com.google.code.findbugs:jsr305:3.0.1'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.7.0'
 
-    compile 'com.google.dagger:dagger:2.15'
+    implementation 'com.google.dagger:dagger:2.15'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.15'
-    provided 'org.glassfish:javax.annotation:10.0-b28'
+    compileOnly 'org.glassfish:javax.annotation:10.0-b28'
 
-    compile 'com.github.ozodrukh:CircularReveal:2.0.1@aar'
+    implementation 'com.github.ozodrukh:CircularReveal:2.0.1@aar'
 
 }
