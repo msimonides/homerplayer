@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -156,9 +155,7 @@ public class UiControllerMain implements ServiceConnection {
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        activity.startActivity(new Intent(
-                                                android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                                Uri.parse("package:" + activity.getApplication().getPackageName())));
+                                        PermissionUtils.openAppSettings(activity);
                                     }
                                 });
                     }
@@ -171,6 +168,9 @@ public class UiControllerMain implements ServiceConnection {
                             })
                     .create().show();
                 }
+                break;
+            case UiControllerNoBooks.PERMISSION_REQUEST_DOWNLOADS:
+                currentState.onRequestPermissionResult(code, grantResults);
                 break;
         }
     }
@@ -270,6 +270,10 @@ public class UiControllerMain implements ServiceConnection {
 
         void onActivityPause() {}
 
+        void onRequestPermissionResult(int code, @NonNull int[] grantResults) {
+            Preconditions.checkState(false);
+        }
+
         abstract @NonNull String debugName();
     }
 
@@ -303,6 +307,11 @@ public class UiControllerMain implements ServiceConnection {
         public void onBooksChanged(@NonNull UiControllerMain mainController) {
             if (mainController.hasAnyBooks())
                 mainController.changeState(StateFactory.BOOK_LIST);
+        }
+
+        @Override
+        void onRequestPermissionResult(int code, @NonNull int[] grantResults) {
+            controller.onRequestPermissionResult(code, grantResults);
         }
 
         @Override

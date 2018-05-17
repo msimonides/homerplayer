@@ -1,16 +1,22 @@
 package com.studio4plus.homerplayer.ui;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 
 import com.google.common.base.Preconditions;
+import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.service.DemoSamplesInstallerService;
 import com.studio4plus.homerplayer.events.DemoSamplesInstallationStartedEvent;
 
@@ -40,6 +46,8 @@ public class UiControllerNoBooks {
         }
     }
 
+    static final int PERMISSION_REQUEST_DOWNLOADS = 100;
+
     private final @NonNull Activity activity;
     private final @NonNull NoBooksUi ui;
     private final @NonNull Uri samplesDownloadUrl;
@@ -64,6 +72,14 @@ public class UiControllerNoBooks {
     }
 
     public void startSamplesInstallation() {
+        if (PermissionUtils.checkAndRequestPermissionForAudiobooksScan(
+                activity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                PERMISSION_REQUEST_DOWNLOADS))
+            doStartSamplesInstallation();
+    }
+
+    private void doStartSamplesInstallation() {
         eventBus.post(new DemoSamplesInstallationStartedEvent());
         showInstallProgress(false);
         activity.startService(DemoSamplesInstallerService.createDownloadIntent(
@@ -85,6 +101,42 @@ public class UiControllerNoBooks {
         if (progressReceiver != null)
             stopProgressReceiver();
         ui.shutdown();
+    }
+
+    void onRequestPermissionResult(int code, @NonNull int[] grantResults) {
+        Preconditions.checkArgument(code == PERMISSION_REQUEST_DOWNLOADS);
+        Preconditions.checkArgument(grantResults.length == 1);
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            doStartSamplesInstallation();
+        } else {
+            boolean canRetry = ActivityCompat.shouldShowRequestPermissionRationale(
+                    activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            AlertDialog.Builder dialogBuilder = PermissionUtils.permissionRationaleDialogBuilder(
+                    activity, R.string.permission_rationale_download_samples);
+            if (canRetry) {
+                dialogBuilder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+            } else {
+                dialogBuilder.setPositiveButton(
+                        R.string.permission_rationale_settings, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        PermissionUtils.openAppSettings(activity);
+                    }
+                });
+                dialogBuilder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+            }
+            dialogBuilder.create().show();
+        }
     }
 
     private void showInstallProgress(boolean isAlreadyInstalling) {

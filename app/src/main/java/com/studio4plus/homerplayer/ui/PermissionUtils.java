@@ -1,7 +1,9 @@
 package com.studio4plus.homerplayer.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -28,5 +30,11 @@ public class PermissionUtils {
                 .setMessage(rationaleMessage)
                 .setTitle(R.string.permission_rationale_title)
                 .setIcon(R.mipmap.ic_launcher);
+    }
+
+    public static void openAppSettings(Activity activity) {
+        activity.startActivity(new Intent(
+                android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse("package:" + activity.getApplication().getPackageName())));
     }
 }

@@ -155,7 +155,9 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        controller.onRequestPermissionResult(requestCode, grantResults);
+        // A call with no grantResults means the dialog has been closed without any user decision.
+        if (grantResults.length > 0)
+            controller.onRequestPermissionResult(requestCode, grantResults);
     }
 
     protected void onActivityResult(
