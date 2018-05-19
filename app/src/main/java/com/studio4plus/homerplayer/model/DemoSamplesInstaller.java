@@ -53,9 +53,10 @@ public class DemoSamplesInstaller {
 
     @WorkerThread
     private boolean installBooks(File sourceDirectory) {
-        if (!audioBooksDirectory.exists())
+        if (!audioBooksDirectory.exists()) {
             if (!audioBooksDirectory.mkdirs())
                 return false;
+        }
 
         boolean anythingInstalled = false;
         File books[] = sourceDirectory.listFiles();
@@ -81,7 +82,7 @@ public class DemoSamplesInstaller {
         if (bookDirectory.exists())
             return false;
 
-        if (!bookDirectory.mkdir())
+        if (!bookDirectory.mkdirs())
             return false;
 
         try {

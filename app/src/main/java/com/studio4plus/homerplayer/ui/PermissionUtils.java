@@ -4,21 +4,32 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.studio4plus.homerplayer.R;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 public class PermissionUtils {
 
-    public static boolean checkAndRequestPermissionForAudiobooksScan(
-            Activity activity, String permission, int requestCode) {
-        int permissionResult = ContextCompat.checkSelfPermission(activity, permission);
-        if (permissionResult != PackageManager.PERMISSION_GRANTED) {
+    public static boolean checkAndRequestPermission(
+            final Activity activity, String[] permissions, int requestCode) {
+        Collection<String> missingPermissions = Collections2.filter(Arrays.asList(permissions), new Predicate<String>() {
+            @Override
+            public boolean apply(@NonNull String permission) {
+                return ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED;
+            }
+        });
+        if (!missingPermissions.isEmpty()) {
             ActivityCompat.requestPermissions(
-                    activity, new String[]{ permission }, requestCode);
+                    activity, missingPermissions.toArray(new String[missingPermissions.size()]), requestCode);
             return false;
         }
         return true;

@@ -127,14 +127,19 @@ public class UiControllerMain implements ServiceConnection {
         playbackService = null;
     }
 
-    public void onRequestPermissionResult(int code, @NonNull int[] grantResults) {
+    public void onRequestPermissionResult(
+            int code, final @NonNull String[] permissions, final @NonNull int[] grantResults) {
         switch(code) {
             case PERMISSION_REQUEST_FOR_BOOK_SCAN:
-                if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     scanAudioBookFiles();
                 } else {
-                    boolean canRetry = ActivityCompat.shouldShowRequestPermissionRationale(
-                            activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+                    boolean canRetry =
+                            ActivityCompat.shouldShowRequestPermissionRationale(
+                                    activity, Manifest.permission.READ_EXTERNAL_STORAGE) ||
+                            ActivityCompat.shouldShowRequestPermissionRationale(
+                                    activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
                     AlertDialog.Builder dialogBuilder = PermissionUtils.permissionRationaleDialogBuilder(
                             activity, R.string.permission_rationale_scan_audiobooks);
                     if (canRetry) {
@@ -143,10 +148,8 @@ public class UiControllerMain implements ServiceConnection {
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        PermissionUtils.checkAndRequestPermissionForAudiobooksScan(
-                                                activity,
-                                                Manifest.permission.READ_EXTERNAL_STORAGE,
-                                                PERMISSION_REQUEST_FOR_BOOK_SCAN);
+                                        PermissionUtils.checkAndRequestPermission(
+                                                activity, permissions, PERMISSION_REQUEST_FOR_BOOK_SCAN);
                                     }
                                 });
                     } else {
@@ -177,9 +180,10 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     private void scanAudioBookFiles() {
-        if (PermissionUtils.checkAndRequestPermissionForAudiobooksScan(
+        if (PermissionUtils.checkAndRequestPermission(
                 activity,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
+                new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE },
                 PERMISSION_REQUEST_FOR_BOOK_SCAN))
             audioBookManager.scanFiles();
     }

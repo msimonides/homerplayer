@@ -79,9 +79,9 @@ public class UiControllerNoBooks {
     }
 
     public void startSamplesInstallation() {
-        if (PermissionUtils.checkAndRequestPermissionForAudiobooksScan(
+        if (PermissionUtils.checkAndRequestPermission(
                 activity,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE },
                 PERMISSION_REQUEST_DOWNLOADS))
             doStartSamplesInstallation();
     }

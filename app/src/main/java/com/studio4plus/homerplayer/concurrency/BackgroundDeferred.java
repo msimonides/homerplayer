@@ -2,15 +2,10 @@ package com.studio4plus.homerplayer.concurrency;
 
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
 
 public class BackgroundDeferred<V> extends BaseDeferred<V> implements Runnable {
-
-    private final @NonNull List<Listener<V>> listeners = new ArrayList<>();
 
     private final @NonNull Callable<V> task;
     private final @NonNull Handler mainThreadHandler;

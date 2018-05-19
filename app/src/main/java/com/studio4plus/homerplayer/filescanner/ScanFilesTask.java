@@ -26,13 +26,12 @@ public class ScanFilesTask implements Callable<List<FileSet>> {
     private static final String[] SUPPORTED_SUFFIXES = {".mp3", ".m4a", ".ogg"};
 
     private final @NonNull Context applicationContext;
-    private final @NonNull String audioBooksDirectoryPath;
+    private final @NonNull String audioBooksDirectoryName;
 
-    ScanFilesTask(@NonNull Context applicationContext, @NonNull String audioBooksDirectoryPath) {
+    ScanFilesTask(@NonNull Context applicationContext, @NonNull String audioBooksDirectoryName) {
         this.applicationContext = applicationContext;
-        this.audioBooksDirectoryPath = audioBooksDirectoryPath;
+        this.audioBooksDirectoryName = audioBooksDirectoryName;
     }
-
 
     @Override
     public List<FileSet> call() throws Exception {
@@ -47,7 +46,7 @@ public class ScanFilesTask implements Callable<List<FileSet>> {
             dirsToScan.add(defaultStorage);
 
         for (File rootDir : dirsToScan) {
-            File audioBooksDir = new File(rootDir, audioBooksDirectoryPath);
+            File audioBooksDir = new File(rootDir, audioBooksDirectoryName);
             scanAndAppendBooks(audioBooksDir, fileSets);
         }
         return fileSets;
