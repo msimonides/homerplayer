@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -14,6 +15,7 @@ import com.flurry.android.FlurryAgent;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.ui.HomeActivity;
 import com.studio4plus.homerplayer.util.VersionUtil;
+import com.studio4plus.homerplayer.service.NotificationUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -62,6 +64,9 @@ public class HomerPlayerApplication extends Application {
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, mediaStoreUpdateObserver);
 
         HomeActivity.setEnabled(this, globalSettings.isAnyKioskModeEnabled());
+
+        if (Build.VERSION.SDK_INT >= 26)
+            NotificationUtil.API26.registerPlaybackServiceChannel(this);
     }
 
     @Override
