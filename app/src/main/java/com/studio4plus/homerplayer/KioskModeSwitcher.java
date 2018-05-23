@@ -67,6 +67,9 @@ public class KioskModeSwitcher {
         homeIntent.addCategory(Intent.CATEGORY_HOME);
         homeIntent.addCategory(Intent.CATEGORY_DEFAULT);
 
+        // Necessary because application context is used.
+        homeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
         PackageManager pm = context.getPackageManager();
         ResolveInfo resolveInfo = pm.resolveActivity(homeIntent, 0);
         if (resolveInfo.activityInfo.name.equals("com.android.internal.app.ResolverActivity")) {
