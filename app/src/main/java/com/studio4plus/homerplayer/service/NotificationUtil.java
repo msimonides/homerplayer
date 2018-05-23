@@ -23,7 +23,7 @@ public class NotificationUtil {
     static Notification createForegroundServiceNotification(
             Context context, int stringId, int drawableId) {
         Intent activityIntent = new Intent(context, MainActivity.class);
-        activityIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        activityIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent intent = PendingIntent.getActivity(
                 context, 0, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
