@@ -59,8 +59,7 @@
 
         <receiver android:name=".HomerPlayerDeviceAdmin"
             android:label="@string/device_admin_label"
-            android:description="@string/device_admin_description"
-            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            android:description="@string/device_admin_description">
             <meta-data
                 android:name="android.app.device_admin"
                 android:resource="@xml/device_admin_info"/>
