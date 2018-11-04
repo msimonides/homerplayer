@@ -186,7 +186,7 @@ public class DemoSamplesInstallerService extends Service {
     private void onFailed(@NonNull String errorMessage) {
         Crashlytics.log("DemoSamplesInstallerService: download or install failed");
         isDownloading = false;
-        eventBus.post(new DemoSamplesInstallationFinishedEvent(true, errorMessage));
+        eventBus.post(new DemoSamplesInstallationFinishedEvent(false, errorMessage));
         Intent intent = new Intent(BROADCAST_FAILED_ACTION);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         stopSelf();
