@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -22,6 +23,7 @@ import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.events.DemoSamplesInstallationFinishedEvent;
 import com.studio4plus.homerplayer.events.MediaStoreUpdateEvent;
 import com.studio4plus.homerplayer.model.DemoSamplesInstaller;
+import com.studio4plus.homerplayer.util.TlsSSLSocketFactory;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -30,12 +32,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+import javax.net.ssl.HttpsURLConnection;
 
 import de.greenrobot.event.EventBus;
 
@@ -292,7 +296,8 @@ public class DemoSamplesInstallerService extends Service {
             tmpFile.deleteOnExit();
 
             OutputStream output = new BufferedOutputStream(new FileOutputStream(tmpFile));
-            HttpURLConnection connection = (HttpURLConnection) downloadUrl.openConnection();
+            HttpsURLConnection connection = (HttpsURLConnection) downloadUrl.openConnection();
+            enableTlsOnAndroid4(connection);
             InputStream input = new BufferedInputStream(connection.getInputStream());
 
             int totalBytesRead = 0;
@@ -310,6 +315,19 @@ public class DemoSamplesInstallerService extends Service {
             connection.disconnect();
 
             return tmpFile;
+        }
+
+        private static void enableTlsOnAndroid4(HttpsURLConnection connection) {
+            // The internets say that this may be also needed on some API 21 phones...
+            if (Build.VERSION.SDK_INT <= 21) {
+                try {
+                    connection.setSSLSocketFactory(new TlsSSLSocketFactory());
+                } catch (KeyManagementException | NoSuchAlgorithmException e) {
+                    Crashlytics.logException(e);
+                    // Nothing much to do here, the app will attempt the download and most likely
+                    // fail.
+                }
+            }
         }
     }
 }
