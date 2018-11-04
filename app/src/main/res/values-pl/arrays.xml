@@ -6,6 +6,8 @@
         <item>Zablokowana poziomo, odwrotnie</item>
     </string-array>
     <string-array name="playback_speed_entries">
+        <item>Bardzo duża</item>
+        <item>Duża</item>
         <item>Zwykła</item>
         <item>Umiarkowana</item>
         <item>Mała</item>

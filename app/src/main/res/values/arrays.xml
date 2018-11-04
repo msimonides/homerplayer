@@ -41,12 +41,16 @@
         <item>LANDSCAPE_REVERSE_LOCKED</item>
     </string-array>
     <string-array name="playback_speed_entries">
+        <item>Very fast</item>
+        <item>Fast</item>
         <item>Normal</item>
         <item>Moderate</item>
         <item>Slow</item>
         <item>Very slow</item>
     </string-array>
     <string-array name="playback_speed_values" translatable="false">
+        <item>2.0</item>
+        <item>1.5</item>
         <item>1.0</item>
         <item>0.8</item>
         <item>0.65</item>
