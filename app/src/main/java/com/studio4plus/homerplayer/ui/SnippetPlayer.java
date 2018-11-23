@@ -43,9 +43,6 @@ public class SnippetPlayer implements PlaybackController.Observer {
     }
 
     @Override
-    public void onPlaybackStarted() {}
-
-    @Override
     public void onDuration(File file, long durationMs) {}
 
     @Override

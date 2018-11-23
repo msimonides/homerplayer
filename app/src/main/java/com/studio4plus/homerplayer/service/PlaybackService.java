@@ -251,6 +251,7 @@ public class PlaybackService
             long startPositionMs = Math.max(0, position.seekPosition - jumpBackMs);
             controller.start(position.file, startPositionMs);
             handler.postDelayed(updatePosition, UPDATE_TIME_MS);
+            resetSleepTimer();
         }
 
         public void stop() {
@@ -278,11 +279,6 @@ public class PlaybackService
         public void onPlaybackProgressed(long currentPositionMs) {
             eventBus.post(new PlaybackProgressedEvent(
                     audioBook, audioBook.getLastPositionTime(currentPositionMs)));
-        }
-
-        @Override
-        public void onPlaybackStarted() {
-            resetSleepTimer();
         }
 
         @Override

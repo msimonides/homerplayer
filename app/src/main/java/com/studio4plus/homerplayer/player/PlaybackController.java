@@ -5,7 +5,6 @@ import java.io.File;
 public interface PlaybackController {
 
     interface Observer {
-        void onPlaybackStarted();
         void onDuration(File file, long durationMs);
 
         /**

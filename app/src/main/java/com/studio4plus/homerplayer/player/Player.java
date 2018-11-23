@@ -129,7 +129,6 @@ public class Player {
 
             switch(playbackState) {
                 case com.google.android.exoplayer2.Player.STATE_READY:
-                    observer.onPlaybackStarted();
                     observer.onDuration(currentFile, exoPlayer.getDuration());
                     updateProgress();
                     break;
