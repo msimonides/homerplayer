@@ -30,6 +30,11 @@ android {
 
     compileSdkVersion 28
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     defaultConfig {
         applicationId "com.studio4plus.homerplayer"
         minSdkVersion 17
@@ -60,7 +65,7 @@ dependencies {
     implementation 'com.flurry.android:analytics:6.9.2'
     implementation 'com.google.guava:guava:24.0-android'
     implementation 'com.google.code.findbugs:jsr305:3.0.1'
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.8.4'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.9.1'
 
     implementation 'com.google.dagger:dagger:2.15'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.15'
