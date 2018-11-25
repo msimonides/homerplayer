@@ -9,6 +9,8 @@ import com.studio4plus.homerplayer.player.Player;
 
 import java.io.File;
 
+import de.greenrobot.event.EventBus;
+
 /**
  * Plays the current audiobook for a short amount of time. Just to demonstrate.
  */
@@ -20,8 +22,8 @@ public class SnippetPlayer implements PlaybackController.Observer {
     private long startPositionMs = -1;
     private boolean isPlaying = false;
 
-    public SnippetPlayer(Context context, float playbackSpeed) {
-        Player player = new Player(context);
+    public SnippetPlayer(Context context, EventBus eventBus, float playbackSpeed) {
+        Player player = new Player(context, eventBus);
         player.setPlaybackSpeed(playbackSpeed);
         playbackController = player.createPlayback();
         playbackController.setObserver(this);

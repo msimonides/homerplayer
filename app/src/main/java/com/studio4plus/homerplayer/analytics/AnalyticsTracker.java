@@ -5,6 +5,7 @@ import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
 import com.studio4plus.homerplayer.events.DemoSamplesInstallationFinishedEvent;
 import com.studio4plus.homerplayer.events.DemoSamplesInstallationStartedEvent;
+import com.studio4plus.homerplayer.events.PlaybackErrorEvent;
 import com.studio4plus.homerplayer.events.PlaybackProgressedEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppingEvent;
 import com.studio4plus.homerplayer.events.SettingsEnteredEvent;
@@ -35,6 +36,11 @@ public class AnalyticsTracker {
     private static final String FF_REWIND_IS_FF_KEY = "isFf";
     private static final String PERMISSION_RATIONALE_SHOWN = "permissionRationaleShown";
     private static final String PERMISSION_RATIONALE_REQUEST_KEY = "permissionRequest";
+    private static final String PLAYBACK_ERROR = "playbackError";
+    private static final String PLAYBACK_ERROR_MESSAGE_KEY = "message";
+    private static final String PLAYBACK_ERROR_FORMAT_KEY = "format";
+    private static final String PLAYBACK_ERROR_DURATION_KEY = "durationMs";
+    private static final String PLAYBACK_ERROR_POSITION_KEY = "positionMs";
     private static final String SAMPLES_DOWNLOAD_STARTED = "samplesDownloadStarted";
     private static final String SAMPLES_DOWNLOAD_SUCCESS = "samplesDownloadSuccess";
     private static final String SAMPLES_DOWNLOAD_FAILURE = "samplesDownloadFailure";
@@ -103,6 +109,16 @@ public class AnalyticsTracker {
             currentlyPlayed = null;
             FlurryAgent.logEvent(BOOK_PLAYED, data);
         }
+    }
+
+    @SuppressWarnings("unused")
+    public void onEvent(PlaybackErrorEvent event) {
+        Map<String, String> data = new TreeMap<>();
+        data.put(PLAYBACK_ERROR_MESSAGE_KEY, event.errorMessage);
+        data.put(PLAYBACK_ERROR_FORMAT_KEY, event.format);
+        data.put(PLAYBACK_ERROR_DURATION_KEY, event.durationMs + "ms");
+        data.put(PLAYBACK_ERROR_POSITION_KEY, event.positionMs + "ms");
+        FlurryAgent.logEvent(PLAYBACK_ERROR, data);
     }
 
     public void onBookSwiped() {

@@ -16,7 +16,7 @@ import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
-import com.studio4plus.homerplayer.events.PlaybackErrorEvent;
+import com.studio4plus.homerplayer.events.PlaybackFatalErrorEvent;
 import com.studio4plus.homerplayer.events.PlaybackProgressedEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppedEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppingEvent;
@@ -310,7 +310,7 @@ public class PlaybackService
 
         @Override
         public void onPlaybackError(File path) {
-            eventBus.post(new PlaybackErrorEvent(path));
+            eventBus.post(new PlaybackFatalErrorEvent(path));
         }
 
         @Override
@@ -357,7 +357,7 @@ public class PlaybackService
 
         @Override
         public void onPlayerError(File path) {
-            eventBus.post(new PlaybackErrorEvent(path));
+            eventBus.post(new PlaybackFatalErrorEvent(path));
         }
     }
 

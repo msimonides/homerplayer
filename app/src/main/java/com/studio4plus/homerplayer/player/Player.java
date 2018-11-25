@@ -7,6 +7,7 @@ import android.os.Looper;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
@@ -15,21 +16,29 @@ import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.FileDataSource;
 import com.google.android.exoplayer2.upstream.FileDataSourceFactory;
 import com.google.common.base.Preconditions;
+import com.studio4plus.homerplayer.events.PlaybackErrorEvent;
 
+import java.io.EOFException;
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+
+import de.greenrobot.event.EventBus;
 
 public class Player {
 
     private final SimpleExoPlayer exoPlayer;
+    private final EventBus eventBus;
 
     private float playbackSpeed = 1.0f;
 
-    public Player(Context context) {
+    public Player(Context context, EventBus eventBus) {
         exoPlayer = ExoPlayerFactory.newSimpleInstance(context, new DefaultTrackSelector());
+        this.eventBus = eventBus;
     }
 
     public PlaybackController createPlayback() {
@@ -147,6 +156,20 @@ public class Player {
 
         @Override
         public void onPlayerError(ExoPlaybackException error) {
+            eventBus.post(new PlaybackErrorEvent(
+                    error.getMessage(),
+                    exoPlayer.getDuration(),
+                    exoPlayer.getCurrentPosition(),
+                    getFormatDescription()));
+            if (error.type == ExoPlaybackException.TYPE_SOURCE) {
+                IOException exception = error.getSourceException();
+                if (exception instanceof FileDataSource.FileDataSourceException
+                        && exception.getCause() instanceof EOFException) {
+                    // May happen with files that have seeking or length information.
+                    observer.onPlaybackEnded();
+                    return;
+                }
+            }
             observer.onPlaybackError(currentFile);
         }
 
@@ -162,6 +185,17 @@ public class Player {
                 delayMs += (long) (1000 * playbackSpeed);
 
             handler.postDelayed(updateProgressTask, delayMs);
+        }
+
+        private String getFormatDescription() {
+            Format format = exoPlayer.getAudioFormat();
+            if (format != null) {
+                return format.toString();
+            } else {
+                String fileName = currentFile.getName();
+                int suffixIndex = fileName.lastIndexOf('.');
+                return suffixIndex != -1 ? fileName.substring(suffixIndex) : "";
+            }
         }
     }
 
