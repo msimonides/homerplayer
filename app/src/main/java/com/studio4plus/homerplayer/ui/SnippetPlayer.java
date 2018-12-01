@@ -1,6 +1,7 @@
 package com.studio4plus.homerplayer.ui;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.studio4plus.homerplayer.model.AudioBook;
@@ -18,6 +19,7 @@ public class SnippetPlayer implements PlaybackController.Observer {
 
     private static final long PLAYBACK_TIME_MS = 5000;
 
+    private static final String TAG = "SnippetPlayer";
     private PlaybackController playbackController;
     private long startPositionMs = -1;
     private boolean isPlaying = false;
@@ -66,7 +68,7 @@ public class SnippetPlayer implements PlaybackController.Observer {
 
     @Override
     public void onPlaybackError(File path) {
-        Crashlytics.log("Unable to play snippet: " + path.toString());
+        Crashlytics.log(Log.DEBUG, TAG,"Unable to play snippet: " + path.toString());
     }
 
     @Override

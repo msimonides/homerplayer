@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
@@ -41,6 +42,7 @@ public class UiControllerMain implements ServiceConnection {
     private final @NonNull UiControllerPlayback.Factory playbackControllerFactory;
 
     private static final int PERMISSION_REQUEST_FOR_BOOK_SCAN = 1;
+    private static final String TAG = "UiControllerMain";
 
     private @Nullable PlaybackService playbackService;
 
@@ -73,7 +75,7 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     void onActivityStart() {
-        Crashlytics.log("activity start");
+        Crashlytics.log(Log.DEBUG, TAG,"activity start");
         scanAudioBookFiles();
         maybeSetInitialState();
     }
@@ -83,7 +85,8 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     void onActivityStop() {
-        Crashlytics.log("UI: leave state " + currentState.debugName() + " (activity stop)");
+        Crashlytics.log(Log.DEBUG, TAG,
+                "UI: leave state " + currentState.debugName() + " (activity stop)");
         currentState.onLeaveState();
         currentState = new InitState();
     }
@@ -116,7 +119,7 @@ public class UiControllerMain implements ServiceConnection {
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder service) {
-        Crashlytics.log("onServiceConnected");
+        Crashlytics.log(Log.DEBUG, TAG, "onServiceConnected");
         Preconditions.checkState(playbackService == null);
         playbackService = ((PlaybackService.ServiceBinder) service).getService();
         maybeSetInitialState();
@@ -124,6 +127,7 @@ public class UiControllerMain implements ServiceConnection {
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
+        Crashlytics.log(Log.DEBUG, TAG, "onServiceDisconnected");
         playbackService = null;
     }
 
@@ -212,9 +216,9 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     private void changeState(StateFactory newStateFactory) {
-        Crashlytics.log("UI: leave state: " + currentState.debugName());
+        Crashlytics.log(Log.DEBUG, TAG, "UI: leave state: " + currentState.debugName());
         currentState.onLeaveState();
-        Crashlytics.log("UI: create state: " + newStateFactory.name());
+        Crashlytics.log(Log.DEBUG, TAG,"UI: create state: " + newStateFactory.name());
         currentState = newStateFactory.create(this, currentState);
     }
 
