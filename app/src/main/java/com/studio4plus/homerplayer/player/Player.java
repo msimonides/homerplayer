@@ -116,8 +116,9 @@ public class Player {
         }
 
         public void stop() {
+            long position = exoPlayer.getCurrentPosition();
             exoPlayer.stop();
-            observer.onPlaybackStopped(exoPlayer.getCurrentPosition());
+            observer.onPlaybackStopped(position);
         }
 
         @Override
