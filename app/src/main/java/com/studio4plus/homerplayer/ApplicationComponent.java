@@ -1,7 +1,6 @@
 package com.studio4plus.homerplayer;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
 

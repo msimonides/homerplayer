@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.concurrency.BackgroundExecutor;
+import com.studio4plus.homerplayer.ui.SoundBank;
 
 import java.util.Locale;
 
@@ -66,6 +67,11 @@ public class ApplicationModule {
     @Provides @Singleton
     AnalyticsTracker provideAnalyticsTracker(GlobalSettings globalSettings, EventBus eventBus) {
         return new AnalyticsTracker(globalSettings, eventBus);
+    }
+
+    @Provides @Singleton
+    SoundBank provideSoundBank(Resources resources) {
+        return new SoundBank(resources);
     }
 
     @Provides @Singleton @Named("IO_EXECUTOR")
