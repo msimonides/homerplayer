@@ -10,6 +10,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -100,6 +101,8 @@ public class PlaybackService
                 getApplicationContext(),
                 R.string.playback_service_notification,
                 android.R.drawable.ic_media_play);
+        ContextCompat.startForegroundService(
+                this, new Intent(this, PlaybackService.class));
         startForeground(NOTIFICATION_ID, notification);
 
         if (book.getTotalDurationMs() == AudioBook.UNKNOWN_POSITION) {
@@ -196,8 +199,9 @@ public class PlaybackService
             onPlaybackEnded();
         }
         player = null;
-        stopForeground(true);
         eventBus.post(PLAYBACK_STOPPED_EVENT);
+        stopForeground(true);
+        stopSelf();
     }
 
     private void requestAudioFocus() {

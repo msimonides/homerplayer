@@ -70,7 +70,6 @@ public class UiControllerMain implements ServiceConnection {
     void onActivityCreated() {
         eventBus.register(this);
         Intent serviceIntent = new Intent(activity, PlaybackService.class);
-        activity.startService(serviceIntent);
         activity.bindService(serviceIntent, this, Context.BIND_AUTO_CREATE);
     }
 
