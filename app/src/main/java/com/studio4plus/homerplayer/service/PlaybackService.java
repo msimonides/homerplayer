@@ -297,7 +297,6 @@ public class PlaybackService
                 AudioBook.Position position = audioBook.getLastPosition();
                 controller.start(position.file, position.seekPosition);
             } else {
-                handler.removeCallbacks(updatePosition);
                 audioBook.resetPosition();
                 PlaybackService.this.onPlaybackEnded();
                 controller.release();
@@ -306,7 +305,6 @@ public class PlaybackService
 
         @Override
         public void onPlaybackStopped(long currentPositionMs) {
-            handler.removeCallbacks(updatePosition);
             audioBook.updatePosition(currentPositionMs);
         }
 
@@ -317,6 +315,7 @@ public class PlaybackService
 
         @Override
         public void onPlayerReleased() {
+            handler.removeCallbacks(updatePosition);
             PlaybackService.this.onPlayerReleased();
         }
     }
