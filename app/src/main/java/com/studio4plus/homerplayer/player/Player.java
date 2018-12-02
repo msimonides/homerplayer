@@ -33,6 +33,7 @@ public class Player {
 
     private final SimpleExoPlayer exoPlayer;
     private final EventBus eventBus;
+    private ExtractorMediaSource.Factory mediaSourceFactory;
 
     private float playbackSpeed = 1.0f;
 
@@ -61,31 +62,31 @@ public class Player {
 
     private void prepareAudioFile(File file, long startPositionMs) {
         Uri fileUri = Uri.fromFile(file);
-
-        DataSource.Factory dataSourceFactory = new FileDataSourceFactory();
-        DefaultExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-        extractorsFactory.setMp3ExtractorFlags(Mp3Extractor.FLAG_ENABLE_CONSTANT_BITRATE_SEEKING);
-        MediaSource source = new ExtractorMediaSource(
-                fileUri, dataSourceFactory, extractorsFactory, null, null);
+        MediaSource source = getExtractorMediaSourceFactory().createMediaSource(fileUri);
 
         exoPlayer.seekTo(startPositionMs);
         exoPlayer.prepare(source, false, true);
     }
 
+    private ExtractorMediaSource.Factory getExtractorMediaSourceFactory() {
+        if (mediaSourceFactory == null) {
+            DataSource.Factory dataSourceFactory = new FileDataSourceFactory();
+            DefaultExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+            extractorsFactory.setMp3ExtractorFlags(Mp3Extractor.FLAG_ENABLE_CONSTANT_BITRATE_SEEKING);
+            mediaSourceFactory = new ExtractorMediaSource.Factory(dataSourceFactory)
+                            .setExtractorsFactory(extractorsFactory);
+        }
+        return mediaSourceFactory;
+    }
+
     private class PlaybackControllerImpl
-            extends com.google.android.exoplayer2.Player.DefaultEventListener
-            implements PlaybackController {
+            implements com.google.android.exoplayer2.Player.EventListener, PlaybackController {
 
         private File currentFile;
         private Observer observer;
         private int lastPlaybackState;
         private Handler handler;
-        private final Runnable updateProgressTask = new Runnable() {
-            @Override
-            public void run() {
-                updateProgress();
-            }
-        };
+        private final Runnable updateProgressTask = this::updateProgress;
 
         private PlaybackControllerImpl(Handler handler) {
             this.handler = handler;
@@ -201,8 +202,7 @@ public class Player {
     }
 
     private class DurationQueryControllerImpl
-            extends com.google.android.exoplayer2.Player.DefaultEventListener
-            implements DurationQueryController {
+            implements com.google.android.exoplayer2.Player.EventListener, DurationQueryController {
 
         private final Iterator<File> iterator;
         private File currentFile;
