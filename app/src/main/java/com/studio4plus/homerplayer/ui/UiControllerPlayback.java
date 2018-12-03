@@ -4,7 +4,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.events.PlaybackProgressedEvent;
@@ -19,6 +21,8 @@ import javax.inject.Inject;
 import de.greenrobot.event.EventBus;
 
 public class UiControllerPlayback {
+
+    private static final String TAG = "UiControllerPlayback";
 
     static class Factory {
         private final @NonNull EventBus eventBus;
@@ -79,6 +83,7 @@ public class UiControllerPlayback {
     }
 
     public void stopPlayback() {
+        Crashlytics.log(Log.DEBUG, TAG, "UiControllerPlayback.stopPlayback");
         playbackService.stopPlayback();
     }
 

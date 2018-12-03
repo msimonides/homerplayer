@@ -81,6 +81,7 @@ public class PlaybackService
 
     @Override
     public void onDestroy() {
+        Crashlytics.log(Log.DEBUG, TAG, "PlaybackService.onDestroy");
         super.onDestroy();
         stopPlayback();
     }
@@ -158,6 +159,7 @@ public class PlaybackService
 
     @Override
     public void onFaceDownStill() {
+        Crashlytics.log(Log.DEBUG, TAG, "PlaybackService.onFaceDownStill");
         stopPlayback();
     }
 
@@ -172,6 +174,7 @@ public class PlaybackService
         // Notifications should request TRANSIENT_CAN_DUCK so they won't interfere.
         if (focusChange == AudioManager.AUDIOFOCUS_LOSS ||
                 focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+            Crashlytics.log(Log.DEBUG, TAG, "PlaybackService.onAudioFocusChange");
             stopPlayback();
         }
     }
@@ -388,10 +391,12 @@ public class PlaybackService
         public void run() {
             currentVolume -= VOLUME_DOWN_STEP;
             player.setPlaybackVolume(currentVolume);
-            if (currentVolume <= 0)
+            if (currentVolume <= 0) {
+                Crashlytics.log(Log.DEBUG, TAG, "SleepFadeOut stop");
                 stopPlayback();
-            else
+            } else {
                 handler.postDelayed(this, STEP_INTERVAL_MS);
+            }
         }
     }
 }
