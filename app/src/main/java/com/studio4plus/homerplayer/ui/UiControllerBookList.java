@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
 import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
+import com.studio4plus.homerplayer.model.AudioBook;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.concurrency.SimpleFuture;
 
@@ -70,7 +71,11 @@ public class UiControllerBookList {
         this.screenOnReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                speakCurrentTitle();
+                final AudioBook currentBook = audioBookManager.getCurrentBook();
+                // The onReceive call is posted from another thread and there may be no books
+                // by the time it is executed.
+                if (currentBook != null)
+                    speak(currentBook.getTitle());
             }
         };
 
@@ -150,9 +155,5 @@ public class UiControllerBookList {
         ui.updateBookList(
                 audioBookManager.getAudioBooks(),
                 audioBookManager.getCurrentBookIndex());
-    }
-
-    private void speakCurrentTitle() {
-        speak(audioBookManager.getCurrentBook().getTitle());
     }
 }
