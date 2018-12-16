@@ -31,7 +31,6 @@ public class HomerPlayerApplication extends Application {
     private static final String AUDIOBOOKS_DIRECTORY = "AudioBooks";
     private static final String DEMO_SAMPLES_URL =
             "https://homer-player.firebaseapp.com/samples.zip";
-    private static final String FLURRY_API_KEY_ASSET = "api_keys/flurry";
 
     private ApplicationComponent component;
     private MediaStoreUpdateObserver mediaStoreUpdateObserver;
@@ -45,13 +44,6 @@ public class HomerPlayerApplication extends Application {
 
         CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
         Fabric.with(this, new Crashlytics.Builder().core(core).build());
-
-        String flurryKey = getFlurryKey(getAssets());
-        if (flurryKey != null && VersionUtil.isOfficialVersion()) {
-            new FlurryAgent.Builder()
-                    .withLogEnabled(true)
-                    .build(this, flurryKey);
-        }
 
         component = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this, Uri.parse(DEMO_SAMPLES_URL)))
@@ -78,22 +70,5 @@ public class HomerPlayerApplication extends Application {
 
     public static ApplicationComponent getComponent(Context context) {
         return ((HomerPlayerApplication) context.getApplicationContext()).component;
-    }
-
-    private @Nullable String getFlurryKey(AssetManager assets) {
-        try {
-            InputStream inputStream = assets.open(FLURRY_API_KEY_ASSET);
-            try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                String key = reader.readLine();
-                inputStream.close();
-                return key;
-            } catch(IOException e) {
-                inputStream.close();
-                return null;
-            }
-        } catch (IOException e) {
-            return null;
-        }
     }
 }

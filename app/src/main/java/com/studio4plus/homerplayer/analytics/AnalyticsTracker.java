@@ -1,6 +1,7 @@
 package com.studio4plus.homerplayer.analytics;
 
-import com.flurry.android.FlurryAgent;
+import android.content.Context;
+
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
 import com.studio4plus.homerplayer.events.DemoSamplesInstallationFinishedEvent;
@@ -48,14 +49,19 @@ public class AnalyticsTracker {
     private static final NavigableMap<Long, String> PLAYBACK_DURATION_BUCKETS = new TreeMap<>();
 
     private final GlobalSettings globalSettings;
+    private final StatsLogger stats;
 
     private CurrentlyPlayed currentlyPlayed;
 
     @Inject
     public AnalyticsTracker(
-            GlobalSettings globalSettings, EventBus eventBus) {
+            Context context, GlobalSettings globalSettings, EventBus eventBus) {
         this.globalSettings = globalSettings;
         eventBus.register(this);
+
+        // Not bothering with injecting the stats logger, at least until I need to add a debug
+        // implementation.
+        stats = new StatsLogger(context);
     }
 
     @SuppressWarnings("unused")
@@ -63,7 +69,7 @@ public class AnalyticsTracker {
         if (event.contentType.supersedes(globalSettings.booksEverInstalled())) {
             Map<String, String> data = Collections.singletonMap(
                     BOOKS_INSTALLED_TYPE_KEY, event.contentType.name());
-            FlurryAgent.logEvent(BOOKS_INSTALLED, data);
+            stats.logEvent(BOOKS_INSTALLED, data);
         }
         globalSettings.setBooksEverInstalled(event.contentType);
     }
@@ -75,16 +81,16 @@ public class AnalyticsTracker {
 
     @SuppressWarnings("unused")
     public void onEvent(DemoSamplesInstallationStartedEvent event) {
-        FlurryAgent.logEvent(SAMPLES_DOWNLOAD_STARTED);
+        stats.logEvent(SAMPLES_DOWNLOAD_STARTED);
     }
 
     @SuppressWarnings("unused")
     public void onEvent(DemoSamplesInstallationFinishedEvent event) {
         if (event.success) {
-            FlurryAgent.logEvent(SAMPLES_DOWNLOAD_SUCCESS);
+            stats.logEvent(SAMPLES_DOWNLOAD_SUCCESS);
         } else {
             Map<String, String> data = Collections.singletonMap("error", event.errorMessage);
-            FlurryAgent.logEvent(SAMPLES_DOWNLOAD_FAILURE, data);
+            stats.logEvent(SAMPLES_DOWNLOAD_FAILURE, data);
         }
     }
 
@@ -107,7 +113,7 @@ public class AnalyticsTracker {
             Map.Entry<Long, String> bucket = PLAYBACK_DURATION_BUCKETS.floorEntry(elapsedTimeS);
             data.put(BOOK_PLAYED_DURATION_KEY, bucket.getValue());
             currentlyPlayed = null;
-            FlurryAgent.logEvent(BOOK_PLAYED, data);
+            stats.logEvent(BOOK_PLAYED, data);
         }
     }
 
@@ -118,31 +124,31 @@ public class AnalyticsTracker {
         data.put(PLAYBACK_ERROR_FORMAT_KEY, event.format);
         data.put(PLAYBACK_ERROR_DURATION_KEY, event.durationMs + "ms");
         data.put(PLAYBACK_ERROR_POSITION_KEY, event.positionMs + "ms");
-        FlurryAgent.logEvent(PLAYBACK_ERROR, data);
+        stats.logEvent(PLAYBACK_ERROR, data);
     }
 
     public void onBookSwiped() {
-        FlurryAgent.logEvent(BOOK_SWIPED);
+        stats.logEvent(BOOK_SWIPED);
     }
 
     public void onBookListDisplayed() {
-        FlurryAgent.logEvent(BOOK_LIST_DISPLAYED);
+        stats.logEvent(BOOK_LIST_DISPLAYED);
     }
 
     public void onFfRewindStarted(boolean isFf) {
-        FlurryAgent.logEvent(FF_REWIND, Collections.singletonMap(FF_REWIND_IS_FF_KEY, Boolean.toString(isFf)));
+        stats.logEvent(FF_REWIND, Collections.singletonMap(FF_REWIND_IS_FF_KEY, Boolean.toString(isFf)));
     }
 
     public void onFfRewindFinished(long elapsedWallTimeMs) {
-        FlurryAgent.endTimedEvent(FF_REWIND);
+        stats.endTimedEvent(FF_REWIND);
     }
 
     public void onFfRewindAborted() {
-        FlurryAgent.logEvent(FF_REWIND_ABORTED);
+        stats.logEvent(FF_REWIND_ABORTED);
     }
 
     public void onPermissionRationaleShown(String permissionRequest) {
-        FlurryAgent.logEvent(
+        stats.logEvent(
                 PERMISSION_RATIONALE_SHOWN,
                 Collections.singletonMap(PERMISSION_RATIONALE_REQUEST_KEY, permissionRequest));
     }

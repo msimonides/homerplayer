@@ -65,8 +65,9 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    AnalyticsTracker provideAnalyticsTracker(GlobalSettings globalSettings, EventBus eventBus) {
-        return new AnalyticsTracker(globalSettings, eventBus);
+    AnalyticsTracker provideAnalyticsTracker(
+            Context context, GlobalSettings globalSettings, EventBus eventBus) {
+        return new AnalyticsTracker(context, globalSettings, eventBus);
     }
 
     @Provides @Singleton
