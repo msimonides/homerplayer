@@ -46,6 +46,7 @@ import de.greenrobot.event.EventBus;
 @MainThread
 public class DemoSamplesInstallerService extends Service {
 
+    private static final String CLASS_NAME = "DemoSamplesInstallerService";
     private static final String ACTION_EXTRA = "action";
     private static final int ACTION_START_DOWNLOAD = 0;
     private static final int ACTION_CANCEL_DOWNLOAD = 1;
@@ -55,15 +56,15 @@ public class DemoSamplesInstallerService extends Service {
     private static final int NOTIFICATION_ID = R.string.demo_samples_service_notification_download;
 
     public static final String BROADCAST_DOWNLOAD_PROGRESS_ACTION =
-            DemoSamplesInstallerService.class.getName() + ".PROGRESS";
+            CLASS_NAME + ".PROGRESS";
     public static final String PROGRESS_BYTES_EXTRA = "progressBytes";
     public static final String TOTAL_BYTES_EXTRA = "totalBytes";
     public static final String BROADCAST_INSTALL_STARTED_ACTION =
-            DemoSamplesInstallerService.class.getName() + ".INSTALL_STARTED";
+            CLASS_NAME + ".INSTALL_STARTED";
     public static final String BROADCAST_INSTALL_FINISHED_ACTION =
-            DemoSamplesInstallerService.class.getName() + ".INSTALL_FINISHED";
+            CLASS_NAME + ".INSTALL_FINISHED";
     public static final String BROADCAST_FAILED_ACTION =
-            DemoSamplesInstallerService.class.getName() + ".FAILED";
+            CLASS_NAME + ".FAILED";
 
     public static Intent createDownloadIntent(Context context, Uri downloadUri) {
         Intent intent = new Intent(context, DemoSamplesInstallerService.class);

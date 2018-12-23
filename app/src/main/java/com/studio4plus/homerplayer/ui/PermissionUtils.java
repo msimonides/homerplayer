@@ -29,7 +29,7 @@ public class PermissionUtils {
         });
         if (!missingPermissions.isEmpty()) {
             ActivityCompat.requestPermissions(
-                    activity, missingPermissions.toArray(new String[missingPermissions.size()]), requestCode);
+                    activity, missingPermissions.toArray(new String[0]), requestCode);
             return false;
         }
         return true;
