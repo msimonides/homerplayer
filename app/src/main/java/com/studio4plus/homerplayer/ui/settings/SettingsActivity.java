@@ -5,13 +5,17 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.WindowManager;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
@@ -26,7 +30,6 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
-// TODO: update the toolbar title when the settings screen changes
 public class SettingsActivity
         extends AppCompatActivity
         implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
@@ -52,9 +55,10 @@ public class SettingsActivity
                 .build();
         activityComponent.inject(this);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        // TODO: set up navigation in toolbar.
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         kioskModeHandler.setKeepNavigation(true);
         orientationDelegate = new OrientationActivityDelegate(this, globalSettings);
@@ -100,6 +104,8 @@ public class SettingsActivity
         try {
             // TODO: use FragmentFactory when updating to androidx.
             Class<Fragment> fragmentClass = (Class<Fragment>) Class.forName(pref.getFragment(), true, getClassLoader());
+            Preconditions.checkState(
+                    BaseSettingsFragment.class.isAssignableFrom(fragmentClass));
             fragment = fragmentClass.newInstance();
 
             fragment.setArguments(args);
@@ -127,6 +133,16 @@ public class SettingsActivity
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void blockEventsOnStart() {

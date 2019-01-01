@@ -121,4 +121,9 @@ public class PlaybackSettingsFragment extends BaseSettingsFragment {
             snippetPlayer.play(book);
         }
     }
+
+    @Override
+    protected int getTitle() {
+        return R.string.pref_playback_options_screen_title;
+    }
 }

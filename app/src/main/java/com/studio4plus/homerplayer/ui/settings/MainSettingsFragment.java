@@ -61,6 +61,11 @@ public class MainSettingsFragment extends BaseSettingsFragment {
     }
 
     @Override
+    protected int getTitle() {
+        return R.string.settings_title;
+    }
+
+    @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         switch(key) {
             case GlobalSettings.KEY_SCREEN_ORIENTATION:

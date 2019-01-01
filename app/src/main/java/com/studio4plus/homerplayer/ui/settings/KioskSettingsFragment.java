@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v14.preference.SwitchPreference;
 import android.support.v7.preference.Preference;
 
@@ -74,6 +75,11 @@ public class KioskSettingsFragment extends BaseSettingsFragment {
     public void onStop() {
         eventBus.unregister(this);
         super.onStop();
+    }
+
+    @Override
+    protected int getTitle() {
+        return R.string.pref_kiosk_mode_screen_title;
     }
 
     @SuppressWarnings("UnusedDeclaration")

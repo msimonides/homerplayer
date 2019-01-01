@@ -1,10 +1,14 @@
 package com.studio4plus.homerplayer.ui.settings;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
@@ -23,6 +27,11 @@ abstract class BaseSettingsFragment
     public void onStart() {
         super.onStart();
         getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        Preconditions.checkNotNull(actionBar);
+        actionBar.setTitle(getTitle());
+
     }
 
     @Override
@@ -35,6 +44,9 @@ abstract class BaseSettingsFragment
     protected SharedPreferences getSharedPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(Objects.requireNonNull(getActivity()));
     }
+
+    @StringRes
+    protected abstract int getTitle();
 
     protected void updateListPreferenceSummary(@NonNull SharedPreferences sharedPreferences,
                                                @NonNull String key,
