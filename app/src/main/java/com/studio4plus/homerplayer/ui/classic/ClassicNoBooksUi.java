@@ -23,7 +23,7 @@ import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.ui.MultitapTouchListener;
 import com.studio4plus.homerplayer.ui.UiControllerNoBooks;
 import com.studio4plus.homerplayer.ui.NoBooksUi;
-import com.studio4plus.homerplayer.ui.SettingsActivity;
+import com.studio4plus.homerplayer.ui.settings.SettingsActivity;
 
 import javax.inject.Inject;
 import javax.inject.Named;

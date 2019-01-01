@@ -1,16 +1,21 @@
-package com.studio4plus.homerplayer.ui;
+package com.studio4plus.homerplayer.ui.settings;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.preference.DialogPreference;
+
+import android.support.annotation.Nullable;
+import android.support.v7.preference.DialogPreference;
 import android.util.AttributeSet;
 
-public class ConfirmDialogPreference extends DialogPreference {
+import com.studio4plus.homerplayer.R;
+
+class ConfirmDialogPreference extends DialogPreference {
 
     public interface OnConfirmListener {
         void onConfirmed();
     }
 
+    @Nullable
     private OnConfirmListener listener;
 
     @TargetApi(21)
@@ -26,18 +31,21 @@ public class ConfirmDialogPreference extends DialogPreference {
         super(context, attrs);
     }
 
-    @TargetApi(21)
     public ConfirmDialogPreference(Context context) {
         super(context);
     }
 
-    public void setOnConfirmListener(OnConfirmListener listener) {
+    @Override
+    public int getDialogLayoutResource() {
+        return R.layout.preference_dialog_confirm;
+    }
+
+    void setOnConfirmListener(OnConfirmListener listener) {
         this.listener = listener;
     }
 
-    @Override
-    protected void onDialogClosed(boolean positiveResult) {
-        if (positiveResult && listener != null)
+    void onDialogClosed(boolean positive) {
+        if (positive && listener != null)
             listener.onConfirmed();
     }
 }

@@ -2,12 +2,7 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-        <!-- Customize your theme here. -->
-    </style>
-
-    <style name="SettingsTheme" parent="AppTheme">
-        <item name="android:windowActionBar">true</item>
-        <item name="android:windowNoTitle">false</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="buttonStartStop" parent="ThemeOverlay.AppCompat">

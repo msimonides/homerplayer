@@ -23,7 +23,7 @@ import com.studio4plus.homerplayer.ui.UiControllerBookList;
 import com.studio4plus.homerplayer.ui.BookListUi;
 import com.studio4plus.homerplayer.ui.HintOverlay;
 import com.studio4plus.homerplayer.ui.MultitapTouchListener;
-import com.studio4plus.homerplayer.ui.SettingsActivity;
+import com.studio4plus.homerplayer.ui.settings.SettingsActivity;
 
 import java.util.List;
 

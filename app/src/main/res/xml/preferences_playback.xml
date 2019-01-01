@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ListPreference
+        app:key="jump_back_preference"
+        app:title="@string/pref_jump_back_title"
+        app:entries="@array/jump_back_entries"
+        app:entryValues="@array/jump_back_values"
+        app:defaultValue="@string/pref_jump_back_default_value"/>
+    <ListPreference
+        app:key="sleep_timer_preference"
+        app:title="@string/pref_sleep_timer_title"
+        app:entries="@array/sleep_timer_entries"
+        app:entryValues="@array/sleep_timer_values"
+        app:defaultValue="0"/>
+    <ListPreference
+        app:key="playback_speed_preference"
+        app:title="@string/pref_playback_speed_title"
+        app:entries="@array/playback_speed_entries"
+        app:entryValues="@array/playback_speed_values"
+        app:defaultValue="@string/pref_playback_speed_default_value"/>
+    <SwitchPreference
+        app:key="ff_rewind_sound_preference"
+        app:title="@string/pref_ff_rewind_sound"
+        app:summaryOn="@string/pref_ff_rewind_sound_summary_on"
+        app:summaryOff="@string/pref_ff_rewind_sound_summary_off"
+        app:defaultValue="true"/>
+</PreferenceScreen>

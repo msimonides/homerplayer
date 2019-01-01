@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        app:key="kiosk_mode_preference"
+        app:title="@string/pref_kiosk_mode_full_title"
+        app:defaultValue="false"/>
+    <SwitchPreference
+        app:key="simple_kiosk_mode_preference"
+        app:title="@string/pref_kiosk_mode_simple_title"
+        app:defaultValue="false"/>
+    <!--suppress AndroidElementNotAllowed -->
+    <com.studio4plus.homerplayer.ui.settings.ConfirmDialogPreference
+        app:key="unregister_device_owner_preference"
+        app:title="@string/pref_kiosk_mode_unregister_device_owner"
+        android:dialogTitle="@string/pref_kiosk_mode_unregister_device_owner_dialog_message"/>
+</PreferenceScreen>

@@ -3,6 +3,7 @@ package com.studio4plus.homerplayer.ui;
 import android.app.Activity;
 
 import com.studio4plus.homerplayer.ApplicationComponent;
+import com.studio4plus.homerplayer.ui.settings.SettingsActivity;
 
 import dagger.Component;
 

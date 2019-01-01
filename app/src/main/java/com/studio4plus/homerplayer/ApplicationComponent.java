@@ -18,7 +18,10 @@ import com.studio4plus.homerplayer.ui.classic.ClassicPlaybackUi;
 import com.studio4plus.homerplayer.ui.classic.FragmentBookItem;
 import com.studio4plus.homerplayer.ui.classic.ClassicBookList;
 import com.studio4plus.homerplayer.ui.classic.ClassicNoBooksUi;
-import com.studio4plus.homerplayer.ui.SettingsActivity;
+import com.studio4plus.homerplayer.ui.settings.KioskSettingsFragment;
+import com.studio4plus.homerplayer.ui.settings.MainSettingsFragment;
+import com.studio4plus.homerplayer.ui.settings.PlaybackSettingsFragment;
+import com.studio4plus.homerplayer.ui.settings.SettingsActivity;
 import com.studio4plus.homerplayer.ui.classic.FragmentPlayback;
 
 import javax.inject.Named;
@@ -31,18 +34,20 @@ import de.greenrobot.event.EventBus;
 @ApplicationScope
 @Component(modules = { ApplicationModule.class, AudioBookManagerModule.class, AudioBookPlayerModule.class })
 public interface ApplicationComponent {
-    void inject(FragmentBookItem fragment);
-    void inject(ClassicBookList fragment);
-    void inject(ClassicNoBooksUi fragment);
-    void inject(ClassicPlaybackUi playbackUi);
-    void inject(FragmentPlayback fragment);
-    void inject(ConfigurationContentProvider provider);
-    void inject(HomerPlayerApplication application);
-    void inject(SettingsActivity.SettingsFragment fragment);
     void inject(BatteryStatusProvider batteryStatusProvider);
     void inject(BatteryStatusIndicator batteryStatusIndicator);
     void inject(DemoSamplesInstallerService demoSamplesInstallerService);
+    void inject(ClassicBookList fragment);
+    void inject(ClassicNoBooksUi fragment);
+    void inject(ClassicPlaybackUi playbackUi);
+    void inject(ConfigurationContentProvider provider);
+    void inject(FragmentBookItem fragment);
+    void inject(FragmentPlayback fragment);
+    void inject(HomerPlayerApplication application);
+    void inject(KioskSettingsFragment fragment);
+    void inject(MainSettingsFragment fragment);
     void inject(PlaybackService playbackService);
+    void inject(PlaybackSettingsFragment fragment);
 
     Player createAudioBookPlayer();
     DemoSamplesInstaller createDemoSamplesInstaller();

@@ -27,7 +27,7 @@ public class GlobalSettings {
         }
     }
 
-    // TODO: figure out if these constants can somehow be shared with the keys in preferences.xml
+    // TODO: figure out if these constants can somehow be shared with the keys in xml files.
     public static final String KEY_KIOSK_MODE_SCREEN = "kiosk_mode_screen";
     public static final String KEY_KIOSK_MODE = "kiosk_mode_preference";
     public static final String KEY_SIMPLE_KIOSK_MODE = "simple_kiosk_mode_preference";

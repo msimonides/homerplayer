@@ -36,9 +36,8 @@
         </activity>
 
         <activity
-            android:name=".ui.SettingsActivity"
+            android:name=".ui.settings.SettingsActivity"
             android:label="@string/settings_title"
-            android:theme="@style/SettingsTheme"
             android:excludeFromRecents="true">
         </activity>
 

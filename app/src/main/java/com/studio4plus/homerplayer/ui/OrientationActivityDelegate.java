@@ -13,7 +13,7 @@ public class OrientationActivityDelegate
     private final Activity activity;
     private final GlobalSettings globalSettings;
 
-    OrientationActivityDelegate(@NonNull Activity activity, GlobalSettings globalSettings) {
+    public OrientationActivityDelegate(@NonNull Activity activity, GlobalSettings globalSettings) {
         this.activity = activity;
         this.globalSettings = globalSettings;
     }
