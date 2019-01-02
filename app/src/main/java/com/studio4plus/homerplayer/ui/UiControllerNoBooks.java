@@ -1,7 +1,6 @@
 package com.studio4plus.homerplayer.ui;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -31,13 +31,13 @@ import de.greenrobot.event.EventBus;
 public class UiControllerNoBooks {
 
     public static class Factory {
-        private final @NonNull Activity activity;
+        private final @NonNull AppCompatActivity activity;
         private final @NonNull Uri samplesDownloadUrl;
         private final @NonNull EventBus eventBus;
         private final @NonNull AnalyticsTracker analyticsTracker;
 
         @Inject
-        public Factory(@NonNull Activity activity,
+        public Factory(@NonNull AppCompatActivity activity,
                        @NonNull @Named("SAMPLES_DOWNLOAD_URL") Uri samplesDownloadUrl,
                        @NonNull EventBus eventBus,
                        @NonNull AnalyticsTracker analyticsTracker) {
@@ -55,7 +55,7 @@ public class UiControllerNoBooks {
     private static final String TAG = "UiControllerBooks";
     static final int PERMISSION_REQUEST_DOWNLOADS = 100;
 
-    private final @NonNull Activity activity;
+    private final @NonNull AppCompatActivity activity;
     private final @NonNull NoBooksUi ui;
     private final @NonNull Uri samplesDownloadUrl;
     private final @NonNull EventBus eventBus;
@@ -63,7 +63,7 @@ public class UiControllerNoBooks {
 
     private @Nullable DownloadProgressReceiver progressReceiver;
 
-    private UiControllerNoBooks(@NonNull Activity activity,
+    private UiControllerNoBooks(@NonNull AppCompatActivity activity,
                                 @NonNull NoBooksUi ui,
                                 @NonNull Uri samplesDownloadUrl,
                                 @NonNull EventBus eventBus,

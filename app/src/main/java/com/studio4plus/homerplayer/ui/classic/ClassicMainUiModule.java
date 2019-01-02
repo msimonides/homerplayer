@@ -1,6 +1,6 @@
 package com.studio4plus.homerplayer.ui.classic;
 
-import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
 
 import com.studio4plus.homerplayer.ui.MainActivity;
 import com.studio4plus.homerplayer.ui.MainUi;
@@ -19,7 +19,7 @@ public class ClassicMainUiModule {
     }
 
     @Provides @ActivityScope
-    MainUi mainUi(Activity activity) {
+    MainUi mainUi(AppCompatActivity activity) {
         return new ClassicMainUi(activity);
     }
 

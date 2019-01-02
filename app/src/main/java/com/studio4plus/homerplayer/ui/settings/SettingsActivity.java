@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.Preference;
@@ -103,7 +102,9 @@ public class SettingsActivity
         final Fragment fragment;
         try {
             // TODO: use FragmentFactory when updating to androidx.
-            Class<Fragment> fragmentClass = (Class<Fragment>) Class.forName(pref.getFragment(), true, getClassLoader());
+            Class<? extends Fragment> fragmentClass =
+                    Class.forName(pref.getFragment(), true, getClassLoader())
+                            .asSubclass(Fragment.class);
             Preconditions.checkState(
                     BaseSettingsFragment.class.isAssignableFrom(fragmentClass));
             fragment = fragmentClass.newInstance();
@@ -148,12 +149,9 @@ public class SettingsActivity
     private void blockEventsOnStart() {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-        unblockEventsTask = new Runnable() {
-            @Override
-            public void run() {
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                unblockEventsTask = null;
-            }
+        unblockEventsTask = () -> {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            unblockEventsTask = null;
         };
         mainThreadHandler.postDelayed(unblockEventsTask, BLOCK_TIME_MS);
     }

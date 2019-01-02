@@ -1,7 +1,6 @@
 package com.studio4plus.homerplayer.ui;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -32,7 +32,7 @@ import de.greenrobot.event.EventBus;
 
 public class UiControllerMain implements ServiceConnection {
 
-    private final @NonNull Activity activity;
+    private final @NonNull AppCompatActivity activity;
     private final @NonNull MainUi mainUi;
     private final @NonNull AudioBookManager audioBookManager;
     private final @NonNull EventBus eventBus;
@@ -49,7 +49,7 @@ public class UiControllerMain implements ServiceConnection {
     private @NonNull State currentState = new InitState();
 
     @Inject
-    UiControllerMain(@NonNull Activity activity,
+    UiControllerMain(@NonNull AppCompatActivity activity,
                      @NonNull MainUi mainUi,
                      @NonNull AudioBookManager audioBookManager,
                      @NonNull EventBus eventBus,

@@ -1,7 +1,6 @@
 package com.studio4plus.homerplayer.ui.classic;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,34 +39,24 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater,
+            @NonNull LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_no_books, container, false);
         ApplicationComponent component = HomerPlayerApplication.getComponent(view.getContext());
         component.inject(this);
 
-        TextView noBooksPath = (TextView) view.findViewById(R.id.noBooksPath);
+        TextView noBooksPath = view.findViewById(R.id.noBooksPath);
         String directoryMessage =
                 getString(R.string.copyBooksInstructionMessage, audioBooksDirectoryName);
         noBooksPath.setText(Html.fromHtml(directoryMessage));
 
-        Button downloadSamplesButton = (Button) view.findViewById(R.id.downloadSamplesButton);
-        downloadSamplesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                controller.startSamplesInstallation();
-            }
-        });
+        Button downloadSamplesButton = view.findViewById(R.id.downloadSamplesButton);
+        downloadSamplesButton.setOnClickListener(v -> controller.startSamplesInstallation());
 
         final Context context = view.getContext();
         view.setOnTouchListener(new MultitapTouchListener(
-                context, new MultitapTouchListener.Listener() {
-            @Override
-            public void onMultiTap() {
-                startActivity(new Intent(context, SettingsActivity.class));
-            }
-        }));
+                context, () -> startActivity(new Intent(context, SettingsActivity.class))));
 
         return view;
     }
@@ -160,13 +150,10 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
             progressDialog.setButton(
                     DialogInterface.BUTTON_NEGATIVE,
                     context.getString(android.R.string.cancel),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Note: the dialog will dismiss itself even if the controller doesn't
-                            // abort the installation.
-                            controller.abortSamplesInstallation();
-                        }
+                    (dialog, which) -> {
+                        // Note: the dialog will dismiss itself even if the controller doesn't
+                        // abort the installation.
+                        controller.abortSamplesInstallation();
                     });
             return progressDialog;
         }

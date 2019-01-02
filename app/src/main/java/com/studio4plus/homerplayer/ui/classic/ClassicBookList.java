@@ -1,13 +1,14 @@
 package com.studio4plus.homerplayer.ui.classic;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,15 +40,16 @@ public class ClassicBookList extends Fragment implements BookListUi {
     @Inject public AnalyticsTracker analyticsTracker;
     @Inject public GlobalSettings globalSettings;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(
-            LayoutInflater inflater,
+            @NonNull LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_book_list, container, false);
         HomerPlayerApplication.getComponent(view.getContext()).inject(this);
 
-        bookPager = (ViewPager) view.findViewById(R.id.bookListPager);
+        bookPager = view.findViewById(R.id.bookListPager);
         bookPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             int currentViewIndex;
             String currentBookId;
@@ -75,12 +77,7 @@ public class ClassicBookList extends Fragment implements BookListUi {
 
         final Context context = view.getContext();
         bookPager.setOnTouchListener(new MultitapTouchListener(
-                context, new MultitapTouchListener.Listener() {
-                    @Override
-                    public void onMultiTap() {
-                        startActivity(new Intent(context, SettingsActivity.class));
-                    }
-                }));
+                context, () -> startActivity(new Intent(context, SettingsActivity.class))));
 
         return view;
     }
@@ -126,8 +123,8 @@ public class ClassicBookList extends Fragment implements BookListUi {
     }
 
     private boolean isAnyHintVisible() {
-        ViewStub browseHintStub = (ViewStub)view.findViewById(R.id.browseHintOverlayStub);
-        ViewStub settingsHintStub = (ViewStub) view.findViewById(R.id.settingsHintOverlayStub);
+        ViewStub browseHintStub = view.findViewById(R.id.browseHintOverlayStub);
+        ViewStub settingsHintStub = view.findViewById(R.id.settingsHintOverlayStub);
         return  browseHintStub == null || settingsHintStub == null;
     }
 

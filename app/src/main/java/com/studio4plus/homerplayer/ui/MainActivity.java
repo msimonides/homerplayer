@@ -87,11 +87,12 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
 
     @Override
     protected void onStart() {
+        super.onStart();
+        // onStart must be called before the UI controller can manipulate fragments.
         controller.onActivityStart();
         orientationDelegate.onStart();
         batteryStatusProvider.start();
         kioskModeHandler.onActivityStart();
-        super.onStart();
         handleIntent(getIntent());
     }
 

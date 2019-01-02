@@ -2,13 +2,13 @@ package com.studio4plus.homerplayer.ui.classic;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
-import android.app.Fragment;
+import android.annotation.SuppressLint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -49,25 +49,23 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
 
     @Inject public GlobalSettings globalSettings;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(
-            LayoutInflater inflater,
+            @NonNull LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_playback, container, false);
         HomerPlayerApplication.getComponent(view.getContext()).inject(this);
 
-        stopButton = (Button) view.findViewById(R.id.stopButton);
-        stopButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Preconditions.checkNotNull(controller);
-                controller.stopPlayback();
-            }
+        stopButton = view.findViewById(R.id.stopButton);
+        stopButton.setOnClickListener(v -> {
+            Preconditions.checkNotNull(controller);
+            controller.stopPlayback();
         });
 
-        elapsedTimeView = (TextView) view.findViewById(R.id.elapsedTime);
-        elapsedTimeRewindFFView = (TextView) view.findViewById(R.id.elapsedTimeRewindFF);
+        elapsedTimeView = view.findViewById(R.id.elapsedTime);
+        elapsedTimeRewindFFView = view.findViewById(R.id.elapsedTimeRewindFF);
 
         elapsedTimeView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -85,8 +83,8 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
             }
         });
 
-        rewindButton = (ImageButton) view.findViewById(R.id.rewindButton);
-        ffButton = (ImageButton) view.findViewById(R.id.fastForwardButton);
+        rewindButton = view.findViewById(R.id.rewindButton);
+        ffButton = view.findViewById(R.id.fastForwardButton);
 
         View rewindFFOverlay = view.findViewById(R.id.rewindFFOverlay);
         rewindFFHandler = new RewindFFHandler(
@@ -94,12 +92,9 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
         rewindButton.setEnabled(false);
         ffButton.setEnabled(false);
 
-        rewindFFOverlay.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // Don't let any events "through" the overlay.
-                return true;
-            }
+        rewindFFOverlay.setOnTouchListener((v, event) -> {
+            // Don't let any events "through" the overlay.
+            return true;
         });
 
         elapsedTimeRewindFFViewAnimation =
@@ -109,6 +104,7 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
         return view;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onResume() {
         super.onResume();
@@ -117,6 +113,7 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
         showHintIfNecessary();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onPause() {
         // Remove press-release detectors and tell rewindFFHandler directly that we're paused.
