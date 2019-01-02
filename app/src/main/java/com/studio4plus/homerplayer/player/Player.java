@@ -80,7 +80,8 @@ public class Player {
     }
 
     private class PlaybackControllerImpl
-            implements com.google.android.exoplayer2.Player.EventListener, PlaybackController {
+            extends com.google.android.exoplayer2.Player.DefaultEventListener
+            implements PlaybackController {
 
         private File currentFile;
         private Observer observer;
@@ -202,7 +203,8 @@ public class Player {
     }
 
     private class DurationQueryControllerImpl
-            implements com.google.android.exoplayer2.Player.EventListener, DurationQueryController {
+            extends com.google.android.exoplayer2.Player.DefaultEventListener
+            implements DurationQueryController {
 
         private final Iterator<File> iterator;
         private File currentFile;
