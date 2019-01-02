@@ -47,6 +47,7 @@ public class UiControllerMain implements ServiceConnection {
     private @Nullable PlaybackService playbackService;
 
     private @NonNull State currentState = new InitState();
+    private boolean isRunning = false;
 
     @Inject
     UiControllerMain(@NonNull AppCompatActivity activity,
@@ -76,11 +77,16 @@ public class UiControllerMain implements ServiceConnection {
     void onActivityStart() {
         Crashlytics.log(Log.DEBUG, TAG,"activity start");
         scanAudioBookFiles();
+    }
+
+    void onActivityResumeFragments() {
+        isRunning = true;
         maybeSetInitialState();
     }
 
     void onActivityPause() {
         currentState.onActivityPause();
+        isRunning = false;
     }
 
     void onActivityStop() {
@@ -193,7 +199,7 @@ public class UiControllerMain implements ServiceConnection {
 
     private void  maybeSetInitialState() {
         if (currentState instanceof InitState && playbackService != null &&
-                audioBookManager.isInitialized()) {
+                audioBookManager.isInitialized() && isRunning) {
 
             if (playbackService.getState() != PlaybackService.State.IDLE) {
                 Preconditions.checkState(hasAnyBooks());
@@ -215,6 +221,10 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     private void changeState(StateFactory newStateFactory) {
+        Preconditions.checkState(isRunning,
+                "attempt to switch state from " + currentState.debugName() + " to "
+                        + newStateFactory.name() + " while activity is paused");
+
         Crashlytics.log(Log.DEBUG, TAG, "UI: leave state: " + currentState.debugName());
         currentState.onLeaveState();
         Crashlytics.log(Log.DEBUG, TAG,"UI: create state: " + newStateFactory.name());

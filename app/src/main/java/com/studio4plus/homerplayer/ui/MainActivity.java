@@ -96,6 +96,12 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
         handleIntent(getIntent());
     }
 
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+        controller.onActivityResumeFragments();
+    }
+
     @SuppressLint("MissingSuperCall")
     @Override
     protected void onSaveInstanceState(Bundle outState) {
