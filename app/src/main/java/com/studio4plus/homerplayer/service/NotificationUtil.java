@@ -45,7 +45,7 @@ public class NotificationUtil {
             NotificationChannel channel = new NotificationChannel(
                     PLAYBACK_SERVICE_CHANNEL_ID,
                     context.getString(R.string.notificationChannelPlayback),
-                    NotificationManager.IMPORTANCE_HIGH);
+                    NotificationManager.IMPORTANCE_LOW);
             manager.createNotificationChannel(channel);
         }
     }
