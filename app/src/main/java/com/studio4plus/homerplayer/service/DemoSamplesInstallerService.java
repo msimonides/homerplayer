@@ -298,6 +298,9 @@ public class DemoSamplesInstallerService extends Service {
 
             OutputStream output = new BufferedOutputStream(new FileOutputStream(tmpFile));
             HttpsURLConnection connection = (HttpsURLConnection) downloadUrl.openConnection();
+            // Disable gzip, apparently Java and/or Android's okhttp has problems with it
+            // (possibly https://bugs.java.com/bugdatabase/view_bug.do?bug_id=7003462).
+            connection.setRequestProperty("accept-encoding", "identity");
             enableTlsOnAndroid4(connection);
             InputStream input = new BufferedInputStream(connection.getInputStream());
 
