@@ -115,8 +115,11 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
 
     @Override
     protected void onPause() {
-        controller.onActivityPause();
+        // Call super.onPause() first. It may, among other things, call onResumeFragments(), so
+        // calling super.onPause() before controller.onActivityPause() is necessary to ensure that
+        // controller.onActivityResumeFragments() is called in the right order.
         super.onPause();
+        controller.onActivityPause();
     }
 
     @Override
