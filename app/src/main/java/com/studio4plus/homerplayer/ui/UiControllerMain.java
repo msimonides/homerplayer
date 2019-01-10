@@ -75,7 +75,7 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     void onActivityStart() {
-        Crashlytics.log(Log.DEBUG, TAG,"activity start");
+        Crashlytics.log(Log.DEBUG, TAG,"UI: onActivityStart");
         scanAudioBookFiles();
     }
 
@@ -85,6 +85,7 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     void onActivityPause() {
+        Crashlytics.log(Log.DEBUG, TAG, "UI: onActivityPause, state: " + currentState.debugName());
         currentState.onActivityPause();
         isRunning = false;
     }
@@ -221,9 +222,8 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     private void changeState(StateFactory newStateFactory) {
-        Preconditions.checkState(isRunning,
-                "attempt to switch state from " + currentState.debugName() + " to "
-                        + newStateFactory.name() + " while activity is paused");
+        if (!isRunning)
+            Crashlytics.log(Log.DEBUG, TAG, "UI(!): changing state while activity is paused");
 
         Crashlytics.log(Log.DEBUG, TAG, "UI: leave state: " + currentState.debugName());
         currentState.onLeaveState();

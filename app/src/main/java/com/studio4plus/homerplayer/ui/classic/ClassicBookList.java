@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
+import com.crashlytics.android.Crashlytics;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
@@ -103,6 +104,7 @@ public class ClassicBookList extends Fragment implements BookListUi {
     @Override
     public void onResume() {
         super.onResume();
+        Crashlytics.log("UI: ClassicBookList fragment resumed");
         showHintsIfNecessary();
     }
 

@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.ApplicationComponent;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
@@ -64,6 +65,12 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
     @Override
     public void initWithController(@NonNull UiControllerNoBooks controller) {
         this.controller = controller;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Crashlytics.log("UI: ClassicNoBooks fragment resumed");
     }
 
     @Override
