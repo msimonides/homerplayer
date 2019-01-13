@@ -21,6 +21,10 @@
     public void onEvent*(**);
 }
 
+# Settings fragments that are referenced with the app:fragment property on preferences
+# are not recognized by ProGuard as being used and are removed. Keep them.
+-keep class com.studio4plus.homerplayer.ui.settings.**
+
 # Guava
 -dontwarn sun.misc.Unsafe
 ## https://github.com/google/guava/issues/2926#issuecomment-325455128
