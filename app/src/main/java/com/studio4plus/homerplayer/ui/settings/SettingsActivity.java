@@ -13,7 +13,6 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
@@ -99,28 +98,18 @@ public class SettingsActivity
     public boolean onPreferenceStartFragment(PreferenceFragmentCompat caller, Preference pref) {
         // Instantiate the new Fragment
         final Bundle args = pref.getExtras();
-        final Fragment fragment;
-        try {
-            // TODO: use FragmentFactory when updating to androidx.
-            Class<? extends Fragment> fragmentClass =
-                    Class.forName(pref.getFragment(), true, getClassLoader())
-                            .asSubclass(Fragment.class);
-            Preconditions.checkState(
-                    BaseSettingsFragment.class.isAssignableFrom(fragmentClass));
-            fragment = fragmentClass.newInstance();
+        final Fragment fragment = getSupportFragmentManager().getFragmentFactory().instantiate(
+                getClassLoader(), pref.getFragment(), args);
+        Preconditions.checkState(fragment instanceof BaseSettingsFragment);
 
-            fragment.setArguments(args);
-            fragment.setTargetFragment(caller, 0);
-            // Replace the existing Fragment with the new Fragment
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.settings_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
-            return true;
-        } catch (Exception e) {
-            Crashlytics.logException(e);
-            return false;
-        }
+        fragment.setArguments(args);
+        fragment.setTargetFragment(caller, 0);
+        // Replace the existing Fragment with the new Fragment
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.settings_container, fragment)
+                .addToBackStack(null)
+                .commit();
+        return true;
     }
 
     @Override
