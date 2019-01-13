@@ -5,12 +5,12 @@ import android.content.Context;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Handler;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;

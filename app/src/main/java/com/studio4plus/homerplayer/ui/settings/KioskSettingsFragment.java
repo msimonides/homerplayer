@@ -5,9 +5,9 @@ import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v14.preference.SwitchPreference;
-import android.support.v7.preference.Preference;
+import androidx.annotation.NonNull;
+import androidx.preference.SwitchPreference;
+import androidx.preference.Preference;
 
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;

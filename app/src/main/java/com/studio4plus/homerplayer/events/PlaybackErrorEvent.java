@@ -1,6 +1,6 @@
 package com.studio4plus.homerplayer.events;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 public class PlaybackErrorEvent {
     @NonNull

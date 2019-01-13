@@ -3,8 +3,8 @@ package com.studio4plus.homerplayer.ui.settings;
 import android.annotation.TargetApi;
 import android.content.Context;
 
-import android.support.annotation.Nullable;
-import android.support.v7.preference.DialogPreference;
+import androidx.annotation.Nullable;
+import androidx.preference.DialogPreference;
 import android.util.AttributeSet;
 
 import com.studio4plus.homerplayer.R;

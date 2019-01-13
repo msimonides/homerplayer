@@ -2,25 +2,16 @@ package com.studio4plus.homerplayer;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
-import com.flurry.android.FlurryAgent;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.ui.HomeActivity;
-import com.studio4plus.homerplayer.util.VersionUtil;
 import com.studio4plus.homerplayer.service.NotificationUtil;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import javax.inject.Inject;
 

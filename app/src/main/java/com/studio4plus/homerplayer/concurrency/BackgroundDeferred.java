@@ -1,7 +1,7 @@
 package com.studio4plus.homerplayer.concurrency;
 
 import android.os.Handler;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.concurrent.Callable;
 

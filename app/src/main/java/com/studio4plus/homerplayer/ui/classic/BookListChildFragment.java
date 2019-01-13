@@ -2,7 +2,7 @@ package com.studio4plus.homerplayer.ui.classic;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 import com.studio4plus.homerplayer.R;
 

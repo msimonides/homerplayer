@@ -1,6 +1,6 @@
 package com.studio4plus.homerplayer.ui;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.View;
 

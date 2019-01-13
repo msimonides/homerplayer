@@ -1,9 +1,6 @@
 package com.studio4plus.homerplayer.ui;
 
-import android.support.annotation.NonNull;
-
-import com.google.common.base.Preconditions;
-import com.studio4plus.homerplayer.model.AudioBook;
+import androidx.annotation.NonNull;
 
 public interface PlaybackUi {
 

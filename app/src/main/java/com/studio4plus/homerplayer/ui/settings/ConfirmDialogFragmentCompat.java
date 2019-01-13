@@ -1,8 +1,8 @@
 package com.studio4plus.homerplayer.ui.settings;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.preference.PreferenceDialogFragmentCompat;
+import androidx.annotation.NonNull;
+import androidx.preference.PreferenceDialogFragmentCompat;
 
 public class ConfirmDialogFragmentCompat extends PreferenceDialogFragmentCompat {
 

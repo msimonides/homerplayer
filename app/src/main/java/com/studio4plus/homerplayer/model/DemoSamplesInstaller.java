@@ -2,8 +2,8 @@ package com.studio4plus.homerplayer.model;
 
 import android.content.Context;
 import android.media.MediaScannerConnection;
-import android.support.annotation.MainThread;
-import android.support.annotation.WorkerThread;
+import androidx.annotation.MainThread;
+import androidx.annotation.WorkerThread;
 
 import com.crashlytics.android.Crashlytics;
 import com.github.saturngod.Decompress;

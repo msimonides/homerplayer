@@ -2,8 +2,8 @@ package com.studio4plus.homerplayer.analytics;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.flurry.android.FlurryAgent;
 import com.studio4plus.homerplayer.util.VersionUtil;

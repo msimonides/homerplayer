@@ -1,6 +1,6 @@
 package com.studio4plus.homerplayer.concurrency;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 public class SimpleDeferred<V> extends BaseDeferred<V> {
 

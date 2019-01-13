@@ -1,7 +1,7 @@
 package com.studio4plus.homerplayer.ui;
 
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.studio4plus.homerplayer.GlobalSettings;
 

@@ -1,6 +1,6 @@
 package com.studio4plus.homerplayer.ui;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.studio4plus.homerplayer.concurrency.SimpleFuture;
 

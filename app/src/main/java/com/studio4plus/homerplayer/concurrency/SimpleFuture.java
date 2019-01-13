@@ -1,6 +1,6 @@
 package com.studio4plus.homerplayer.concurrency;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * A very simple future that has listeners for notifying when the result is available.

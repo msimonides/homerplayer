@@ -1,6 +1,6 @@
 package com.studio4plus.homerplayer.events;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class DemoSamplesInstallationFinishedEvent {
 

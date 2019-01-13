@@ -2,8 +2,8 @@ package com.studio4plus.homerplayer.model;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.MainThread;
-import android.support.annotation.NonNull;
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 
 import com.crashlytics.android.Crashlytics;
 import com.studio4plus.homerplayer.ApplicationScope;

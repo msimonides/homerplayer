@@ -3,7 +3,7 @@ package com.studio4plus.homerplayer.ui;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.studio4plus.homerplayer.GlobalSettings;
 

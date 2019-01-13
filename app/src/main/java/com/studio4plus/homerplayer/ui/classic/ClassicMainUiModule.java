@@ -1,6 +1,6 @@
 package com.studio4plus.homerplayer.ui.classic;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.studio4plus.homerplayer.ui.MainActivity;
 import com.studio4plus.homerplayer.ui.MainUi;
