@@ -2,20 +2,23 @@
 <resources>
 
     <style name="buttonStartOverlay" parent="ThemeOverlay.AppCompat">
-        <item name="colorAccent">@color/buttonStartBackground</item>
-        <item name="colorButtonNormal">@color/buttonStartBackground</item>
+        <item name="android:textColor">?attr/buttonStartTextColor</item>
+        <item name="colorAccent">?attr/buttonStartBackground</item>
+        <item name="colorButtonNormal">?attr/buttonStartBackground</item>
         <item name="android:paddingLeft">@dimen/buttonPaddingHoriz</item>
         <item name="android:paddingRight">@dimen/buttonPaddingHoriz</item>
     </style>
 
     <style name="buttonStopOverlay" parent="ThemeOverlay.AppCompat">
-        <item name="colorAccent">@color/buttonStopBackground</item>
-        <item name="colorButtonNormal">@color/buttonStopBackground</item>
+        <item name="android:textColor">?attr/buttonStopTextColor</item>
+        <item name="colorAccent">?attr/buttonStopBackground</item>
+        <item name="colorButtonNormal">?attr/buttonStopBackground</item>
     </style>
 
     <style name="buttonFFRewindOverlay" parent="ThemeOverlay.AppCompat">
-        <item name="colorButtonNormal">@color/buttonFFRewindBackground</item>
-        <item name="colorAccent">@color/buttonFFRewindBackground</item>
+        <item name="android:textColor">?attr/buttonFFRewindTextColor</item>
+        <item name="colorButtonNormal">?attr/buttonFFRewindBackground</item>
+        <item name="colorAccent">?attr/buttonFFRewindBackground</item>
     </style>
 
 </resources>

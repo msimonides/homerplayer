@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="color_theme_entries">
+        <item>Standardowy</item>
+        <item>Wysoki kontrast</item>
+    </string-array>
     <string-array name="screen_orientation_entries">
         <item>Pozioma, automatyczne obracanie</item>
         <item>Zablokowana poziomo</item>

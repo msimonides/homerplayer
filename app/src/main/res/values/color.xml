@@ -1,10 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="buttonStartBackground">#ff008800</color>
-    <color name="buttonStartPressedBackground">#ff33aa33</color>
-    <color name="buttonStopBackground">#ffbb2200</color>
-    <color name="buttonStopPressedBackground">#ffdd5544</color>
-    <color name="buttonFFRewindBackground">#2f459c</color>
-    <color name="ffRewindFillBackground">@color/buttonFFRewindBackground</color>
     <color name="transparent">#00000000</color>
+
+    <color name="classicPlaybackTextColor">#ffffff</color>
+    <color name="classicPlaybackBackground">#008856</color>
+    <color name="classicButtonStartTextColor">#ffffffff</color>
+    <color name="classicButtonStartBackground">#ff008800</color>
+    <color name="classicButtonStartPressedBackground">#ff33aa33</color>
+    <color name="classicButtonStopTextColor">#ffffffff</color>
+    <color name="classicButtonStopBackground">#ffbb2200</color>
+    <color name="classicButtonStopPressedBackground">#ffdd5544</color>
+    <color name="classicButtonFFRewindTextColor">#ffffffff</color>
+    <color name="classicButtonFFRewindBackground">#2f459c</color>
+    <color name="classicFfRewindFillBackground">@color/classicButtonFFRewindBackground</color>
+
+    <color name="bookVividYellow">#ffb300</color>
+    <color name="bookStrongPurple">#803e75</color>
+    <color name="bookVividOrange">#ff6800</color>
+    <color name="bookVeryLightBlue">#a6bdd7</color>
+    <color name="bookVividRed">#c10020</color>
+    <color name="bookGreyishYellow">#cea262</color>
+    <color name="bookMediumGrey">#817066</color>
+
+    <color name="highContrastPlaybackTextColor">#ffffff</color>
+    <color name="highContrastPlaybackBackground">#000000</color>
+    <color name="highContrastButtonStartTextColor">#000000</color>
+    <color name="highContrastButtonStartBackground">#56FB1F</color>
+    <color name="highContrastButtonStartPressedBackground">#4BE418</color>
+    <color name="highContrastButtonStopTextColor">#ffffff</color>
+    <color name="highContrastButtonStopBackground">#FF6740</color>
+    <color name="highContrastButtonStopPressedBackground">#E05835</color>
+    <color name="highContrastButtonFFRewindTextColor">#ffffff</color>
+    <color name="highContrastButtonFFRewindBackground">#0C7BDC</color>
+    <color name="highContrastFfRewindFillBackground">@color/highContrastButtonFFRewindBackground</color>
 </resources>

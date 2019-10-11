@@ -54,18 +54,21 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
     private final static long SUPPRESSED_BACK_MESSAGE_DELAY_NANO = TimeUnit.SECONDS.toNanos(2);
     private long lastSuppressedBackTimeNano = 0;
 
+    @Nullable
+    private ColorTheme currentTheme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
-
         mainUiComponent = DaggerClassicMainUiComponent.builder()
                 .applicationComponent(HomerPlayerApplication.getComponent(this))
                 .activityModule(new ActivityModule(this))
                 .classicMainUiModule(new ClassicMainUiModule(this))
                 .build();
         mainUiComponent.inject(this);
+
+        setTheme(globalSettings.colorTheme());
+        setContentView(R.layout.main_activity);
 
         controller.onActivityCreated();
 
@@ -94,6 +97,16 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
         batteryStatusProvider.start();
         kioskModeHandler.onActivityStart();
         handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ColorTheme theme = globalSettings.colorTheme();
+        if (currentTheme != theme) {
+            setTheme(theme);
+            recreate();
+        }
     }
 
     @Override
@@ -241,5 +254,10 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
                 }
             }
         }
+    }
+
+    private void setTheme(@NonNull ColorTheme theme) {
+        currentTheme = theme;
+        setTheme(theme.styleId);
     }
 }

@@ -5,7 +5,10 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 
+import androidx.annotation.NonNull;
+
 import com.studio4plus.homerplayer.model.LibraryContentType;
+import com.studio4plus.homerplayer.ui.ColorTheme;
 
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +31,7 @@ public class GlobalSettings {
     }
 
     // TODO: figure out if these constants can somehow be shared with the keys in xml files.
+    public static final String KEY_COLOR_THEME = "color_theme";
     public static final String KEY_KIOSK_MODE_SCREEN = "kiosk_mode_screen";
     public static final String KEY_KIOSK_MODE = "kiosk_mode_preference";
     public static final String KEY_SIMPLE_KIOSK_MODE = "simple_kiosk_mode_preference";
@@ -151,5 +155,16 @@ public class GlobalSettings {
 
     public boolean isFFRewindSoundEnabled() {
         return sharedPreferences.getBoolean(KEY_FF_REWIND_SOUND, true);
+    }
+
+    @NonNull
+    public ColorTheme colorTheme() {
+        String colorThemeName = sharedPreferences.getString(
+                KEY_COLOR_THEME, resources.getString(R.string.pref_color_theme_default_value));
+        try {
+            return ColorTheme.valueOf(colorThemeName);
+        } catch (IllegalArgumentException illegalArgument) {
+            return ColorTheme.valueOf(resources.getString(R.string.pref_color_theme_default_value));
+        }
     }
 }

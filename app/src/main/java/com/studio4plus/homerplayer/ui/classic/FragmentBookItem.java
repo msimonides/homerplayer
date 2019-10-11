@@ -1,9 +1,13 @@
 package com.studio4plus.homerplayer.ui.classic;
 
 import android.os.Bundle;
+
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.text.Html;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,10 +51,12 @@ public class FragmentBookItem extends BookListChildFragment {
         final String bookId = args.getString(ARG_BOOK_ID);
         if (bookId != null) {
             AudioBook book = audioBookManager.getById(bookId);
-            TextView textView = (TextView) view.findViewById(R.id.title);
+            TextView textView = view.findViewById(R.id.title);
             textView.setText(book.getTitle());
-            textView.setTextColor(book.getColourScheme().textColour);
-            view.setBackgroundColor(book.getColourScheme().backgroundColour);
+
+            @ColorInt int textColour = getColor(book.getColourScheme().textColourAttrId);
+            textView.setTextColor(textColour);
+            view.setBackgroundColor(getColor(book.getColourScheme().backgroundColorAttrId));
 
             if (book.isDemoSample()) {
                 TextView copyBooksInstruction =
@@ -58,7 +64,7 @@ public class FragmentBookItem extends BookListChildFragment {
                 String directoryMessage =
                         getString(R.string.copyBooksInstructionMessage, audioBooksDirectoryName);
                 copyBooksInstruction.setText(Html.fromHtml(directoryMessage));
-                copyBooksInstruction.setTextColor(book.getColourScheme().textColour);
+                copyBooksInstruction.setTextColor(textColour);
                 copyBooksInstruction.setVisibility(View.VISIBLE);
             }
 
@@ -82,6 +88,13 @@ public class FragmentBookItem extends BookListChildFragment {
 
     void setController(@NonNull UiControllerBookList controller) {
         this.controller = controller;
+    }
+
+    @ColorInt
+    private int getColor(@AttrRes int attributeId) {
+        TypedValue value = new TypedValue();
+        getContext().getTheme().resolveAttribute(attributeId, value, true);
+        return getResources().getColor(value.resourceId);
     }
 
     private static final String ARG_BOOK_ID = "bookId";

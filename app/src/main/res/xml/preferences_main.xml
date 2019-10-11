@@ -12,6 +12,12 @@
         app:entries="@array/screen_orientation_entries"
         app:entryValues="@array/screen_orientation_values"
         app:defaultValue="@string/pref_screen_orientation_default_value"/>
+    <ListPreference
+        app:key="color_theme"
+        app:title="@string/pref_color_theme_title"
+        app:entries="@array/color_theme_entries"
+        app:entryValues="@array/color_theme_values"
+        app:defaultValue="@string/pref_color_theme_default_value"/>
     <PreferenceScreen
         app:key="kiosk_mode_screen"
         app:title="@string/pref_kiosk_mode_screen_title"

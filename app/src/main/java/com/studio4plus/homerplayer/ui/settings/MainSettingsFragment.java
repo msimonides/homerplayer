@@ -56,6 +56,7 @@ public class MainSettingsFragment extends BaseSettingsFragment {
         super.onStart();
 
         SharedPreferences sharedPreferences = getSharedPreferences();
+        updateColorThemeSummary(sharedPreferences);
         updateKioskModeSummary();
         updateScreenOrientationSummary(sharedPreferences);
     }
@@ -68,6 +69,9 @@ public class MainSettingsFragment extends BaseSettingsFragment {
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         switch(key) {
+            case GlobalSettings.KEY_COLOR_THEME:
+                updateColorThemeSummary(sharedPreferences);
+                break;
             case GlobalSettings.KEY_SCREEN_ORIENTATION:
                 updateScreenOrientationSummary(sharedPreferences);
                 break;
@@ -81,6 +85,13 @@ public class MainSettingsFragment extends BaseSettingsFragment {
     private void updateVersionSummary() {
         Preference preference = findPreference(KEY_VERSION);
         preference.setSummary(BuildConfig.VERSION_NAME);
+    }
+
+    private void updateColorThemeSummary(@NonNull SharedPreferences sharedPreferences) {
+        updateListPreferenceSummary(
+                sharedPreferences,
+                GlobalSettings.KEY_COLOR_THEME,
+                R.string.pref_color_theme_default_value);
     }
 
     private void updateScreenOrientationSummary(@NonNull SharedPreferences sharedPreferences) {

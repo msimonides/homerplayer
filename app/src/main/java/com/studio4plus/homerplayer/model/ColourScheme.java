@@ -1,5 +1,9 @@
 package com.studio4plus.homerplayer.model;
 
+import androidx.annotation.AttrRes;
+
+import com.studio4plus.homerplayer.R;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -8,20 +12,22 @@ import java.util.Random;
 // See https://eleanormaclure.files.wordpress.com/2011/03/colour-coding.pdf
 // More documents on color summarised here: http://stackoverflow.com/a/4382138/3892517
 public enum ColourScheme {
-    VIVID_YELLOW(0xFFFFB300, 0xFF000000),
-    STRONG_PURPLE(0xFF803E75, 0xFFFFFFFF),
-    VIVID_ORANGE(0xFFFF6800, 0xFF000000),
-    VERY_LIGHT_BLUE(0xFFA6BDD7, 0xFF000000),
-    VIVID_RED(0xFFC10020, 0xFFFFFFFF),
-    GREYISH_YELLOW(0xFFCEA262, 0xFF000000),
-    MEDIUM_GREY(0xFF817066, 0xFFFFFFFF);
+    VIVID_YELLOW(R.attr.bookVividYellowBackground, R.attr.bookVividYellowTextColor),
+    STRONG_PURPLE(R.attr.bookStrongPurpleBackground, R.attr.bookStrongPurpleTextColor),
+    VIVID_ORANGE(R.attr.bookVividOrangeBackground, R.attr.bookVividOrangeTextColor),
+    VERY_LIGHT_BLUE(R.attr.bookVeryLightBlueBackground, R.attr.bookVeryLightBlueTextColor),
+    VIVID_RED(R.attr.bookVividRedBackground, R.attr.bookVividRedTextColor),
+    GREYISH_YELLOW(R.attr.bookGreyishYellowBackground, R.attr.bookGreyishYellowTextColor),
+    MEDIUM_GREY(R.attr.bookMediumGreyBackground, R.attr.bookMediumGreyTextColor);
 
-    public final int backgroundColour;
-    public final int textColour;
+    @AttrRes
+    public final int backgroundColorAttrId;
+    @AttrRes
+    public final int textColourAttrId;
 
-    ColourScheme(int backgroundColour, int textColour) {
-        this.backgroundColour = backgroundColour;
-        this.textColour = textColour;
+    ColourScheme(@AttrRes int backgroundColourAttrId, @AttrRes int textColourAttrId) {
+        this.backgroundColorAttrId = backgroundColourAttrId;
+        this.textColourAttrId = textColourAttrId;
     }
 
     private static Random random;

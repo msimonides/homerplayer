@@ -20,7 +20,7 @@
                       android:anyDensity="true"/>
 
     <application android:allowBackup="true" android:label="@string/app_name"
-        android:icon="@mipmap/ic_launcher" android:theme="@style/AppTheme"
+        android:icon="@mipmap/ic_launcher" android:theme="@style/AppThemeClassic"
         android:name=".HomerPlayerApplication"
         tools:ignore="GoogleAppIndexingWarning">
 

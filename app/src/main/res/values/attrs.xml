@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="playbackTextColor" format="reference"/>
+    <attr name="playbackBackground" format="reference"/>
+    <attr name="buttonStartTextColor" format="reference"/>
+    <attr name="buttonStartBackground" format="reference"/>
+    <attr name="buttonStartPressedBackground" format="reference"/>
+    <attr name="buttonStopTextColor" format="reference"/>
+    <attr name="buttonStopBackground" format="reference"/>
+    <attr name="buttonStopPressedBackground" format="reference"/>
+    <attr name="buttonFFRewindTextColor" format="reference"/>
+    <attr name="buttonFFRewindBackground" format="reference"/>
+    <attr name="ffRewindFillBackground" format="reference"/>
+
+    <attr name="bookVividYellowBackground" format="reference"/>
+    <attr name="bookVividYellowTextColor" format="reference"/>
+    <attr name="bookStrongPurpleBackground" format="reference"/>
+    <attr name="bookStrongPurpleTextColor" format="reference"/>
+    <attr name="bookVividOrangeBackground" format="reference"/>
+    <attr name="bookVividOrangeTextColor" format="reference"/>
+    <attr name="bookVeryLightBlueBackground" format="reference"/>
+    <attr name="bookVeryLightBlueTextColor" format="reference"/>
+    <attr name="bookVividRedBackground" format="reference"/>
+    <attr name="bookVividRedTextColor" format="reference"/>
+    <attr name="bookGreyishYellowBackground" format="reference"/>
+    <attr name="bookGreyishYellowTextColor" format="reference"/>
+    <attr name="bookMediumGreyBackground" format="reference"/>
+    <attr name="bookMediumGreyTextColor" format="reference"/>
+</resources>

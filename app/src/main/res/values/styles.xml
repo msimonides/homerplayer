@@ -1,15 +1,72 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppTheme.Base" parent="Theme.AppCompat.NoActionBar">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+    </style>
+
+    <style name="AppThemeClassic" parent="AppTheme.Base">
+        <item name="playbackTextColor">@color/classicPlaybackTextColor</item>
+        <item name="playbackBackground">@color/classicPlaybackBackground</item>
+        <item name="buttonStartTextColor">@color/classicButtonStartTextColor</item>
+        <item name="buttonStartBackground">@color/classicButtonStartBackground</item>
+        <item name="buttonStartPressedBackground">@color/classicButtonStartPressedBackground</item>
+        <item name="buttonStopTextColor">@color/classicButtonStopTextColor</item>
+        <item name="buttonStopBackground">@color/classicButtonStopBackground</item>
+        <item name="buttonStopPressedBackground">@color/classicButtonStopPressedBackground</item>
+        <item name="buttonFFRewindTextColor">@color/classicButtonFFRewindTextColor</item>
+        <item name="buttonFFRewindBackground">@color/classicButtonFFRewindBackground</item>
+        <item name="ffRewindFillBackground">@color/classicFfRewindFillBackground</item>
+
+        <item name="bookVividYellowBackground">@color/bookVividYellow</item>
+        <item name="bookVividYellowTextColor">@android:color/black</item>
+        <item name="bookStrongPurpleBackground">@color/bookStrongPurple</item>
+        <item name="bookStrongPurpleTextColor">@android:color/white</item>
+        <item name="bookVividOrangeBackground">@color/bookVividOrange</item>
+        <item name="bookVividOrangeTextColor">@android:color/black</item>
+        <item name="bookVeryLightBlueBackground">@color/bookVeryLightBlue</item>
+        <item name="bookVeryLightBlueTextColor">@android:color/black</item>
+        <item name="bookVividRedBackground">@color/bookVividRed</item>
+        <item name="bookVividRedTextColor">@android:color/white</item>
+        <item name="bookGreyishYellowBackground">@color/bookGreyishYellow</item>
+        <item name="bookGreyishYellowTextColor">@android:color/black</item>
+        <item name="bookMediumGreyBackground">@color/bookMediumGrey</item>
+        <item name="bookMediumGreyTextColor">@android:color/white</item>
+    </style>
+
+    <style name="AppThemeHighContrast" parent="AppTheme.Base">
+        <item name="playbackTextColor">@color/highContrastPlaybackTextColor</item>
+        <item name="playbackBackground">@color/highContrastPlaybackBackground</item>
+        <item name="buttonStartTextColor">@color/highContrastButtonStartTextColor</item>
+        <item name="buttonStartBackground">@color/highContrastButtonStartBackground</item>
+        <item name="buttonStartPressedBackground">@color/highContrastButtonStartPressedBackground</item>
+        <item name="buttonStopTextColor">@color/highContrastButtonStopTextColor</item>
+        <item name="buttonStopBackground">@color/highContrastButtonStopBackground</item>
+        <item name="buttonStopPressedBackground">@color/highContrastButtonStopPressedBackground</item>
+        <item name="buttonFFRewindTextColor">@color/highContrastButtonFFRewindTextColor</item>
+        <item name="buttonFFRewindBackground">@color/highContrastButtonFFRewindBackground</item>
+        <item name="ffRewindFillBackground">@color/highContrastFfRewindFillBackground</item>
+
+        <item name="bookVividYellowBackground">@android:color/black</item>
+        <item name="bookVividYellowTextColor">@android:color/white</item>
+        <item name="bookStrongPurpleBackground">@android:color/black</item>
+        <item name="bookStrongPurpleTextColor">@android:color/white</item>
+        <item name="bookVividOrangeBackground">@android:color/black</item>
+        <item name="bookVividOrangeTextColor">@android:color/white</item>
+        <item name="bookVeryLightBlueBackground">@android:color/black</item>
+        <item name="bookVeryLightBlueTextColor">@android:color/white</item>
+        <item name="bookVividRedBackground">@android:color/black</item>
+        <item name="bookVividRedTextColor">@android:color/white</item>
+        <item name="bookGreyishYellowBackground">@android:color/black</item>
+        <item name="bookGreyishYellowTextColor">@android:color/white</item>
+        <item name="bookMediumGreyBackground">@android:color/black</item>
+        <item name="bookMediumGreyTextColor">@android:color/white</item>
     </style>
 
     <style name="buttonStartStop" parent="ThemeOverlay.AppCompat">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">#ffffffff</item>
         <item name="android:textSize">@dimen/bookListTextSize</item>
     </style>
 

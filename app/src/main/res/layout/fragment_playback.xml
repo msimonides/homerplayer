@@ -9,7 +9,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#008856"
+        android:background="?attr/playbackBackground"
         android:paddingBottom="@dimen/bookListItemPaddingVertical"
         android:paddingLeft="@dimen/bookListItemPaddingHoriz"
         android:paddingRight="@dimen/bookListItemPaddingHoriz">
@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             android:layout_above="@+id/buttons"
             android:gravity="center"
-            android:textColor="#ffffff"
+            android:textColor="?attr/playbackTextColor"
             android:textSize="@dimen/bookElapsedTimeTextSize"
             tools:text="00:13:10" />
 
@@ -91,13 +91,13 @@
         android:id="@+id/rewindFFOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/ffRewindFillBackground"
+        android:background="?attr/ffRewindFillBackground"
         android:visibility="gone">
 
         <!-- The text view is positioned to match the elapsedTime position -->
         <TextView
             android:id="@+id/elapsedTimeRewindFF"
-            android:textColor="#ffffff"
+            android:textColor="?attr/playbackTextColor"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textSize="@dimen/bookElapsedTimeTextSize"

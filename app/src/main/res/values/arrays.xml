@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="color_theme_entries">
+        <item>Regular</item>
+        <item>High-contrast</item>
+    </string-array>
+    <string-array name="color_theme_values" translatale="false">
+        <item>CLASSIC_REGULAR</item>
+        <item>CLASSIC_HIGH_CONTRAST</item>
+    </string-array>
     <string-array name="jump_back_entries" translatable="false">
         <item>@string/pref_jump_back_entry_disabled</item>
         <item>5s</item>
