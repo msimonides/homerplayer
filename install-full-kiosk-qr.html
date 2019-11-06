@@ -1,0 +1,112 @@
+---
+layout: page
+meta_title: "Homer Player: setting up full kiosk mode"
+title: "Make a Dedicated Player - Full Kiosk Mode"
+heading: "Making a Dedicated Player"
+header-img: img/header-install.jpg
+description: "Full kiosk mode setup for Android 7+"
+---
+<h2>Preparation</h2>
+
+<p>
+You will need:
+
+<ol>
+<li>A tablet or smartphone running Android 7+ equipped with a camera (there
+are separate <a href="install-full-kiosk-adb.html">instructions for older
+Android versions</a>).
+<li>WiFi Internet connection (for the tablet).
+</ol>
+
+<h3>Important</h3>
+
+<p>
+The functionality needed for these installation steps, "QR provisioning", is
+part of Android 7, however there are devices on which it doesn't work.
+</p>
+<p>
+There is some limited information about availability of QR provisioning on
+specific devices:
+
+<ul>
+  <li><a
+  href="https://bayton.org/docs/enterprise-mobility/android/android-enterprise-device-support/">Jason
+  Bayton has tested a number of devices</a>, look for your model and
+  "<span style="color: #229922; font-weight: bold">✓</span> QR provisioning".
+  <li>You can try googling the phrase (with the quotes):<br><em>
+    &lt;your-tablet-model&gt; "QR provisioning"</em>
+</ul>
+</p>
+
+<p>
+Please let me know what device you use if you succeed or fail so that I can
+compile a list of supported devices.
+</p>
+
+<h2>1. Factory reset</h2>
+
+<p>
+The device needs to be cleared to its factory state so that Homer Player can
+be installed as a priviliged app. This will allow it to activate the full kiosk
+mode.
+</p>
+
+<p class="additional-info info">
+<strong>Factory reset deletes all contacts, photos, music and other data from
+  the device.</strong>
+  <br>
+  Make sure you copy all the important data to other devices before proceeding.
+</p>
+
+<ol>
+  <li>Go to <strong>Settings</strong> &rarr; <strong>Backup &amp;
+    reset</strong>.
+  <li>Tap <strong>Factory data reset</strong> to reset the device.
+  <li>Reset will take a while. When it's finished <strong>do not start
+  configuring the device</strong>, see the next step.
+</ol>
+
+<h2>2. Device setup with Homer Player</h2>
+
+<p>
+When the factory reset process finishes you are presented with the device
+"Welcome" screen.
+</p>
+
+<ol>
+  <li>Tap the "Welcome" screen 6 times (somewhere not on a button).
+  <li>Follow the on-screen instructions to connect to the Internet and install
+  additional components.
+  <li>A camera app for scanning QR codes will show up.
+  <li>Point the camera at the QR code below to scan it.<br>
+  The code instructs the device to install Homer Player and make it a
+  priviliged app so that it can activate the full kiosk mode.
+  <li>Follow the on-screen instructions to finish installation of Homer Player.
+</ol>
+
+<img src="img/homer-player-device-owner-qrcode.png" class="img-responsive center-block" style="max-width: 10em">
+
+<p class="additional-info info">
+If tapping the "Welcome" screen doesn't have any effect it is likely your
+device doesn't support "QR provisioning".<br>
+Please e-mail me, I may be able to help.
+</p>
+
+<h2>3. Enable the full kiosk mode</h2>
+
+<p>
+Now you can enable and disable the full kiosk mode at will.
+
+<ol>
+<li>Start Homer Player.
+<li>Tap 5 times on the screen to enter settings.
+<li>Tap <strong>Prevent from exiting the application (kiosk mode)</strong>.
+<li>Enable <strong>Full mode...</strong>
+<li>Go back to leave the settings screen.
+</ol>
+
+<img class="img-responsive center-block" src="img/full-kiosk-mode.png">
+
+Now it's impossible to leave the player application (you can revert this by
+disabling the "Full mode..." option).
+</p>
