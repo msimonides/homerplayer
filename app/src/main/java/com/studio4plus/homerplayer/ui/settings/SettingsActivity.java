@@ -99,7 +99,7 @@ public class SettingsActivity
         // Instantiate the new Fragment
         final Bundle args = pref.getExtras();
         final Fragment fragment = getSupportFragmentManager().getFragmentFactory().instantiate(
-                getClassLoader(), pref.getFragment(), args);
+                getClassLoader(), pref.getFragment());
         Preconditions.checkState(fragment instanceof BaseSettingsFragment);
 
         fragment.setArguments(args);
