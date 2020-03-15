@@ -1,6 +1,6 @@
 package com.studio4plus.homerplayer.analytics;
 
-import android.content.Context;
+import androidx.annotation.NonNull;
 
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
@@ -13,6 +13,7 @@ import com.studio4plus.homerplayer.events.SettingsEnteredEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -35,6 +36,7 @@ public class AnalyticsTracker {
     private static final String FF_REWIND = "ffRewind";
     private static final String FF_REWIND_ABORTED = "ffRewindAborted";
     private static final String FF_REWIND_IS_FF_KEY = "isFf";
+    private static final String FF_REWIND_DURATION_KEY = "durationBucket";
     private static final String PERMISSION_RATIONALE_SHOWN = "permissionRationaleShown";
     private static final String PERMISSION_RATIONALE_REQUEST_KEY = "permissionRequest";
     private static final String PLAYBACK_ERROR = "playbackError";
@@ -46,22 +48,26 @@ public class AnalyticsTracker {
     private static final String SAMPLES_DOWNLOAD_SUCCESS = "samplesDownloadSuccess";
     private static final String SAMPLES_DOWNLOAD_FAILURE = "samplesDownloadFailure";
 
+    @NonNull
     private static final NavigableMap<Long, String> PLAYBACK_DURATION_BUCKETS = new TreeMap<>();
+    @NonNull
+    private static final NavigableMap<Long, String> REWIND_DURATION_BUCKETS = new TreeMap<>();
 
+    @NonNull
     private final GlobalSettings globalSettings;
+    @NonNull
     private final StatsLogger stats;
 
     private CurrentlyPlayed currentlyPlayed;
 
     @Inject
     public AnalyticsTracker(
-            Context context, GlobalSettings globalSettings, EventBus eventBus) {
+            @NonNull StatsLogger statsLogger,
+            @NonNull GlobalSettings globalSettings,
+            @NonNull EventBus eventBus) {
         this.globalSettings = globalSettings;
         eventBus.register(this);
-
-        // Not bothering with injecting the stats logger, at least until I need to add a debug
-        // implementation.
-        stats = new StatsLogger(context);
+        this.stats = statsLogger;
     }
 
     @SuppressWarnings("unused")
@@ -135,12 +141,13 @@ public class AnalyticsTracker {
         stats.logEvent(BOOK_LIST_DISPLAYED);
     }
 
-    public void onFfRewindStarted(boolean isFf) {
-        stats.logEvent(FF_REWIND, Collections.singletonMap(FF_REWIND_IS_FF_KEY, Boolean.toString(isFf)));
-    }
-
-    public void onFfRewindFinished(long elapsedWallTimeMs) {
-        stats.endTimedEvent(FF_REWIND);
+    public void onFfRewindFinished(boolean isFf, long elapsedWallTimeMs) {
+        Map.Entry<Long, String> durationBucket = REWIND_DURATION_BUCKETS.floorEntry(elapsedWallTimeMs);
+        durationBucket.getValue();
+        Map<String, String> params = new HashMap<>(2);
+        params.put(FF_REWIND_IS_FF_KEY, Boolean.toString(isFf));
+        params.put(FF_REWIND_DURATION_KEY, durationBucket.getValue());
+        stats.logEvent(FF_REWIND, params);
     }
 
     public void onFfRewindAborted() {
@@ -170,5 +177,9 @@ public class AnalyticsTracker {
         PLAYBACK_DURATION_BUCKETS.put(5 * 60L, "5 - 15m");
         PLAYBACK_DURATION_BUCKETS.put(15 * 60L, "15 - 30m");
         PLAYBACK_DURATION_BUCKETS.put(30 * 60L, "> 30m");
+        REWIND_DURATION_BUCKETS.put(TimeUnit.SECONDS.toMillis(0), "0 - 1s");
+        REWIND_DURATION_BUCKETS.put(TimeUnit.SECONDS.toMillis(1), "1 - 10s");
+        REWIND_DURATION_BUCKETS.put(TimeUnit.SECONDS.toMillis(10), "10 - 60s");
+        REWIND_DURATION_BUCKETS.put(TimeUnit.SECONDS.toMillis(60), "> 60s");
     }
 }

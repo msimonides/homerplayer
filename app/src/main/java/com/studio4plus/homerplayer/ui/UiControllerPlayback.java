@@ -116,12 +116,12 @@ public class UiControllerPlayback {
                 isForward,
                 timerObserver);
         ffRewindController.start();
-        analyticsTracker.onFfRewindStarted(isForward);
     }
 
     public void stopRewind() {
         if (ffRewindController != null) {
-            analyticsTracker.onFfRewindFinished(ffRewindController.getRewindWallTimeMs());
+            analyticsTracker.onFfRewindFinished(
+                    ffRewindController.isFF, ffRewindController.getRewindWallTimeMs());
             playbackService.getAudioBookBeingPlayed().updateTotalPosition(
                     ffRewindController.getDisplayTimeMs());
             ffRewindController.stop();
