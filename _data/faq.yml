@@ -14,6 +14,40 @@
         href="http://www.bluestacks.com">Bluestacks</a>.
         </p>
 
+    - question: Does the app work with Kindle Fire
+      answer: >
+        <h3>The short answer</h3>
+        <p>
+        Kindle Fire tablets are good to test the app, however they are not
+        well suited for making a dedicated Homer Player device.
+        </p>
+        <h3>The long answer:</h3>
+        <p>
+        Kindle Fire tablets are Android devices and as such should run all or
+        almost Android apps. So if you own a Kindle Fire and want to test
+        Homer Player, go ahead. Homer Player is not published in the Amazon
+        Appstore but you can download the newest APK installation package from
+        here: <a href="https://goo.gl/XJhKX7">https://goo.gl/XJhKX7</a>
+        </p>
+        <p>
+        However, while all the playback functions work fine, Kindle Fire
+        tablets have two limitations that make them unsuitable for making a
+        dedicated audiobook player:
+        </p>
+        <ul>
+        <li>the <a href="install-full-kiosk.html">full kiosk mode</a> is not
+        supported, only the simple kiosk mode is available,
+        <li>it isn't possible to disable the lock screen - even with all
+        security lock options disabled the user needs to swipe
+        the screen to use any apps.
+        </ul>
+        <p>These limitations may be acceptable to some users.</p>
+        <p>
+        <em>Ths information is based on a 5th generation Kindle 7 and might be
+        inaccurate for newer devices. Kindle Fires are not available where I
+        live so it's difficult to borrow a newer one for testing.</em>
+        </p>
+
     - question: Is it necessary for the user to have WiFi or Internet connection after installing the app?
       answer: >
         <p>
