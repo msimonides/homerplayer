@@ -1,1 +1,3 @@
 include ':app'
+include ':app:analytics-firebase'
+include ':app:analytics-noop'

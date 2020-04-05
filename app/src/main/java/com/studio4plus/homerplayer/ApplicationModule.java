@@ -9,14 +9,10 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.preference.PreferenceManager;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
-import com.studio4plus.homerplayer.analytics.DummyStatsLogger;
-import com.studio4plus.homerplayer.analytics.FirebaseStatsLogger;
 import com.studio4plus.homerplayer.analytics.StatsLogger;
 import com.studio4plus.homerplayer.concurrency.BackgroundExecutor;
 import com.studio4plus.homerplayer.ui.SoundBank;
-import com.studio4plus.homerplayer.util.VersionUtil;
 
 import java.util.Locale;
 
@@ -71,10 +67,7 @@ public class ApplicationModule {
 
     @Provides @Singleton
     StatsLogger provideStatsLogger(Context context) {
-        if (VersionUtil.isOfficialVersion())
-            return new FirebaseStatsLogger(FirebaseAnalytics.getInstance(context));
-        else
-            return new DummyStatsLogger();
+        return new StatsLogger(context);
     }
 
     @Provides @Singleton
