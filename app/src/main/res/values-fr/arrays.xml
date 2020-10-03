@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="color_theme_entries">
+        <item>Standard</item>
+        <item>Fort contraste</item>
+    </string-array>
+    <string-array name="screen_orientation_entries">
+        <item>Paysage, auto</item>
+        <item>Paysage vérouillé</item>
+        <item>Paysage inversé vérouillé</item>
+    </string-array>
+    <string-array name="playback_speed_entries">
+        <item>Très rapide</item>
+        <item>Rapide</item>
+        <item>Normale</item>
+        <item>Modérée</item>
+        <item>Lente</item>
+        <item>Très lente</item>
+    </string-array>
+</resources>
