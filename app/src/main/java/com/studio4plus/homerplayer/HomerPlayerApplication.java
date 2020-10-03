@@ -30,12 +30,11 @@ public class HomerPlayerApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        SampleMap sampleMap = new SampleMap();
         CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
         Fabric.with(this, new Crashlytics.Builder().core(core).build());
 
         component = DaggerApplicationComponent.builder()
-                .applicationModule(new ApplicationModule(this, sampleMap.getSamples(this)))
+                .applicationModule(new ApplicationModule(this))
                 .audioBookManagerModule(new AudioBookManagerModule(AUDIOBOOKS_DIRECTORY))
                 .build();
         component.inject(this);

@@ -27,11 +27,11 @@ import de.greenrobot.event.EventBus;
 public class ApplicationModule {
 
     private final Application application;
-    private final Uri samplesDownloadUrl;
+    private SamplesMap samplesMap;
 
-    public ApplicationModule(Application application, Uri samplesDownloadUrl) {
+    public ApplicationModule(Application application) {
         this.application = application;
-        this.samplesDownloadUrl = samplesDownloadUrl;
+        this.samplesMap = new SamplesMap();
     }
 
     @Provides @ApplicationScope
@@ -56,7 +56,7 @@ public class ApplicationModule {
 
     @Provides @Singleton @Named("SAMPLES_DOWNLOAD_URL")
     Uri provideSamplesUrl() {
-        return samplesDownloadUrl;
+        return this.samplesMap.getSamples(provideCurrentLocale(provideResources(application)).getLanguage());
     }
 
     @Provides
