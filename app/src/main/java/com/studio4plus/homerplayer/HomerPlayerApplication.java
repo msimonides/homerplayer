@@ -2,7 +2,6 @@ package com.studio4plus.homerplayer;
 
 import android.app.Application;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -20,8 +19,6 @@ import io.fabric.sdk.android.Fabric;
 public class HomerPlayerApplication extends Application {
 
     private static final String AUDIOBOOKS_DIRECTORY = "AudioBooks";
-    private static final String DEMO_SAMPLES_URL =
-            "https://homer-player.firebaseapp.com/samples.zip";
 
     private ApplicationComponent component;
     private MediaStoreUpdateObserver mediaStoreUpdateObserver;
@@ -33,11 +30,12 @@ public class HomerPlayerApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        SampleMap sampleMap = new SampleMap();
         CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
         Fabric.with(this, new Crashlytics.Builder().core(core).build());
 
         component = DaggerApplicationComponent.builder()
-                .applicationModule(new ApplicationModule(this, Uri.parse(DEMO_SAMPLES_URL)))
+                .applicationModule(new ApplicationModule(this, sampleMap.getSamples(this)))
                 .audioBookManagerModule(new AudioBookManagerModule(AUDIOBOOKS_DIRECTORY))
                 .build();
         component.inject(this);
