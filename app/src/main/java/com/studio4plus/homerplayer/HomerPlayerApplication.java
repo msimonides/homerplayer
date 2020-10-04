@@ -34,7 +34,7 @@ public class HomerPlayerApplication extends Application {
         Fabric.with(this, new Crashlytics.Builder().core(core).build());
 
         component = DaggerApplicationComponent.builder()
-                .applicationModule(new ApplicationModule(this))
+                .applicationModule(new ApplicationModule(this, new SamplesMap()))
                 .audioBookManagerModule(new AudioBookManagerModule(AUDIOBOOKS_DIRECTORY))
                 .build();
         component.inject(this);

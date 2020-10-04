@@ -29,9 +29,9 @@ public class ApplicationModule {
     private final Application application;
     private SamplesMap samplesMap;
 
-    public ApplicationModule(Application application) {
+    public ApplicationModule(Application application, SamplesMap samplesMap) {
         this.application = application;
-        this.samplesMap = new SamplesMap();
+        this.samplesMap = samplesMap;
     }
 
     @Provides @ApplicationScope
