@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -21,6 +22,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.Reusable;
 import de.greenrobot.event.EventBus;
 
 @Module
@@ -47,6 +49,11 @@ public class ApplicationModule {
     @Provides
     Locale provideCurrentLocale(Resources resources) {
         return resources.getConfiguration().locale;
+    }
+
+    @Provides @Reusable
+    AudioManager providerAudioManager(Context context) {
+        return (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
     }
 
     @Provides

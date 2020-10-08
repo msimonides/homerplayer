@@ -2,6 +2,7 @@ package com.studio4plus.homerplayer;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.media.AudioManager;
 import android.net.Uri;
 
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
@@ -54,6 +55,7 @@ public interface ApplicationComponent {
 
     AnalyticsTracker getAnalyticsTracker();
     AudioBookManager getAudioBookManager();
+    AudioManager getAudioManager();
     Context getContext();
     EventBus getEventBus();
     GlobalSettings getGlobalSettings();

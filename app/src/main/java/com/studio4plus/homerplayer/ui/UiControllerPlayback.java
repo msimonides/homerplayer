@@ -1,9 +1,12 @@
 package com.studio4plus.homerplayer.ui;
 
+import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.media.AudioManagerCompat;
+
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -27,22 +30,28 @@ public class UiControllerPlayback {
     static class Factory {
         private final @NonNull EventBus eventBus;
         private final @NonNull AnalyticsTracker analyticsTracker;
+        private final @NonNull AudioManager audioManager;
 
         @Inject
-        Factory(@NonNull EventBus eventBus, @NonNull AnalyticsTracker analyticsTracker) {
+        Factory(@NonNull EventBus eventBus,
+                @NonNull AnalyticsTracker analyticsTracker,
+                @NonNull AudioManager audioManager) {
             this.eventBus = eventBus;
             this.analyticsTracker = analyticsTracker;
+            this.audioManager = audioManager;
         }
 
         UiControllerPlayback create(
                 @NonNull PlaybackService playbackService, @NonNull PlaybackUi ui) {
-            return new UiControllerPlayback(eventBus, analyticsTracker, playbackService, ui);
+            return new UiControllerPlayback(
+                    eventBus, analyticsTracker, playbackService, audioManager, ui);
         }
     }
 
     private final @NonNull EventBus eventBus;
     private final @NonNull AnalyticsTracker analyticsTracker;
     private final @NonNull Handler mainHandler;
+    private final @NonNull AudioManager audioManager;
     private final @NonNull PlaybackService playbackService;
     private final @NonNull PlaybackUi ui;
 
@@ -50,11 +59,13 @@ public class UiControllerPlayback {
     private @Nullable FFRewindController ffRewindController;
 
     private UiControllerPlayback(@NonNull EventBus eventBus,
-                         @NonNull AnalyticsTracker analyticsTracker,
-                         @NonNull PlaybackService playbackService,
-                         @NonNull PlaybackUi playbackUi) {
+                                 @NonNull AnalyticsTracker analyticsTracker,
+                                 @NonNull PlaybackService playbackService,
+                                 @NonNull AudioManager audioManager,
+                                 @NonNull PlaybackUi playbackUi) {
         this.eventBus = eventBus;
         this.analyticsTracker = analyticsTracker;
+        this.audioManager = audioManager;
         this.playbackService = playbackService;
         this.ui = playbackUi;
         this.mainHandler = new Handler(Looper.getMainLooper());
@@ -129,6 +140,25 @@ public class UiControllerPlayback {
         } else {
             analyticsTracker.onFfRewindAborted();
         }
+    }
+
+    public void volumeUp() {
+        adjustVolume(AudioManager.ADJUST_RAISE);
+    }
+
+    public void volumeDown() {
+        adjustVolume(AudioManager.ADJUST_LOWER);
+    }
+
+    private void adjustVolume(int direction) {
+        int stream = AudioManager.STREAM_MUSIC;
+        audioManager.adjustStreamVolume(stream, direction, 0);
+        // TODO: once MediaSession is implemented, volume changes should be reported via its
+        //  VolumeProviderCompat.
+        ui.onVolumeChanged(
+                AudioManagerCompat.getStreamMinVolume(audioManager, stream),
+                AudioManagerCompat.getStreamMaxVolume(audioManager, stream),
+                audioManager.getStreamVolume(stream));
     }
 
     private static class FFRewindController implements FFRewindTimer.Observer {

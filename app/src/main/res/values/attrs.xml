@@ -10,7 +10,11 @@
     <attr name="buttonStopPressedBackground" format="reference"/>
     <attr name="buttonFFRewindTextColor" format="reference"/>
     <attr name="buttonFFRewindBackground" format="reference"/>
+    <attr name="buttonVolumeTextColor" format="color|reference"/>
+    <attr name="buttonVolumeBackground" format="color|reference"/>
     <attr name="ffRewindFillBackground" format="reference"/>
+    <attr name="volumeOverlayBackground" format="reference"/>
+
 
     <attr name="bookVividYellowBackground" format="reference"/>
     <attr name="bookVividYellowTextColor" format="reference"/>

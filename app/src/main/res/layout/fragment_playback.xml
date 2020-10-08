@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/playbackBackground"
@@ -18,74 +18,113 @@
             android:id="@+id/elapsedTime"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/buttons"
             android:gravity="center"
             android:textColor="?attr/playbackTextColor"
             android:textSize="@dimen/bookElapsedTimeTextSize"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             tools:text="00:13:10" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/buttons"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/stopButton"
+            style="@style/buttonStartStop"
+            android:theme="@style/buttonStopOverlay"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal"
-            tools:layout_editor_absoluteX="30dp"
-            tools:layout_editor_absoluteY="327dp">
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="@dimen/buttonDistanceHoriz"
+            android:layout_marginRight="@dimen/buttonDistanceHoriz"
+            android:maxLines="1"
+            android:text="@string/button_stop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_weight="1.5"
+            app:layout_constraintLeft_toRightOf="@+id/rewindButton"
+            app:layout_constraintRight_toLeftOf="@+id/fastForwardButton" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/stopButton"
-                style="@style/buttonStartStop"
-                android:theme="@style/buttonStopOverlay"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="0dp"
-                android:layout_marginLeft="@dimen/buttonDistanceHoriz"
-                android:layout_marginRight="@dimen/buttonDistanceHoriz"
-                android:maxLines="1"
-                android:text="@string/button_stop"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_weight="1.5"
-                app:layout_constraintLeft_toRightOf="@+id/rewindButton"
-                app:layout_constraintRight_toLeftOf="@+id/fastForwardButton" />
+        <ImageButton
+            android:id="@+id/fastForwardButton"
+            android:theme="@style/buttonFFRewindOverlay"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginRight="@dimen/buttonDistanceHoriz"
+            android:contentDescription="@string/button_acc_fastforward"
+            android:src="@drawable/ff"
+            app:layout_constraintBottom_toBottomOf="@+id/stopButton"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintLeft_toRightOf="@+id/stopButton"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/stopButton"
+            tools:ignore="RtlHardcoded"/>
 
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/fastForwardButton"
-                android:theme="@style/buttonFFRewindOverlay"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginBottom="0dp"
-                android:layout_marginTop="0dp"
-                android:layout_marginRight="@dimen/buttonDistanceHoriz"
-                android:contentDescription="@string/button_acc_fastforward"
-                android:src="@drawable/ff"
-                app:layout_constraintBottom_toBottomOf="@+id/stopButton"
-                app:layout_constraintHorizontal_weight="1"
-                app:layout_constraintLeft_toRightOf="@+id/stopButton"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/stopButton" />
+        <ImageButton
+            android:id="@+id/rewindButton"
+            android:theme="@style/buttonFFRewindOverlay"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginLeft="@dimen/buttonDistanceHoriz"
+            android:contentDescription="@string/button_acc_rewind"
+            android:src="@drawable/rewind"
+            app:layout_constraintBottom_toBottomOf="@+id/stopButton"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/stopButton"
+            app:layout_constraintTop_toTopOf="@+id/stopButton"
+            tools:ignore="RtlHardcoded" />
 
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/rewindButton"
-                android:theme="@style/buttonFFRewindOverlay"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginBottom="0dp"
-                android:layout_marginTop="0dp"
-                android:layout_marginLeft="@dimen/buttonDistanceHoriz"
-                android:contentDescription="@string/button_acc_rewind"
-                android:src="@drawable/rewind"
-                app:layout_constraintBottom_toBottomOf="@+id/stopButton"
-                app:layout_constraintHorizontal_weight="1"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@+id/stopButton"
-                app:layout_constraintTop_toTopOf="@+id/stopButton" />
+        <FrameLayout
+            android:id="@+id/volumeIndicatorOverlay"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:theme="@style/ThemeOverlay.VolumeChangeIndicator"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/volumeDown"
+            app:layout_constraintEnd_toStartOf="@id/volumeUp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintDimensionRatio="3:2"
+            android:background="?attr/volumeOverlayBackground"
+            android:alpha="0"
+            android:visibility="gone">
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.studio4plus.homerplayer.ui.classic.VolumeChangeIndicator
+                android:id="@+id/volumeIndicator"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="30dp"/>
+        </FrameLayout>
 
-    </RelativeLayout>
+        <Button
+            android:id="@+id/volumeDown"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:theme="@style/buttonVolumeOverlay"
+            android:textSize="@dimen/bookListTextSize"
+            android:text="-"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintWidth_percent="0.19" />
+
+        <Button
+            android:id="@+id/volumeUp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:theme="@style/buttonVolumeOverlay"
+            android:textSize="@dimen/bookListTextSize"
+            android:text="+"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintWidth_percent="0.19" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <RelativeLayout
         android:id="@+id/rewindFFOverlay"

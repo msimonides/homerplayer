@@ -21,4 +21,10 @@
         <item name="colorAccent">?attr/buttonFFRewindBackground</item>
     </style>
 
+    <style name="buttonVolumeOverlay" parent="ThemeOverlay.AppCompat">
+        <item name="android:textColor">?attr/buttonVolumeTextColor</item>
+        <item name="colorButtonNormal">?attr/buttonVolumeBackground</item>
+        <item name="colorAccent">?attr/buttonVolumeBackground</item>
+    </style>
+
 </resources>

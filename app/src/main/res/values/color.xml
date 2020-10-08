@@ -12,7 +12,10 @@
     <color name="classicButtonStopPressedBackground">#ffdd5544</color>
     <color name="classicButtonFFRewindTextColor">#ffffffff</color>
     <color name="classicButtonFFRewindBackground">#2f459c</color>
+    <color name="classicButtonVolumeTextColor">#ff000000</color>
+    <color name="classicButtonVolumeBackground">#ebeb0c</color>
     <color name="classicFfRewindFillBackground">@color/classicButtonFFRewindBackground</color>
+    <color name="classicVolumeOverlayBackground">#e0303030</color>
 
     <color name="bookVividYellow">#ffb300</color>
     <color name="bookStrongPurple">#803e75</color>
@@ -32,5 +35,8 @@
     <color name="highContrastButtonStopPressedBackground">#E05835</color>
     <color name="highContrastButtonFFRewindTextColor">#ffffff</color>
     <color name="highContrastButtonFFRewindBackground">#0C7BDC</color>
+    <color name="highContrastButtonVolumeTextColor">#ff000000</color>
+    <color name="highContrastButtonVolumeBackground">#ebeb0c</color>
     <color name="highContrastFfRewindFillBackground">@color/highContrastButtonFFRewindBackground</color>
+    <color name="highContrastVolumeOverlayBackground">#f0707070</color>
 </resources>
