@@ -6,18 +6,10 @@
         app:key="playback_options_screen"
         app:title="@string/pref_playback_options_screen_title"
         app:fragment="com.studio4plus.homerplayer.ui.settings.PlaybackSettingsFragment"/>
-    <ListPreference
-        app:key="screen_orientation_preference"
-        app:title="@string/pref_screen_orientation"
-        app:entries="@array/screen_orientation_entries"
-        app:entryValues="@array/screen_orientation_values"
-        app:defaultValue="@string/pref_screen_orientation_default_value"/>
-    <ListPreference
-        app:key="color_theme"
-        app:title="@string/pref_color_theme_title"
-        app:entries="@array/color_theme_entries"
-        app:entryValues="@array/color_theme_values"
-        app:defaultValue="@string/pref_color_theme_default_value"/>
+    <Preference
+        app:key="ui_options_screen"
+        app:title="@string/pref_ui_options_screen_title"
+        app:fragment="com.studio4plus.homerplayer.ui.settings.UiSettingsFragment"/>
     <PreferenceScreen
         app:key="kiosk_mode_screen"
         app:title="@string/pref_kiosk_mode_screen_title"

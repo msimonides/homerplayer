@@ -52,6 +52,7 @@
     <string name="pref_reset_all_book_progress">Przewiń wszystkie książki na początek…</string>
     <string name="pref_reset_all_book_progress_dialog_title">Przewinąć książki na początek?</string>
     <string name="pref_reset_all_book_progress_done">Książki przewinięte</string>
+    <string name="pref_ui_options_screen_title">Interfejs użytkownika…</string>
     <string name="pref_version_title">Wersja</string>
     <string name="button_acc_rewind">przewiń do tyłu</string>
     <string name="button_acc_fastforward">przewiń do przodu</string>

@@ -2,7 +2,6 @@ package com.studio4plus.homerplayer.ui.settings;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import android.widget.Toast;
 
@@ -56,9 +55,7 @@ public class MainSettingsFragment extends BaseSettingsFragment {
         super.onStart();
 
         SharedPreferences sharedPreferences = getSharedPreferences();
-        updateColorThemeSummary(sharedPreferences);
         updateKioskModeSummary();
-        updateScreenOrientationSummary(sharedPreferences);
     }
 
     @Override
@@ -69,12 +66,6 @@ public class MainSettingsFragment extends BaseSettingsFragment {
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         switch(key) {
-            case GlobalSettings.KEY_COLOR_THEME:
-                updateColorThemeSummary(sharedPreferences);
-                break;
-            case GlobalSettings.KEY_SCREEN_ORIENTATION:
-                updateScreenOrientationSummary(sharedPreferences);
-                break;
             case GlobalSettings.KEY_SIMPLE_KIOSK_MODE:
             case GlobalSettings.KEY_KIOSK_MODE:
                 updateKioskModeSummary();
@@ -85,20 +76,6 @@ public class MainSettingsFragment extends BaseSettingsFragment {
     private void updateVersionSummary() {
         Preference preference = findPreference(KEY_VERSION);
         preference.setSummary(BuildConfig.VERSION_NAME);
-    }
-
-    private void updateColorThemeSummary(@NonNull SharedPreferences sharedPreferences) {
-        updateListPreferenceSummary(
-                sharedPreferences,
-                GlobalSettings.KEY_COLOR_THEME,
-                R.string.pref_color_theme_default_value);
-    }
-
-    private void updateScreenOrientationSummary(@NonNull SharedPreferences sharedPreferences) {
-        updateListPreferenceSummary(
-                sharedPreferences,
-                GlobalSettings.KEY_SCREEN_ORIENTATION,
-                R.string.pref_screen_orientation_default_value);
     }
 
     private void updateKioskModeSummary() {
