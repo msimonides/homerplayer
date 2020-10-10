@@ -28,7 +28,7 @@ abstract class BaseSettingsFragment
         super.onStart();
         getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        final ActionBar actionBar = ((AppCompatActivity) requireActivity()).getSupportActionBar();
         Preconditions.checkNotNull(actionBar);
         actionBar.setTitle(getTitle());
 
@@ -57,8 +57,7 @@ abstract class BaseSettingsFragment
                                                @NonNull String key,
                                                int default_value_res_id) {
         String stringValue = sharedPreferences.getString(key, getString(default_value_res_id));
-        ListPreference preference =
-                (ListPreference) findPreference(key);
+        ListPreference preference = getPreference(key);
         int index = preference.findIndexOfValue(stringValue);
         if (index < 0)
             index = 0;
