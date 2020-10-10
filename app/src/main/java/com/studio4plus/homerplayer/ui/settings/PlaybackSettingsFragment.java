@@ -1,9 +1,11 @@
 package com.studio4plus.homerplayer.ui.settings;
 
-import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 
@@ -29,7 +31,7 @@ public class PlaybackSettingsFragment extends BaseSettingsFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        HomerPlayerApplication.getComponent(getActivity()).inject(this);
+        HomerPlayerApplication.getComponent(requireActivity()).inject(this);
         super.onCreate(savedInstanceState);
     }
 
@@ -37,17 +39,22 @@ public class PlaybackSettingsFragment extends BaseSettingsFragment {
     public void onCreatePreferences(Bundle bundle, String rootKey) {
         setPreferencesFromResource(R.xml.preferences_playback, rootKey);
 
-        findPreference(GlobalSettings.KEY_PLAYBACK_SPEED).setOnPreferenceClickListener(
+        getPreference(GlobalSettings.KEY_JUMP_BACK).setSummaryProvider(
+                new FormatStringListSummaryProvider(
+                        getResources(),
+                        R.string.pref_jump_back_entry_disabled,
+                        R.string.pref_jump_back_summary));
+        getPreference(GlobalSettings.KEY_SLEEP_TIMER).setSummaryProvider(
+                new FormatStringListSummaryProvider(
+                        getResources(),
+                        R.string.pref_sleep_timer_summary_disabled,
+                        R.string.pref_sleep_timer_summary));
+        getPreference(GlobalSettings.KEY_PLAYBACK_SPEED).setOnPreferenceClickListener(
                 preference -> {
                     if (snippetPlayer != null && !snippetPlayer.isPlaying())
                         playSnippet();
                     return false;
                 });
-
-        SharedPreferences sharedPreferences = getSharedPreferences();
-        updatePlaybackSpeedSummary(sharedPreferences);
-        updateJumpBackSummary(sharedPreferences);
-        updateSleepTimerSummary();
     }
 
     @Override
@@ -56,55 +63,6 @@ public class PlaybackSettingsFragment extends BaseSettingsFragment {
         if (snippetPlayer != null) {
             snippetPlayer.stop();
             snippetPlayer = null;
-        }
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        // TODO: use summary updaters when updating to androix.
-        switch(key) {
-            case GlobalSettings.KEY_JUMP_BACK:
-                updateJumpBackSummary(sharedPreferences);
-                break;
-            case GlobalSettings.KEY_SLEEP_TIMER:
-                updateSleepTimerSummary();
-                break;
-            case GlobalSettings.KEY_PLAYBACK_SPEED:
-                updatePlaybackSpeedSummary(sharedPreferences);
-                playSnippet();
-                break;
-        }
-    }
-
-    private void updatePlaybackSpeedSummary(@NonNull SharedPreferences sharedPreferences) {
-        updateListPreferenceSummary(
-                sharedPreferences,
-                GlobalSettings.KEY_PLAYBACK_SPEED,
-                R.string.pref_playback_speed_default_value);
-    }
-
-    private void updateJumpBackSummary(@NonNull SharedPreferences sharedPreferences) {
-        String stringValue = sharedPreferences.getString(
-                GlobalSettings.KEY_JUMP_BACK, getString(R.string.pref_jump_back_default_value));
-        int value = Integer.parseInt(stringValue);
-        Preference preference = findPreference(GlobalSettings.KEY_JUMP_BACK);
-        if (value == 0) {
-            preference.setSummary(R.string.pref_jump_back_entry_disabled);
-        } else {
-            preference.setSummary(String.format(
-                    getString(R.string.pref_jump_back_summary), value));
-        }
-    }
-
-    private void updateSleepTimerSummary() {
-        ListPreference preference = (ListPreference) findPreference(GlobalSettings.KEY_SLEEP_TIMER);
-        int index = preference.findIndexOfValue(preference.getValue());
-        if (index == 0) {
-            preference.setSummary(getString(R.string.pref_sleep_timer_summary_disabled));
-        } else {
-            CharSequence entry = preference.getEntries()[index];
-            preference.setSummary(String.format(
-                    getString(R.string.pref_sleep_timer_summary), entry));
         }
     }
 
@@ -125,5 +83,33 @@ public class PlaybackSettingsFragment extends BaseSettingsFragment {
     @Override
     protected int getTitle() {
         return R.string.pref_playback_options_screen_title;
+    }
+
+    private static class FormatStringListSummaryProvider
+            implements Preference.SummaryProvider<ListPreference> {
+
+        @NonNull
+        private final Resources resources;
+        @StringRes
+        private final int stringDisabled;
+        @StringRes
+        private final int stringValue;
+
+        private FormatStringListSummaryProvider(@NonNull Resources resources, int stringDisabled, int stringValue) {
+            this.resources = resources;
+            this.stringDisabled = stringDisabled;
+            this.stringValue = stringValue;
+        }
+
+        @Override
+        public CharSequence provideSummary(ListPreference preference) {
+            int index = preference.findIndexOfValue(preference.getValue());
+            if (index == 0) {
+                return resources.getString(stringDisabled);
+            } else {
+                CharSequence entry = preference.getEntries()[index];
+                return resources.getString(stringValue, entry);
+            }
+        }
     }
 }

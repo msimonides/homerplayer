@@ -9,6 +9,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.ListPreference;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import android.widget.Toast;
@@ -37,6 +38,11 @@ abstract class BaseSettingsFragment
     public void onStop() {
         getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         super.onStop();
+    }
+
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     }
 
     @NonNull
@@ -70,5 +76,12 @@ abstract class BaseSettingsFragment
             Toast.makeText(getView().getContext(),
                     R.string.pref_no_browser_toast, Toast.LENGTH_LONG).show();
         }
+    }
+
+    @NonNull
+    protected <T extends Preference> T getPreference(@NonNull CharSequence key) {
+        T preference = findPreference(key);
+        Preconditions.checkNotNull(preference);
+        return preference;
     }
 }
