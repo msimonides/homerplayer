@@ -61,6 +61,9 @@
     <string name="pref_reset_all_book_progress_done">Book progress reset</string>
     <string name="pref_ui_options_screen_title">User interface…</string>
     <string name="pref_version_title">Version</string>
+    <string name="pref_volume_controls">Volume controls on playback screen</string>
+    <string name="pref_volume_controls_summary_on">Enabled</string>
+    <string name="pref_volume_controls_summary_off">Disabled</string>
     <string name="playback_elapsed_time" translatable="false">%1$2d:%2$02d:%3$02d</string>
     <string name="button_acc_rewind">rewind</string>
     <string name="button_acc_fastforward">fast-forward</string>

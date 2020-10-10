@@ -40,6 +40,7 @@ public class GlobalSettings {
     public static final String KEY_SCREEN_ORIENTATION = "screen_orientation_preference";
     public static final String KEY_FF_REWIND_SOUND = "ff_rewind_sound_preference";
     public static final String KEY_PLAYBACK_SPEED = "playback_speed_preference";
+    public static final String KEY_VOLUME_CONTROLS = "volume_controls_preference";
 
     private static final String KEY_BROWSING_HINT_SHOWN = "hints.browsing_hint_shown";
     private static final String KEY_SETTINGS_HINT_SHOWN = "hints.settings.hint_shown";
@@ -155,6 +156,10 @@ public class GlobalSettings {
 
     public boolean isFFRewindSoundEnabled() {
         return sharedPreferences.getBoolean(KEY_FF_REWIND_SOUND, true);
+    }
+
+    public boolean isVolumeControlEnabled() {
+        return sharedPreferences.getBoolean(KEY_VOLUME_CONTROLS, true);
     }
 
     @NonNull

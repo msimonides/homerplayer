@@ -88,18 +88,25 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
 
         // Don't let any events "through" overlays.
         View.OnTouchListener capturingListener = (v, event) -> true;
-        view.findViewById(R.id.volumeUp).setOnClickListener((v) -> {
-            Preconditions.checkNotNull(controller);
-            controller.volumeUp();
-        });
-        view.findViewById(R.id.volumeDown).setOnClickListener((v) -> {
-            Preconditions.checkNotNull(controller);
-            controller.volumeDown();
-        });
-        View volumeIndicatorOverlay = view.findViewById(R.id.volumeIndicatorOverlay);
-        volumeIndicatorOverlay.setOnTouchListener(capturingListener);
-        volumeIndicatorShowController = new VolumeIndicatorShowController(volumeIndicatorOverlay);
-        volumeIndicator = view.findViewById(R.id.volumeIndicator);
+        View volumeUp = view.findViewById(R.id.volumeUp);
+        View volumeDown = view.findViewById(R.id.volumeDown);
+        if (globalSettings.isVolumeControlEnabled()) {
+            volumeUp.setOnClickListener((v) -> {
+                Preconditions.checkNotNull(controller);
+                controller.volumeUp();
+            });
+            volumeDown.setOnClickListener((v) -> {
+                Preconditions.checkNotNull(controller);
+                controller.volumeDown();
+            });
+            View volumeIndicatorOverlay = view.findViewById(R.id.volumeIndicatorOverlay);
+            volumeIndicatorOverlay.setOnTouchListener(capturingListener);
+            volumeIndicatorShowController = new VolumeIndicatorShowController(volumeIndicatorOverlay);
+            volumeIndicator = view.findViewById(R.id.volumeIndicator);
+        } else {
+            volumeUp.setVisibility(View.GONE);
+            volumeDown.setVisibility(View.GONE);
+        }
 
         rewindButton = view.findViewById(R.id.rewindButton);
         ffButton = view.findViewById(R.id.fastForwardButton);
