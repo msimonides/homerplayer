@@ -23,7 +23,7 @@ import java.util.concurrent.Callable;
 
 public class ScanFilesTask implements Callable<List<FileSet>> {
 
-    private static final String[] SUPPORTED_SUFFIXES = {".mp3", ".m4a", ".ogg", ".m4a", ".m4b"};
+    private static final String[] SUPPORTED_SUFFIXES = { ".m4a", ".m4b", ".mp3", ".ogg" };
 
     private final @NonNull Context applicationContext;
     private final @NonNull String audioBooksDirectoryName;
