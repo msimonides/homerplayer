@@ -48,6 +48,7 @@ public class GlobalSettings {
 
     private static final String KEY_BOOKS_EVER_INSTALLED = "action_history.books_ever_installed";
     private static final String KEY_SETTINGS_EVER_ENTERED = "action_history.settings_ever_entered";
+    private static final String KEY_LAST_STARTED_VERSION_CODE = "last_version_code";
 
     private final Resources resources;
     private final SharedPreferences sharedPreferences;
@@ -160,6 +161,18 @@ public class GlobalSettings {
 
     public boolean isVolumeControlEnabled() {
         return sharedPreferences.getBoolean(KEY_VOLUME_CONTROLS, true);
+    }
+
+    public void setVolumeControlsEnabled(boolean isEnabled) {
+        sharedPreferences.edit().putBoolean(KEY_VOLUME_CONTROLS, isEnabled).apply();
+    }
+
+    public long lastVersionCode() {
+        return sharedPreferences.getLong(KEY_LAST_STARTED_VERSION_CODE, 0L);
+    }
+
+    public void setLastVersionCode(long versionCode) {
+        sharedPreferences.edit().putLong(KEY_LAST_STARTED_VERSION_CODE, versionCode).apply();
     }
 
     @NonNull
