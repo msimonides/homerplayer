@@ -21,3 +21,10 @@ allprojects {
         jcenter()
     }
 }
+
+ext {
+    compileSdkVersion = 28
+    targetSdkVersion = 28
+    version_appcompat = "1.2.0"
+    version_firebase_bom = "25.12.0"
+}

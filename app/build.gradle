@@ -28,7 +28,7 @@ def getVersionName = { ->
 android {
     useLibrary 'org.apache.http.legacy'
 
-    compileSdkVersion 28
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -38,7 +38,7 @@ android {
     defaultConfig {
         applicationId "com.studio4plus.homerplayer"
         minSdkVersion 17
-        targetSdkVersion 28
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 55
         versionName getVersionName()
     }
@@ -68,7 +68,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'de.greenrobot:eventbus:2.4.1'
 
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation "androidx.appcompat:appcompat:${rootProject.ext.version_appcompat}"
     implementation 'androidx.media:media:1.2.0'
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
