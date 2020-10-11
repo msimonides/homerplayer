@@ -10,5 +10,5 @@ import dagger.Component;
 @ActivityScope
 @Component(dependencies = ApplicationComponent.class,
         modules ={ActivityModule.class, ClassicMainUiModule.class})
-interface ClassicMainUiComponent extends MainUiComponent {
+public interface ClassicMainUiComponent extends MainUiComponent {
 }

@@ -68,10 +68,10 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'de.greenrobot:eventbus:2.4.1'
 
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.media:media:1.2.0'
-    implementation 'androidx.preference:preference:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta4'
+    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
 
     implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') { transitive = true }
@@ -80,7 +80,7 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-core:2.10.8'
 
     implementation 'com.google.dagger:dagger:2.24'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.15'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.24'
     compileOnly 'org.glassfish:javax.annotation:10.0-b28'
 
     implementation 'com.github.ozodrukh:CircularReveal:2.0.1@aar'
