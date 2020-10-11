@@ -6,9 +6,9 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Build;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,7 +85,7 @@ public class SoundBank {
 
             return new Sound(track, frameCount, sampleRate);
         } catch (IOException e) {
-            Crashlytics.logException(e);
+            CrashReporting.logException(e);
             return null;
         }
     }

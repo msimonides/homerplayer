@@ -5,9 +5,9 @@ import android.media.MediaScannerConnection;
 import androidx.annotation.MainThread;
 import androidx.annotation.WorkerThread;
 
-import com.crashlytics.android.Crashlytics;
 import com.github.saturngod.Decompress;
 import com.google.common.io.Files;
+import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.filescanner.FileScanner;
 
 import org.json.JSONException;
@@ -110,7 +110,7 @@ public class DemoSamplesInstaller {
             return true;
         } catch(IOException exception) {
             deleteFolderWithFiles(bookDirectory);
-            Crashlytics.logException(exception);
+            CrashReporting.logException(exception);
             return false;
         }
     }
@@ -127,7 +127,7 @@ public class DemoSamplesInstaller {
 
             return localizedTitle;
         } catch(IOException | JSONException | ClassCastException exception) {
-            Crashlytics.logException(exception);
+            CrashReporting.logException(exception);
             return null;
         }
     }

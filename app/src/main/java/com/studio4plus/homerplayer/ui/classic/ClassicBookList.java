@@ -15,11 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
-import com.crashlytics.android.Crashlytics;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
+import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.model.AudioBook;
 import com.studio4plus.homerplayer.ui.UiControllerBookList;
 import com.studio4plus.homerplayer.ui.BookListUi;
@@ -104,7 +104,7 @@ public class ClassicBookList extends Fragment implements BookListUi {
     @Override
     public void onResume() {
         super.onResume();
-        Crashlytics.log("UI: ClassicBookList fragment resumed");
+        CrashReporting.log("UI: ClassicBookList fragment resumed");
         showHintsIfNecessary();
     }
 
@@ -150,6 +150,7 @@ public class ClassicBookList extends Fragment implements BookListUi {
         }
 
         @Override
+        @NonNull
         public Fragment getItem(int viewIndex) {
             int bookIndex = getBookIndex(viewIndex);
             FragmentBookItem item = FragmentBookItem.newInstance(audioBooks.get(bookIndex).getId());

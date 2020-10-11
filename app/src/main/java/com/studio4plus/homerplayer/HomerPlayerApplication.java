@@ -1,6 +1,5 @@
 package com.studio4plus.homerplayer;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -9,18 +8,16 @@ import android.os.Handler;
 import android.provider.MediaStore;
 
 import androidx.core.content.pm.PackageInfoCompat;
+import androidx.multidex.MultiDexApplication;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashlyticsCore;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
+import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.ui.HomeActivity;
 import com.studio4plus.homerplayer.service.NotificationUtil;
 
 import javax.inject.Inject;
 
-import io.fabric.sdk.android.Fabric;
-
-public class HomerPlayerApplication extends Application {
+public class HomerPlayerApplication extends MultiDexApplication {
 
     private static final String AUDIOBOOKS_DIRECTORY = "AudioBooks";
 
@@ -34,8 +31,7 @@ public class HomerPlayerApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
-        Fabric.with(this, new Crashlytics.Builder().core(core).build());
+        CrashReporting.init(this);
 
         component = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
@@ -92,7 +88,7 @@ public class HomerPlayerApplication extends Application {
             return PackageInfoCompat.getLongVersionCode(info);
         } catch (PackageManager.NameNotFoundException e) {
             // Should never happen.
-            Crashlytics.logException(e);
+            CrashReporting.logException(e);
             return 0L;
         }
     }

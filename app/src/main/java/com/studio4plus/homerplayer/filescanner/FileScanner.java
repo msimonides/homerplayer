@@ -3,10 +3,10 @@ package com.studio4plus.homerplayer.filescanner;
 import android.content.Context;
 import android.os.Environment;
 
-import com.crashlytics.android.Crashlytics;
 import com.studio4plus.homerplayer.ApplicationScope;
 import com.studio4plus.homerplayer.concurrency.BackgroundExecutor;
 import com.studio4plus.homerplayer.concurrency.SimpleFuture;
+import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.util.MediaScannerUtil;
 
 import java.io.File;
@@ -75,13 +75,13 @@ public class FileScanner {
                             MediaScannerUtil.scanAndDeleteFile(applicationContext, dummyFile);
                         }
                     } catch (IOException e) {
-                        Crashlytics.logException(e);
+                        CrashReporting.logException(e);
                     }
                 }
             } else {
                 // This should not happen because permissions are granted by this point.
                 // But it does, at least on some unofficial CyanogenMod systems.
-                Crashlytics.logException(new Exception(
+                CrashReporting.logException(new Exception(
                         "Unable to write to: " + path.getParentFile().getAbsolutePath()));
             }
         }

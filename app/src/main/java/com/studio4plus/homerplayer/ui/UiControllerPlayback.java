@@ -9,9 +9,9 @@ import androidx.media.AudioManagerCompat;
 
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
+import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.events.PlaybackProgressedEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppingEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
@@ -94,7 +94,7 @@ public class UiControllerPlayback {
     }
 
     public void stopPlayback() {
-        Crashlytics.log(Log.DEBUG, TAG, "UiControllerPlayback.stopPlayback");
+        CrashReporting.log(Log.DEBUG, TAG, "UiControllerPlayback.stopPlayback");
         playbackService.stopPlayback();
     }
 

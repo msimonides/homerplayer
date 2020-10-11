@@ -80,10 +80,6 @@
             android:exported="true"
             tools:ignore="ExportedContentProvider" />
 
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="91e15c5f7c7de7af5def5ea4c7373afdbb745355" />
-
         <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false" />
         <meta-data android:name="google_analytics_ssaid_collection_enabled" android:value="false" />
 

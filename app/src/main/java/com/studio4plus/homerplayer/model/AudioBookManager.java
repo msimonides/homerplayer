@@ -5,9 +5,9 @@ import android.os.Looper;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 
-import com.crashlytics.android.Crashlytics;
 import com.studio4plus.homerplayer.ApplicationScope;
 import com.studio4plus.homerplayer.concurrency.SimpleFuture;
+import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
 import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
 import com.studio4plus.homerplayer.events.MediaStoreUpdateEvent;
@@ -105,7 +105,7 @@ public class AudioBookManager {
             public void onException(@NonNull Throwable t) {
                 isInitialized = true;
                 // TODO: clear the list of books?
-                Crashlytics.logException(t);
+                CrashReporting.logException(t);
             }
         });
     }

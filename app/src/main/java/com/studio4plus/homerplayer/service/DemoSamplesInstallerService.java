@@ -16,10 +16,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.events.DemoSamplesInstallationFinishedEvent;
 import com.studio4plus.homerplayer.events.MediaStoreUpdateEvent;
 import com.studio4plus.homerplayer.model.DemoSamplesInstaller;
@@ -98,7 +98,7 @@ public class DemoSamplesInstallerService extends Service {
         int action = intent.getIntExtra(ACTION_EXTRA, -1);
         switch(action) {
             case ACTION_START_DOWNLOAD: {
-                Crashlytics.log("DemoSamplesInstallerService: starting download");
+                CrashReporting.log("DemoSamplesInstallerService: starting download");
                 Preconditions.checkState(downloadAndInstallThread == null);
                 String downloadUri = intent.getDataString();
 
@@ -119,7 +119,7 @@ public class DemoSamplesInstallerService extends Service {
                 break;
             }
             case ACTION_CANCEL_DOWNLOAD:
-                Crashlytics.log("DemoSamplesInstallerService: cancelling download");
+                CrashReporting.log("DemoSamplesInstallerService: cancelling download");
                 if (downloadAndInstallThread != null) {
                     isDownloading = false;
                     downloadAndInstallThread.interrupt();
@@ -135,14 +135,14 @@ public class DemoSamplesInstallerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Crashlytics.log("DemoSamplesInstallerService: created");
+        CrashReporting.log("DemoSamplesInstallerService: created");
         HomerPlayerApplication.getComponent(getApplicationContext()).inject(this);
         instance = this;
     }
 
     @Override
     public void onDestroy() {
-        Crashlytics.log("DemoSamplesInstallerService: destroying");
+        CrashReporting.log("DemoSamplesInstallerService: destroying");
         if (downloadAndInstallThread != null)
             downloadAndInstallThread.interrupt();
         instance = null;
@@ -163,7 +163,7 @@ public class DemoSamplesInstallerService extends Service {
     }
 
     private void onInstallStarted() {
-        Crashlytics.log("DemoSamplesInstallerService: install started");
+        CrashReporting.log("DemoSamplesInstallerService: install started");
         isDownloading = false;
         Intent intent = new Intent(BROADCAST_INSTALL_STARTED_ACTION);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
@@ -178,7 +178,7 @@ public class DemoSamplesInstallerService extends Service {
     }
 
     private void onInstallFinished() {
-        Crashlytics.log("DemoSamplesInstallerService: install finished");
+        CrashReporting.log("DemoSamplesInstallerService: install finished");
         Intent intent = new Intent(BROADCAST_INSTALL_FINISHED_ACTION);
         eventBus.post(new DemoSamplesInstallationFinishedEvent(true, null));
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
@@ -189,7 +189,7 @@ public class DemoSamplesInstallerService extends Service {
     }
 
     private void onFailed(@NonNull String errorMessage) {
-        Crashlytics.log("DemoSamplesInstallerService: download or install failed");
+        CrashReporting.log("DemoSamplesInstallerService: download or install failed");
         isDownloading = false;
         eventBus.post(new DemoSamplesInstallationFinishedEvent(false, errorMessage));
         Intent intent = new Intent(BROADCAST_FAILED_ACTION);
@@ -327,7 +327,7 @@ public class DemoSamplesInstallerService extends Service {
                 try {
                     connection.setSSLSocketFactory(new TlsSSLSocketFactory());
                 } catch (KeyManagementException | NoSuchAlgorithmException e) {
-                    Crashlytics.logException(e);
+                    CrashReporting.logException(e);
                     // Nothing much to do here, the app will attempt the download and most likely
                     // fail.
                 }

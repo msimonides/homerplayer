@@ -17,11 +17,11 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.ui.FFRewindTimer;
 import com.studio4plus.homerplayer.ui.HintOverlay;
 import com.studio4plus.homerplayer.ui.PressReleaseDetector;
@@ -129,7 +129,7 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
     @Override
     public void onResume() {
         super.onResume();
-        Crashlytics.log("UI: FragmentPlayback resumed");
+        CrashReporting.log("UI: FragmentPlayback resumed");
         rewindButton.setOnTouchListener(new PressReleaseDetector(rewindFFHandler));
         ffButton.setOnTouchListener(new PressReleaseDetector(rewindFFHandler));
         showHintIfNecessary();

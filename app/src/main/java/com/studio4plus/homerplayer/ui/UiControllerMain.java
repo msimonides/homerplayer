@@ -15,10 +15,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
+import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
 import com.studio4plus.homerplayer.events.PlaybackFatalErrorEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppedEvent;
@@ -75,7 +75,7 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     void onActivityStart() {
-        Crashlytics.log(Log.DEBUG, TAG,"UI: onActivityStart");
+        CrashReporting.log(Log.DEBUG, TAG,"UI: onActivityStart");
         scanAudioBookFiles();
     }
 
@@ -85,13 +85,13 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     void onActivityPause() {
-        Crashlytics.log(Log.DEBUG, TAG, "UI: onActivityPause, state: " + currentState.debugName());
+        CrashReporting.log(Log.DEBUG, TAG, "UI: onActivityPause, state: " + currentState.debugName());
         currentState.onActivityPause();
         isRunning = false;
     }
 
     void onActivityStop() {
-        Crashlytics.log(Log.DEBUG, TAG,
+        CrashReporting.log(Log.DEBUG, TAG,
                 "UI: leave state " + currentState.debugName() + " (activity stop)");
         currentState.onLeaveState();
         currentState = new InitState();
@@ -125,7 +125,7 @@ public class UiControllerMain implements ServiceConnection {
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder service) {
-        Crashlytics.log(Log.DEBUG, TAG, "onServiceConnected");
+        CrashReporting.log(Log.DEBUG, TAG, "onServiceConnected");
         Preconditions.checkState(playbackService == null);
         playbackService = ((PlaybackService.ServiceBinder) service).getService();
         maybeSetInitialState();
@@ -133,7 +133,7 @@ public class UiControllerMain implements ServiceConnection {
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        Crashlytics.log(Log.DEBUG, TAG, "onServiceDisconnected");
+        CrashReporting.log(Log.DEBUG, TAG, "onServiceDisconnected");
         playbackService = null;
     }
 
@@ -223,11 +223,11 @@ public class UiControllerMain implements ServiceConnection {
 
     private void changeState(StateFactory newStateFactory) {
         if (!isRunning)
-            Crashlytics.log(Log.DEBUG, TAG, "UI(!): changing state while activity is paused");
+            CrashReporting.log(Log.DEBUG, TAG, "UI(!): changing state while activity is paused");
 
-        Crashlytics.log(Log.DEBUG, TAG, "UI: leave state: " + currentState.debugName());
+        CrashReporting.log(Log.DEBUG, TAG, "UI: leave state: " + currentState.debugName());
         currentState.onLeaveState();
-        Crashlytics.log(Log.DEBUG, TAG,"UI: create state: " + newStateFactory.name());
+        CrashReporting.log(Log.DEBUG, TAG,"UI: create state: " + newStateFactory.name());
         currentState = newStateFactory.create(this, currentState);
     }
 
