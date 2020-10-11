@@ -58,8 +58,6 @@ class ClassicMainUi implements MainUi {
     private void showPage(@NonNull Fragment pageFragment, boolean animate) {
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        if (animate)
-            transaction.setCustomAnimations(R.animator.flip_right_in, R.animator.flip_right_out);
         transaction.replace(R.id.mainContainer, pageFragment);
         transaction.commitNow();
     }
