@@ -41,7 +41,7 @@
     <string name="pref_kiosk_mode_full_summary_old_version">Wymagany Android 5.0 lub nowszy</string>
     <string name="pref_kiosk_mode_unregister_device_owner">Wyłącz uprawnienia wymagane przez pełny tryb kiosku</string>
     <string name="pref_kiosk_mode_unregister_device_owner_dialog_message">Ta akcja wyłączy pelny tryb kiosku i nie może być łatwo cofnięta.\nWykonać?</string>
-    <string name="pref_kiosk_mode_unregister_device_owner_summary_off">Nie posiada uprawnień \"device owner\"</string>
+    <string name="pref_kiosk_mode_unregister_device_owner_summary_off">Nie posiada uprawnień "device owner"</string>
     <string name="pref_kiosk_mode_unregister_device_owner_summary_on">Posiada uprawnienia</string>
     <string name="pref_no_browser_toast">Nie można otworzyć strony: brak przeglądarki.</string>
     <string name="pref_playback_options_screen_title">Ustawienia odtwarzania…</string>
