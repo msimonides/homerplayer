@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -21,17 +22,16 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.Reusable;
 import de.greenrobot.event.EventBus;
 
 @Module
 public class ApplicationModule {
 
     private final Application application;
-    private SamplesMap samplesMap;
 
-    public ApplicationModule(Application application, SamplesMap samplesMap) {
+    public ApplicationModule(Application application) {
         this.application = application;
-        this.samplesMap = samplesMap;
     }
 
     @Provides @ApplicationScope
@@ -49,14 +49,19 @@ public class ApplicationModule {
         return resources.getConfiguration().locale;
     }
 
+    @Provides @Reusable
+    AudioManager providerAudioManager(Context context) {
+        return (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+    }
+
     @Provides
     SharedPreferences provideSharedPreferences(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    @Provides @Singleton @Named("SAMPLES_DOWNLOAD_URL")
-    Uri provideSamplesUrl() {
-        return this.samplesMap.getSamples(provideCurrentLocale(provideResources(application)).getLanguage());
+    @Provides @Reusable
+    SamplesMap provideSamples() {
+        return new SamplesMap();
     }
 
     @Provides

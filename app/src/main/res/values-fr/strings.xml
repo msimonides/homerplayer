@@ -62,4 +62,11 @@
     <string name="pref_kiosk_mode_full_summary_old_version">Android 5.0 ou plus récent est requis</string>
     <string name="pref_kiosk_mode_unregister_device_owner">Désactiver les privilèges requis par le mode kiosque complet</string>
     <string name="pref_color_theme_title">Thème des couleurs</string>
+    <string name="pref_kiosk_mode_unregister_device_owner_dialog_message">Cette action va désactiver le mode kiosque complet et je peut pas être annulée facilement. Continuer ?</string>
+    <string name="pref_kiosk_mode_unregister_device_owner_summary_off">Privilèges requis</string>
+    <string name="pref_ui_options_screen_title">Interface utilisateur…</string>
+    <string name="pref_version_title">Version</string>
+    <string name="pref_volume_controls_summary_on">Activé</string>
+    <string name="pref_volume_controls_summary_off">Désactivé</string>
+    <string name="pref_volume_controls">Boutons de réglages du volume sur l\'écran de lecture</string>
 </resources>

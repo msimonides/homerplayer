@@ -2,9 +2,13 @@ package com.studio4plus.homerplayer;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
 import android.provider.MediaStore;
+
+import androidx.core.content.pm.PackageInfoCompat;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
@@ -34,10 +38,15 @@ public class HomerPlayerApplication extends Application {
         Fabric.with(this, new Crashlytics.Builder().core(core).build());
 
         component = DaggerApplicationComponent.builder()
-                .applicationModule(new ApplicationModule(this, new SamplesMap()))
+                .applicationModule(new ApplicationModule(this))
                 .audioBookManagerModule(new AudioBookManagerModule(AUDIOBOOKS_DIRECTORY))
                 .build();
         component.inject(this);
+
+        long currentVersionCode = getVersionCode();
+        if (isUpdate(globalSettings.lastVersionCode(), currentVersionCode)) {
+            onUpdate(globalSettings.lastVersionCode(), currentVersionCode);
+        }
 
         mediaStoreUpdateObserver = new MediaStoreUpdateObserver(new Handler(getMainLooper()));
         getContentResolver().registerContentObserver(
@@ -58,5 +67,33 @@ public class HomerPlayerApplication extends Application {
 
     public static ApplicationComponent getComponent(Context context) {
         return ((HomerPlayerApplication) context.getApplicationContext()).component;
+    }
+
+    private boolean isUpdate(long previousVersionCode, long currentVersionCode) {
+        if (previousVersionCode == 0) {
+            // previousVersionCode is 0 for versions up to 55 so it can't be used to distinguish
+            // between an update and a new installation. browsingHintShown is a good approximation.
+            return globalSettings.browsingHintShown();
+        } else {
+            return previousVersionCode < currentVersionCode;
+        }
+    }
+
+    private void onUpdate(long previousVersionCode, long currentVersionCode) {
+        if (previousVersionCode < 56) {
+            globalSettings.setVolumeControlsEnabled(false);
+        }
+        globalSettings.setLastVersionCode(currentVersionCode);
+    }
+
+    private long getVersionCode() {
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
+            return PackageInfoCompat.getLongVersionCode(info);
+        } catch (PackageManager.NameNotFoundException e) {
+            // Should never happen.
+            Crashlytics.logException(e);
+            return 0L;
+        }
     }
 }

@@ -9,6 +9,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.ListPreference;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import android.widget.Toast;
@@ -27,7 +28,7 @@ abstract class BaseSettingsFragment
         super.onStart();
         getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        final ActionBar actionBar = ((AppCompatActivity) requireActivity()).getSupportActionBar();
         Preconditions.checkNotNull(actionBar);
         actionBar.setTitle(getTitle());
 
@@ -37,6 +38,11 @@ abstract class BaseSettingsFragment
     public void onStop() {
         getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         super.onStop();
+    }
+
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     }
 
     @NonNull
@@ -51,8 +57,7 @@ abstract class BaseSettingsFragment
                                                @NonNull String key,
                                                int default_value_res_id) {
         String stringValue = sharedPreferences.getString(key, getString(default_value_res_id));
-        ListPreference preference =
-                (ListPreference) findPreference(key);
+        ListPreference preference = getPreference(key);
         int index = preference.findIndexOfValue(stringValue);
         if (index < 0)
             index = 0;
@@ -70,5 +75,12 @@ abstract class BaseSettingsFragment
             Toast.makeText(getView().getContext(),
                     R.string.pref_no_browser_toast, Toast.LENGTH_LONG).show();
         }
+    }
+
+    @NonNull
+    protected <T extends Preference> T getPreference(@NonNull CharSequence key) {
+        T preference = findPreference(key);
+        Preconditions.checkNotNull(preference);
+        return preference;
     }
 }

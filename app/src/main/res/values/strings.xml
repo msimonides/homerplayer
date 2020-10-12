@@ -48,7 +48,7 @@
     <string name="pref_jump_back_default_value" translatable="false">5</string>
     <string name="pref_jump_back_entry_disabled">Disabled</string>
     <string name="pref_jump_back_title">Jump back when resuming playback</string>
-    <string name="pref_jump_back_summary">Jump %d seconds back</string>
+    <string name="pref_jump_back_summary">Jump %s back</string>
     <string name="pref_sleep_timer_entry_disabled">Disable</string>
     <string name="pref_sleep_timer_title">Sleep timer</string>
     <string name="pref_sleep_timer_summary">Pause after %s of inactivity</string>
@@ -59,7 +59,11 @@
     <string name="pref_reset_all_book_progress">Rewind all books to the beginning…</string>
     <string name="pref_reset_all_book_progress_dialog_title">Reset listening progress on all books?</string>
     <string name="pref_reset_all_book_progress_done">Book progress reset</string>
+    <string name="pref_ui_options_screen_title">User interface…</string>
     <string name="pref_version_title">Version</string>
+    <string name="pref_volume_controls">Volume controls on playback screen</string>
+    <string name="pref_volume_controls_summary_on">Enabled</string>
+    <string name="pref_volume_controls_summary_off">Disabled</string>
     <string name="playback_elapsed_time" translatable="false">%1$2d:%2$02d:%3$02d</string>
     <string name="button_acc_rewind">rewind</string>
     <string name="button_acc_fastforward">fast-forward</string>

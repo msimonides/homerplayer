@@ -23,7 +23,7 @@
     <string name="pref_help_faq_summary">Otwórz stronę: %s</string>
     <string name="pref_jump_back_title">Cofnij przy wznawianiu odtwarzania</string>
     <string name="pref_jump_back_entry_disabled">Wyłączone</string>
-    <string name="pref_jump_back_summary">Cofnij o %d sekund</string>
+    <string name="pref_jump_back_summary">Cofnij o %s</string>
     <string name="pref_screen_orientation">Orientacja ekranu</string>
     <string name="pref_sleep_timer_entry_disabled">Wyłącz</string>
     <string name="pref_sleep_timer_title">Wyłącznik czasowy</string>
@@ -41,7 +41,7 @@
     <string name="pref_kiosk_mode_full_summary_old_version">Wymagany Android 5.0 lub nowszy</string>
     <string name="pref_kiosk_mode_unregister_device_owner">Wyłącz uprawnienia wymagane przez pełny tryb kiosku</string>
     <string name="pref_kiosk_mode_unregister_device_owner_dialog_message">Ta akcja wyłączy pelny tryb kiosku i nie może być łatwo cofnięta.\nWykonać?</string>
-    <string name="pref_kiosk_mode_unregister_device_owner_summary_off">Nie posiada uprawnień "device owner"</string>
+    <string name="pref_kiosk_mode_unregister_device_owner_summary_off">L\'application ne possède pas les droits suffisants sur l\'appareil</string>
     <string name="pref_kiosk_mode_unregister_device_owner_summary_on">Posiada uprawnienia</string>
     <string name="pref_no_browser_toast">Nie można otworzyć strony: brak przeglądarki.</string>
     <string name="pref_playback_options_screen_title">Ustawienia odtwarzania…</string>
@@ -52,7 +52,11 @@
     <string name="pref_reset_all_book_progress">Przewiń wszystkie książki na początek…</string>
     <string name="pref_reset_all_book_progress_dialog_title">Przewinąć książki na początek?</string>
     <string name="pref_reset_all_book_progress_done">Książki przewinięte</string>
+    <string name="pref_ui_options_screen_title">Interfejs użytkownika…</string>
     <string name="pref_version_title">Wersja</string>
+    <string name="pref_volume_controls">Przyciski głośności na ekranie odtwarzania</string>
+    <string name="pref_volume_controls_summary_on">Włączone</string>
+    <string name="pref_volume_controls_summary_off">Wyłączone</string>
     <string name="button_acc_rewind">przewiń do tyłu</string>
     <string name="button_acc_fastforward">przewiń do przodu</string>
     <string name="button_start">Start</string>

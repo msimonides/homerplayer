@@ -69,6 +69,7 @@ dependencies {
     implementation 'de.greenrobot:eventbus:2.4.1'
 
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.media:media:1.2.0'
     implementation 'androidx.preference:preference:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta4'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'

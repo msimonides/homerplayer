@@ -43,6 +43,8 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
     private ImageButton ffButton;
     private TextView elapsedTimeView;
     private TextView elapsedTimeRewindFFView;
+    private VolumeIndicatorShowController volumeIndicatorShowController;
+    private VolumeChangeIndicator volumeIndicator;
     private RewindFFHandler rewindFFHandler;
     private Animator elapsedTimeRewindFFViewAnimation;
 
@@ -84,6 +86,28 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
             }
         });
 
+        // Don't let any events "through" overlays.
+        View.OnTouchListener capturingListener = (v, event) -> true;
+        View volumeUp = view.findViewById(R.id.volumeUp);
+        View volumeDown = view.findViewById(R.id.volumeDown);
+        if (globalSettings.isVolumeControlEnabled()) {
+            volumeUp.setOnClickListener((v) -> {
+                Preconditions.checkNotNull(controller);
+                controller.volumeUp();
+            });
+            volumeDown.setOnClickListener((v) -> {
+                Preconditions.checkNotNull(controller);
+                controller.volumeDown();
+            });
+            View volumeIndicatorOverlay = view.findViewById(R.id.volumeIndicatorOverlay);
+            volumeIndicatorOverlay.setOnTouchListener(capturingListener);
+            volumeIndicatorShowController = new VolumeIndicatorShowController(volumeIndicatorOverlay);
+            volumeIndicator = view.findViewById(R.id.volumeIndicator);
+        } else {
+            volumeUp.setVisibility(View.GONE);
+            volumeDown.setVisibility(View.GONE);
+        }
+
         rewindButton = view.findViewById(R.id.rewindButton);
         ffButton = view.findViewById(R.id.fastForwardButton);
 
@@ -92,11 +116,7 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
                 (View) rewindFFOverlay.getParent(), rewindFFOverlay);
         rewindButton.setEnabled(false);
         ffButton.setEnabled(false);
-
-        rewindFFOverlay.setOnTouchListener((v, event) -> {
-            // Don't let any events "through" the overlay.
-            return true;
-        });
+        rewindFFOverlay.setOnTouchListener(capturingListener);
 
         elapsedTimeRewindFFViewAnimation =
                 AnimatorInflater.loadAnimator(view.getContext(), R.animator.bounce);
@@ -135,6 +155,11 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
         enableUiOnStart();
     }
 
+    void onVolumeChanged(int min, int max, int current) {
+        volumeIndicator.setVolume(min, max, current);
+        volumeIndicatorShowController.show();
+    }
+
     void enableUiOnStart() {
         rewindButton.setEnabled(true);
         ffButton.setEnabled(true);
@@ -144,6 +169,57 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
         rewindButton.setEnabled(false);
         stopButton.setEnabled(false);
         ffButton.setEnabled(false);
+    }
+
+    private static class VolumeIndicatorShowController {
+        private static final long SHOW_HIDE_DURATION_MS = 500;
+        private static final long AUTO_HIDE_DURATION_MS = 3000;
+
+        @NonNull
+        private final View volumeIndicatorOverlay;
+        private boolean isShown = false;
+
+        @NonNull
+        private final Runnable hideTask = this::hide;
+
+        private VolumeIndicatorShowController(@NonNull View volumeIndicatorOverlay) {
+            this.volumeIndicatorOverlay = volumeIndicatorOverlay;
+        }
+
+        void show() {
+            if (!isShown) {
+                volumeIndicatorOverlay.animate().cancel();
+                volumeIndicatorOverlay.setVisibility(View.VISIBLE);
+                long duration = Math.round(
+                        (1f - volumeIndicatorOverlay.getAlpha()) * SHOW_HIDE_DURATION_MS);
+                volumeIndicatorOverlay.animate()
+                        .alpha(1f)
+                        .setDuration(duration)
+                        .setListener(null)
+                        .start();
+                isShown = true;
+            }
+            volumeIndicatorOverlay.removeCallbacks(hideTask);
+            volumeIndicatorOverlay.postDelayed(hideTask, AUTO_HIDE_DURATION_MS);
+        }
+
+        void hide() {
+            isShown = false;
+            volumeIndicatorOverlay.removeCallbacks(hideTask);
+            volumeIndicatorOverlay.animate().cancel();
+            long duration = Math.round(
+                    volumeIndicatorOverlay.getAlpha() * SHOW_HIDE_DURATION_MS);
+            volumeIndicatorOverlay.animate()
+                    .alpha(0f)
+                    .setDuration(duration)
+                    .setListener(new SimpleAnimatorListener() {
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            volumeIndicatorOverlay.setVisibility(View.GONE);
+                        }
+                    })
+                    .start();
+        }
     }
 
     private String elapsedTime(long elapsedMs) {

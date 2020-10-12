@@ -20,4 +20,6 @@ public interface PlaybackUi {
      * Must be called with SpeedLevel.STOP when ff/rewind is finished.
      */
     void onFFRewindSpeed(SpeedLevel speedLevel);
+
+    void onVolumeChanged(int min, int max, int current);
 }
