@@ -7,24 +7,24 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.SamplesMap;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.service.DemoSamplesInstallerService;
 import com.studio4plus.homerplayer.events.DemoSamplesInstallationStartedEvent;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import de.greenrobot.event.EventBus;
 
@@ -32,23 +32,23 @@ public class UiControllerNoBooks {
 
     public static class Factory {
         private final @NonNull AppCompatActivity activity;
-        private final @NonNull Uri samplesDownloadUrl;
+        private final @NonNull SamplesMap samples;
         private final @NonNull EventBus eventBus;
         private final @NonNull AnalyticsTracker analyticsTracker;
 
         @Inject
         public Factory(@NonNull AppCompatActivity activity,
-                       @NonNull @Named("SAMPLES_DOWNLOAD_URL") Uri samplesDownloadUrl,
+                       @NonNull SamplesMap samples,
                        @NonNull EventBus eventBus,
                        @NonNull AnalyticsTracker analyticsTracker) {
             this.activity = activity;
-            this.samplesDownloadUrl = samplesDownloadUrl;
+            this.samples = samples;
             this.eventBus = eventBus;
             this.analyticsTracker = analyticsTracker;
         }
 
         public UiControllerNoBooks create(@NonNull NoBooksUi ui) {
-            return new UiControllerNoBooks(activity, ui, samplesDownloadUrl, eventBus, analyticsTracker);
+            return new UiControllerNoBooks(activity, ui, samples, eventBus, analyticsTracker);
         }
     }
 
@@ -57,7 +57,7 @@ public class UiControllerNoBooks {
 
     private final @NonNull AppCompatActivity activity;
     private final @NonNull NoBooksUi ui;
-    private final @NonNull Uri samplesDownloadUrl;
+    private final @NonNull SamplesMap samples;
     private final @NonNull EventBus eventBus;
     private final @NonNull AnalyticsTracker analyticsTracker;
 
@@ -65,12 +65,12 @@ public class UiControllerNoBooks {
 
     private UiControllerNoBooks(@NonNull AppCompatActivity activity,
                                 @NonNull NoBooksUi ui,
-                                @NonNull Uri samplesDownloadUrl,
+                                @NonNull SamplesMap samples,
                                 @NonNull EventBus eventBus,
                                 @NonNull AnalyticsTracker analyticsTracker) {
         this.activity = activity;
         this.ui = ui;
-        this.samplesDownloadUrl = samplesDownloadUrl;
+        this.samples = samples;
         this.eventBus = eventBus;
         this.analyticsTracker = analyticsTracker;
 
@@ -96,7 +96,7 @@ public class UiControllerNoBooks {
         eventBus.post(new DemoSamplesInstallationStartedEvent());
         showInstallProgress(false);
         activity.startService(DemoSamplesInstallerService.createDownloadIntent(
-                activity, samplesDownloadUrl));
+                activity, samples.getSamples(activity.getResources().getConfiguration().locale.getLanguage())));
     }
 
     public void abortSamplesInstallation() {

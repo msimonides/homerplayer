@@ -61,5 +61,4 @@ public interface ApplicationComponent {
     GlobalSettings getGlobalSettings();
     KioskModeSwitcher getKioskModeSwitcher();
     Resources getResources();
-    @Named("SAMPLES_DOWNLOAD_URL") Uri getSamplesUrl();
 }

@@ -29,11 +29,9 @@ import de.greenrobot.event.EventBus;
 public class ApplicationModule {
 
     private final Application application;
-    private final Uri samplesDownloadUrl;
 
-    public ApplicationModule(Application application, Uri samplesDownloadUrl) {
+    public ApplicationModule(Application application) {
         this.application = application;
-        this.samplesDownloadUrl = samplesDownloadUrl;
     }
 
     @Provides @ApplicationScope
@@ -61,9 +59,9 @@ public class ApplicationModule {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    @Provides @Singleton @Named("SAMPLES_DOWNLOAD_URL")
-    Uri provideSamplesUrl() {
-        return samplesDownloadUrl;
+    @Provides @Reusable
+    SamplesMap provideSamples() {
+        return new SamplesMap();
     }
 
     @Provides
