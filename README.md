@@ -32,8 +32,8 @@ on the main features.
 
 Contributions
 -------------
-Translations (incl. Play Store description): Naomi Gumpel, Vasiliy Petviashvili,
-Stefan Rotermund, Magdalena Wodyńska.
+Translations (incl. Play Store description): Antoine Guillien, Naomi Gumpel,
+Vasiliy Petviashvili, Stefan Rotermund, Magdalena Wodyńska.
 
 Contact
 -------
