@@ -5,9 +5,12 @@ import android.animation.AnimatorInflater;
 import android.annotation.SuppressLint;
 import android.graphics.Rect;
 import android.os.Bundle;
+
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -280,21 +283,21 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
             final boolean isFF = (v == ffButton);
             rewindOverlay.setVisibility(View.VISIBLE);
             currentAnimator = createAnimation(v, x, y, true);
-            currentAnimator.addListener(new SimpleAnimatorListener() {
-                private boolean isCancelled = false;
-
+            currentAnimator.addListener(new AnimatorListener() {
                 @Override
-                public void onAnimationEnd(Animator animator) {
-
-                    currentAnimator = null;
-                    if (!isCancelled)
-                        controller.startRewind(isFF, FragmentPlayback.this);
+                protected void onAnimationCompleted() {
+                    controller.startRewind(isFF, FragmentPlayback.this);
                 }
 
                 @Override
                 public void onAnimationCancel(Animator animator) {
-                    isCancelled = true;
+                    super.onAnimationCancel(animator);
                     resumeFromRewind();
+                }
+
+                @Override
+                protected void onCompletedOrCancelled() {
+                    currentAnimator = null;
                 }
             });
             currentAnimator.start();
@@ -311,9 +314,9 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
                 currentAnimator = null;
             } else {
                 currentAnimator = createAnimation(v, x, y, false);
-                currentAnimator.addListener(new SimpleAnimatorListener() {
+                currentAnimator.addListener(new AnimatorListener() {
                     @Override
-                    public void onAnimationEnd(Animator animator) {
+                    protected void onCompletedOrCancelled() {
                         rewindOverlay.setVisibility(View.GONE);
                         currentAnimator = null;
                     }
@@ -374,5 +377,27 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
 
             return animator;
         }
+    }
+
+    private static abstract class AnimatorListener extends SimpleAnimatorListener {
+        private boolean isCancelled = false;
+
+        @Override
+        public final void onAnimationEnd(Animator animator) {
+            if (!isCancelled) {
+                onAnimationCompleted();
+                onCompletedOrCancelled();
+            }
+        }
+
+        @CallSuper
+        @Override
+        public void onAnimationCancel(Animator animator) {
+            isCancelled = true;
+            onCompletedOrCancelled();
+        }
+
+        protected abstract void onCompletedOrCancelled();
+        protected void onAnimationCompleted() {}
     }
 }
