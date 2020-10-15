@@ -28,6 +28,7 @@ import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.ui.FFRewindTimer;
 import com.studio4plus.homerplayer.ui.HintOverlay;
 import com.studio4plus.homerplayer.ui.PressReleaseDetector;
+import com.studio4plus.homerplayer.ui.RepeatButton;
 import com.studio4plus.homerplayer.ui.SimpleAnimatorListener;
 import com.studio4plus.homerplayer.ui.UiControllerPlayback;
 import com.studio4plus.homerplayer.util.ViewUtils;
@@ -91,17 +92,16 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
 
         // Don't let any events "through" overlays.
         View.OnTouchListener capturingListener = (v, event) -> true;
-        View volumeUp = view.findViewById(R.id.volumeUp);
-        View volumeDown = view.findViewById(R.id.volumeDown);
+        RepeatButton volumeUp = view.findViewById(R.id.volumeUp);
+        RepeatButton volumeDown = view.findViewById(R.id.volumeDown);
         if (globalSettings.isVolumeControlEnabled()) {
-            volumeUp.setOnClickListener((v) -> {
-                Preconditions.checkNotNull(controller);
-                controller.volumeUp();
-            });
-            volumeDown.setOnClickListener((v) -> {
-                Preconditions.checkNotNull(controller);
-                controller.volumeDown();
-            });
+            volumeUp.setOnClickListener(this::volumeUp);
+            volumeUp.setOnLongClickListener(this::volumeUp);
+            volumeUp.setOnPressListener(this::requestShowVolume);
+            volumeDown.setOnClickListener(this::volumeDown);
+            volumeDown.setOnLongClickListener(this::volumeDown);
+            volumeDown.setOnPressListener(this::requestShowVolume);
+
             View volumeIndicatorOverlay = view.findViewById(R.id.volumeIndicatorOverlay);
             volumeIndicatorOverlay.setOnTouchListener(capturingListener);
             volumeIndicatorShowController = new VolumeIndicatorShowController(volumeIndicatorOverlay);
@@ -172,6 +172,23 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
         rewindButton.setEnabled(false);
         stopButton.setEnabled(false);
         ffButton.setEnabled(false);
+    }
+
+    private boolean volumeUp(@NonNull View ignored) {
+        Preconditions.checkNotNull(controller);
+        controller.volumeUp();
+        return true;
+    }
+
+    private boolean volumeDown(@NonNull View ignored) {
+        Preconditions.checkNotNull(controller);
+        controller.volumeDown();
+        return true;
+    }
+
+    private void requestShowVolume(@NonNull View ignored) {
+        Preconditions.checkNotNull(controller);
+        controller.showVolume();
     }
 
     private static class VolumeIndicatorShowController {

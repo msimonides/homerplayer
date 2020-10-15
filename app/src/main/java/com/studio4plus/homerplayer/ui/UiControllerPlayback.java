@@ -150,15 +150,20 @@ public class UiControllerPlayback {
         adjustVolume(AudioManager.ADJUST_LOWER);
     }
 
+    public void showVolume() {
+        int stream = AudioManager.STREAM_MUSIC;
+        ui.onVolumeChanged(
+                AudioManagerCompat.getStreamMinVolume(audioManager, stream),
+                AudioManagerCompat.getStreamMaxVolume(audioManager, stream),
+                audioManager.getStreamVolume(stream));
+    }
+
     private void adjustVolume(int direction) {
         int stream = AudioManager.STREAM_MUSIC;
         audioManager.adjustStreamVolume(stream, direction, 0);
         // TODO: once MediaSession is implemented, volume changes should be reported via its
         //  VolumeProviderCompat.
-        ui.onVolumeChanged(
-                AudioManagerCompat.getStreamMinVolume(audioManager, stream),
-                AudioManagerCompat.getStreamMaxVolume(audioManager, stream),
-                audioManager.getStreamVolume(stream));
+        showVolume();
     }
 
     private static class FFRewindController implements FFRewindTimer.Observer {

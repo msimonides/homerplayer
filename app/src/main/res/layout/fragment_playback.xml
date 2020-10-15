@@ -100,7 +100,7 @@
                 android:padding="30dp"/>
         </FrameLayout>
 
-        <Button
+        <com.studio4plus.homerplayer.ui.RepeatButton
             android:id="@+id/volumeDown"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -112,7 +112,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintWidth_percent="0.19" />
 
-        <Button
+        <com.studio4plus.homerplayer.ui.RepeatButton
             android:id="@+id/volumeUp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
