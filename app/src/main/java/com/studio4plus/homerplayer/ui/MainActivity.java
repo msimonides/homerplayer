@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
 
     private final static long SUPPRESSED_BACK_MESSAGE_DELAY_NANO = TimeUnit.SECONDS.toNanos(2);
     private long lastSuppressedBackTimeNano = 0;
+    private boolean isInForeground = false;
 
     @Nullable
     private ColorTheme currentTheme;
@@ -102,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
     @Override
     protected void onResume() {
         super.onResume();
+        isInForeground = true;
         ColorTheme theme = globalSettings.colorTheme();
         if (currentTheme != theme) {
             setTheme(theme);
@@ -132,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
         // calling super.onPause() before controller.onActivityPause() is necessary to ensure that
         // controller.onActivityResumeFragments() is called in the right order.
         super.onPause();
+        isInForeground = false;
         controller.onActivityPause();
     }
 
@@ -161,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
+        if (hasFocus && isInForeground) {
             // Start animations.
             batteryStatusIndicator.startAnimations();
 
