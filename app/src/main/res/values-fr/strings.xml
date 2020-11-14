@@ -31,7 +31,7 @@
     <string name="pref_no_browser_toast">Impossible d\'accéder au site web : aucun navigateur web trouvé.</string>
     <string name="pref_ff_rewind_sound">Avance rapide / Rembobiner le son</string>
     <string name="pref_ff_rewind_sound_summary_off">Désactivé</string>
-    <string name="pref_jump_back_summary">Revenir %d sedondes en arrière</string>
+    <string name="pref_jump_back_summary">Revenir %s sedondes en arrière</string>
     <string name="pref_sleep_timer_entry_disabled">Désactivé</string>
     <string name="pref_sleep_timer_title">Minuteur de mise en veille</string>
     <string name="pref_sleep_timer_summary">Pause après %s d\'inactivité</string>
