@@ -62,7 +62,20 @@ android {
             dimension 'releaseType'
         }
 
-        official {
+        // Builds for distribution on GitHub (intended mostly for dedicated device installations).
+        // - Firebase Analytics and Crashlytics disabled (for stores with Google-free apps),
+        // - BIND_DEVICE_ADMIN permission added to allow device owner provisioning via QR code.
+        gitHub {
+            firebaseCrashlytics {
+                mappingFileUploadEnabled = false
+            }
+            dimension 'releaseType'
+        }
+
+        // Builds for distribution in the Play Store.
+        // - Firebase Analytics and Crashlytics enabled,
+        // - BIND_DEVICE_ADMIN permission removed to comply with the policy.
+        playStore {
             dimension 'releaseType'
         }
     }
@@ -90,8 +103,10 @@ dependencies {
     implementation 'com.github.ozodrukh:CircularReveal:2.0.1@aar'
 
     developmentImplementation project(':app:crashreporting-noop')
-    officialImplementation project(':app:crashreporting-firebase')
+    gitHubImplementation project(':app:crashreporting-noop')
+    playStoreImplementation project(':app:crashreporting-firebase')
 
     developmentImplementation project(':app:analytics-noop')
-    officialImplementation project(':app:analytics-firebase')
+    gitHubImplementation project(':app:analytics-noop')
+    playStoreImplementation project(':app:analytics-firebase')
 }

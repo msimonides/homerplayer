@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.studio4plus.homerplayer">
+
+    <application>
+        <receiver android:name=".HomerPlayerDeviceAdmin"
+            android:permission="android.permission.BIND_DEVICE_ADMIN"
+            tools:node="merge"/>
+    </application>
+</manifest>
