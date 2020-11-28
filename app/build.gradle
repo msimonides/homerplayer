@@ -1,3 +1,5 @@
+import java.security.MessageDigest
+
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
@@ -16,13 +18,24 @@ repositories {
     google()
 }
 
-def getVersionName = { ->
+def getVersionName = {
     def stdout = new ByteArrayOutputStream()
     exec {
         commandLine 'git', 'describe'
         standardOutput = stdout
     }
     return stdout.toString().trim()
+}
+
+static def computeApkChecksum(file) {
+    def apkDigest = MessageDigest.getInstance("SHA-256")
+    file.eachByte(256 * 1024) { byte[] data, int bytesRead ->
+        apkDigest.update(data, 0, bytesRead)
+    }
+    return apkDigest.digest().encodeBase64().toString()
+            .replaceAll('\\+', '-')
+            .replaceAll('/', '_')
+            .replaceAll('=', '')
 }
 
 android {
@@ -78,6 +91,35 @@ android {
         playStore {
             dimension 'releaseType'
         }
+    }
+}
+
+android.applicationVariants.all { variant ->
+    if (variant.name == 'gitHubRelease') {
+        def matcher = variant.packageApplicationProvider.name =~ /^package(.*)$/
+        if (!matcher.find()) {
+            throw new IllegalStateException("Task name doesn't match the pattern.")
+        }
+        def variantName = variant.name.capitalize()
+
+        variant.outputs.all { output ->
+            def outputDir = output.outputFile.parent
+
+            task "generateProvisioningData${variantName}"(type: Copy) {
+                description "create data for provisioning QR code"
+                group "Build"
+                dependsOn variant.packageApplicationProvider
+
+                from file('src/main/templates/provisioning-qrcode.txt')
+                into outputDir
+
+                doFirst {
+                    expand(version: output.apkData.versionName, apkChecksum: computeApkChecksum(output.outputFile))
+                }
+            }
+        }
+
+        tasks.named("assemble${variantName}").get().dependsOn(tasks.named("generateProvisioningData${variantName}"))
     }
 }
 
