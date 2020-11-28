@@ -61,7 +61,7 @@ public class AudioBookManager {
     @MainThread
     @NonNull
     public List<AudioBook> getAudioBooks() {
-        return audioBooks;
+        return new ArrayList<>(audioBooks);
     }
 
     @MainThread

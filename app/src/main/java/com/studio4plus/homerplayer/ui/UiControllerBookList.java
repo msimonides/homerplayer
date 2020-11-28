@@ -6,13 +6,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
-import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.concurrency.SimpleFuture;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -56,6 +59,20 @@ public class UiControllerBookList {
     private @Nullable SimpleFuture<Speaker> speakerFuture;
     private @Nullable SimpleFuture.Listener<Speaker> speakerListener;
     private @Nullable Speaker speaker;
+
+    public static class ViewState {
+        @NonNull
+        public final List<AudioBook> books;
+        public final int currentBookIndex;
+
+        public ViewState(@NonNull List<AudioBook> books, int currentBookIndex) {
+            this.books = books;
+            this.currentBookIndex = currentBookIndex;
+        }
+    }
+
+    @NonNull
+    private final MutableLiveData<ViewState> viewState = new MutableLiveData<>();
 
     private UiControllerBookList(@NonNull Context context,
                                  @NonNull AudioBookManager audioBookManager,
@@ -116,6 +133,11 @@ public class UiControllerBookList {
         context.unregisterReceiver(screenOnReceiver);
     }
 
+    @NonNull
+    public LiveData<ViewState> getViewState() {
+        return viewState;
+    }
+
     public void playCurrentAudiobook() {
         uiControllerMain.playCurrentAudiobook();
     }
@@ -128,11 +150,6 @@ public class UiControllerBookList {
     @SuppressWarnings("UnusedDeclaration")
     public void onEvent(AudioBooksChangedEvent event) {
         updateAudioBooks();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEvent(CurrentBookChangedEvent event) {
-        ui.updateCurrentBook(audioBookManager.getCurrentBookIndex());
     }
 
     private void onSpeakerObtained(@Nullable Speaker speaker) {
@@ -152,8 +169,6 @@ public class UiControllerBookList {
     }
 
     private void updateAudioBooks() {
-        ui.updateBookList(
-                audioBookManager.getAudioBooks(),
-                audioBookManager.getCurrentBookIndex());
+        viewState.setValue(new ViewState(audioBookManager.getAudioBooks(), audioBookManager.getCurrentBookIndex()));
     }
 }

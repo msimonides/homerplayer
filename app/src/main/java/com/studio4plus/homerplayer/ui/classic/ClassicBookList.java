@@ -84,8 +84,7 @@ public class ClassicBookList extends Fragment implements BookListUi {
         return view;
     }
 
-    @Override
-    public void updateBookList(List<AudioBook> audioBooks, int currentBookIndex) {
+    private void updateBookList(List<AudioBook> audioBooks, int currentBookIndex) {
         bookAdapter = new BookListPagerAdapter(getChildFragmentManager(), audioBooks);
         bookPager.setAdapter(bookAdapter);
         bookPager.setCurrentItem(
@@ -93,13 +92,11 @@ public class ClassicBookList extends Fragment implements BookListUi {
     }
 
     @Override
-    public void updateCurrentBook(int currentBookId) {
-
-    }
-
-    @Override
     public void initWithController(UiControllerBookList uiControllerBookList) {
         this.uiControllerBookList = uiControllerBookList;
+        uiControllerBookList.getViewState().observe(
+                getViewLifecycleOwner(),
+                viewState -> updateBookList(viewState.books, viewState.currentBookIndex));
     }
 
     @Override
@@ -138,7 +135,7 @@ public class ClassicBookList extends Fragment implements BookListUi {
         private final @NonNull List<AudioBook> audioBooks;
 
         BookListPagerAdapter(@NonNull FragmentManager fm, @NonNull List<AudioBook> audioBooks) {
-            super(fm);
+            super(fm, FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
             this.audioBooks = audioBooks;
         }
 
