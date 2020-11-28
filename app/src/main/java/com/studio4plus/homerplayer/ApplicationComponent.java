@@ -60,5 +60,6 @@ public interface ApplicationComponent {
     EventBus getEventBus();
     GlobalSettings getGlobalSettings();
     KioskModeSwitcher getKioskModeSwitcher();
+    MediaStoreUpdateObserver getMediaStoreUpdateObserver();
     Resources getResources();
 }

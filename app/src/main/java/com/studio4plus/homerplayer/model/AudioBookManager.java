@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.studio4plus.homerplayer.ApplicationScope;
 import com.studio4plus.homerplayer.concurrency.SimpleFuture;
@@ -28,18 +29,26 @@ import de.greenrobot.event.EventBus;
 @ApplicationScope
 public class AudioBookManager {
 
+    @NonNull
     private final List<AudioBook> audioBooks = new ArrayList<>();
+    @NonNull
     private final FileScanner fileScanner;
+    @NonNull
     private final Storage storage;
+    @Nullable
     private AudioBook currentBook;
     private boolean isInitialized = false;
     private boolean isFirstScan = true;
+    @NonNull
+    private final EventBus eventBus;
 
     @Inject
     @MainThread
-    public AudioBookManager(EventBus eventBus, FileScanner fileScanner, Storage storage) {
+    public AudioBookManager(
+            @NonNull EventBus eventBus, @NonNull FileScanner fileScanner, @NonNull Storage storage) {
         this.fileScanner = fileScanner;
         this.storage = storage;
+        this.eventBus = eventBus;
         eventBus.register(this);
     }
 
@@ -50,20 +59,22 @@ public class AudioBookManager {
     }
 
     @MainThread
+    @NonNull
     public List<AudioBook> getAudioBooks() {
         return audioBooks;
     }
 
     @MainThread
-    public void setCurrentBook(String bookId) {
+    public void setCurrentBook(@NonNull String bookId) {
         AudioBook newBook = getById(bookId);
         if (newBook != currentBook) {
             currentBook = getById(bookId);
-            EventBus.getDefault().post(new CurrentBookChangedEvent(currentBook));
+            eventBus.post(new CurrentBookChangedEvent(currentBook));
         }
     }
 
     @MainThread
+    @Nullable
     public AudioBook getCurrentBook() {
         return currentBook;
     }
@@ -74,6 +85,7 @@ public class AudioBookManager {
     }
 
     @MainThread
+    @Nullable
     public AudioBook getById(String id) {
         for (AudioBook book : audioBooks)
             if (book.getId().equals(id))
@@ -178,7 +190,7 @@ public class AudioBookManager {
         }
 
         if (audioBooksChanged || isFirstScan)
-            EventBus.getDefault().post(new AudioBooksChangedEvent(contentType));
+            eventBus.post(new AudioBooksChangedEvent(contentType));
 
         isFirstScan = false;
     }
@@ -211,6 +223,7 @@ public class AudioBookManager {
     }
 
     @MainThread
+    @NonNull
     private List<ColourScheme> getColoursInRange(int startIndex, int endIndex) {
         List<ColourScheme> colours = new ArrayList<>();
         for (int i = startIndex; i <= endIndex; ++i) {

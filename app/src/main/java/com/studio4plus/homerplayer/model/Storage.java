@@ -3,6 +3,8 @@ package com.studio4plus.homerplayer.model;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.NonNull;
+
 import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
 
 import org.json.JSONArray;
@@ -28,15 +30,15 @@ public class Storage implements AudioBook.UpdateObserver {
     private static final String FIELD_POSITION_SEEK = "seek";
     private static final String FIELD_FILE_DURATIONS = "fileDurations";
 
-
+    @NonNull
     private final SharedPreferences preferences;
 
-    public Storage(Context context) {
+    public Storage(@NonNull Context context, @NonNull EventBus eventBus) {
         this.preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
-        EventBus.getDefault().register(this);
+        eventBus.register(this);
     }
 
-    public void readAudioBookState(AudioBook audioBook) {
+    public void readAudioBookState(@NonNull AudioBook audioBook) {
         String bookData = preferences.getString(getAudioBookPreferenceKey(audioBook.getId()), null);
         if (bookData != null) {
             try {

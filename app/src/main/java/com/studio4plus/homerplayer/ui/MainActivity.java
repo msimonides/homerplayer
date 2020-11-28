@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.studio4plus.homerplayer.GlobalSettings;
@@ -47,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
 
     @Inject public UiControllerMain controller;
     @Inject public BatteryStatusProvider batteryStatusProvider;
+    @Inject public EventBus eventBus;
     @Inject public GlobalSettings globalSettings;
     @Inject public KioskModeHandler kioskModeHandler;
     @Inject public KioskModeSwitcher kioskModeSwitcher;
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
         controller.onActivityCreated();
 
         batteryStatusIndicator = new BatteryStatusIndicator(
-                (ImageView) findViewById(R.id.batteryStatusIndicator), EventBus.getDefault());
+                findViewById(R.id.batteryStatusIndicator), eventBus);
 
         orientationDelegate = new OrientationActivityDelegate(this, globalSettings);
 

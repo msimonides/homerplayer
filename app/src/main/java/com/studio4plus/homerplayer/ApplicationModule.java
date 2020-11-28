@@ -5,10 +5,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.preference.PreferenceManager;
+
+import androidx.annotation.NonNull;
 
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.analytics.StatsLogger;
@@ -64,10 +65,17 @@ public class ApplicationModule {
         return new SamplesMap();
     }
 
-    @Provides
+    @Provides @Singleton
     EventBus provideEventBus() {
-        // TODO: provide the EventBus to all classes via Dagger and then switch to a private instance.
-        return EventBus.getDefault();
+        return EventBus.builder()
+                .throwSubscriberException(true)
+                .build();
+    }
+
+    @Provides
+    MediaStoreUpdateObserver provideMediaStoreUpdateObserver(
+            @NonNull Context appContext, @NonNull EventBus eventBus) {
+        return new MediaStoreUpdateObserver(new Handler(appContext.getMainLooper()), eventBus);
     }
 
     @Provides @Singleton

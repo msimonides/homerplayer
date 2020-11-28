@@ -59,7 +59,7 @@ public class KioskSettingsFragment extends BaseSettingsFragment {
                         }
                     });
 
-            updateUnregisterDeviceOwner(HomerPlayerDeviceAdmin.isDeviceOwner(getActivity()));
+            updateUnregisterDeviceOwner(HomerPlayerDeviceAdmin.isDeviceOwner(requireActivity()));
         } else {
             getPreferenceScreen().removePreference(preferenceUnregisterDeviceOwner);
         }

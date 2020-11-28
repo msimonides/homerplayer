@@ -22,8 +22,9 @@ public class HomerPlayerApplication extends MultiDexApplication {
     private static final String AUDIOBOOKS_DIRECTORY = "AudioBooks";
 
     private ApplicationComponent component;
-    private MediaStoreUpdateObserver mediaStoreUpdateObserver;
 
+
+    @Inject public MediaStoreUpdateObserver mediaStoreUpdateObserver;
     @Inject public GlobalSettings globalSettings;
     @Inject public AnalyticsTracker analyticsTracker;  // Force creation of the tracker early.
 
@@ -44,7 +45,6 @@ public class HomerPlayerApplication extends MultiDexApplication {
             onUpdate(globalSettings.lastVersionCode(), currentVersionCode);
         }
 
-        mediaStoreUpdateObserver = new MediaStoreUpdateObserver(new Handler(getMainLooper()));
         getContentResolver().registerContentObserver(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, mediaStoreUpdateObserver);
 

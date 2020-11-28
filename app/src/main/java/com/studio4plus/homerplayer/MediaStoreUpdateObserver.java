@@ -3,7 +3,11 @@ package com.studio4plus.homerplayer;
 import android.database.ContentObserver;
 import android.os.Handler;
 
+import androidx.annotation.NonNull;
+
 import com.studio4plus.homerplayer.events.MediaStoreUpdateEvent;
+
+import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
@@ -19,11 +23,16 @@ public class MediaStoreUpdateObserver extends ContentObserver {
 
     private static final int RESCAN_DELAY_MS = 5000;
 
+    @NonNull
     private final Handler mainThreadHandler;
+    @NonNull
+    private final EventBus eventBus;
 
-    public MediaStoreUpdateObserver(Handler mainThreadHandler) {
+    @Inject
+    public MediaStoreUpdateObserver(@NonNull Handler mainThreadHandler, @NonNull EventBus eventBus) {
         super(mainThreadHandler);
         this.mainThreadHandler = mainThreadHandler;
+        this.eventBus = eventBus;
     }
 
     @Override
@@ -35,7 +44,7 @@ public class MediaStoreUpdateObserver extends ContentObserver {
     private final Runnable delayedRescanTask = new Runnable() {
         @Override
         public void run() {
-            EventBus.getDefault().post(new MediaStoreUpdateEvent());
+            eventBus.post(new MediaStoreUpdateEvent());
         }
     };
 }
