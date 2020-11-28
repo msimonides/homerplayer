@@ -49,11 +49,17 @@ public class PlaybackSettingsFragment extends BaseSettingsFragment {
                         getResources(),
                         R.string.pref_sleep_timer_summary_disabled,
                         R.string.pref_sleep_timer_summary));
-        getPreference(GlobalSettings.KEY_PLAYBACK_SPEED).setOnPreferenceClickListener(
+        Preference playbackSpeed = getPreference(GlobalSettings.KEY_PLAYBACK_SPEED);
+        playbackSpeed.setOnPreferenceClickListener(
                 preference -> {
-                    if (snippetPlayer != null && !snippetPlayer.isPlaying())
-                        playSnippet();
+                    if (snippetPlayer == null || !snippetPlayer.isPlaying())
+                        playSnippet(globalSettings.getPlaybackSpeed());
                     return false;
+                });
+        playbackSpeed.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    playSnippet(Float.parseFloat((String) newValue));
+                    return true;
                 });
     }
 
@@ -66,7 +72,7 @@ public class PlaybackSettingsFragment extends BaseSettingsFragment {
         }
     }
 
-    private void playSnippet() {
+    private void playSnippet(float speed) {
         if (snippetPlayer != null) {
             snippetPlayer.stop();
             snippetPlayer = null;
@@ -74,7 +80,7 @@ public class PlaybackSettingsFragment extends BaseSettingsFragment {
 
         AudioBook book = audioBookManager.getCurrentBook();
         if (book != null) {
-            snippetPlayer = new SnippetPlayer(getActivity(), eventBus, globalSettings.getPlaybackSpeed());
+            snippetPlayer = new SnippetPlayer(getActivity(), eventBus, speed);
 
             snippetPlayer.play(book);
         }
