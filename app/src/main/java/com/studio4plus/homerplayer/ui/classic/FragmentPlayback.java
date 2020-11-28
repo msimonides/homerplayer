@@ -355,18 +355,18 @@ public class FragmentPlayback extends Fragment implements FFRewindTimer.Observer
 
         void onStopping() {
             if (isRunning)
-                stopRewind();
+                stopRewind(true);
         }
 
         private void resumeFromRewind() {
             Preconditions.checkNotNull(controller);
-            stopRewind();
+            stopRewind(false);
             controller.resumeFromRewind();
         }
 
-        private void stopRewind() {
+        private void stopRewind(boolean isPlaybackStopping) {
             Preconditions.checkNotNull(controller);
-            controller.stopRewind();
+            controller.stopRewind(isPlaybackStopping);
             isRunning = false;
         }
 

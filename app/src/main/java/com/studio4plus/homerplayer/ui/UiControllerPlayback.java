@@ -86,7 +86,7 @@ public class UiControllerPlayback {
 
     void stopRewindIfActive() {
         if (ffRewindController != null)
-            stopRewind();
+            stopRewind(false);
     }
 
     void startPlayback(@NonNull AudioBook book) {
@@ -129,12 +129,14 @@ public class UiControllerPlayback {
         ffRewindController.start();
     }
 
-    public void stopRewind() {
+    public void stopRewind(boolean isPlaybackStopping) {
         if (ffRewindController != null) {
             analyticsTracker.onFfRewindFinished(
                     ffRewindController.isFF, ffRewindController.getRewindWallTimeMs());
-            playbackService.getAudioBookBeingPlayed().updateTotalPosition(
-                    ffRewindController.getDisplayTimeMs());
+            if (!isPlaybackStopping) {
+                playbackService.getAudioBookBeingPlayed().updateTotalPosition(
+                        ffRewindController.getDisplayTimeMs());
+            }
             ffRewindController.stop();
             ffRewindController = null;
         } else {
