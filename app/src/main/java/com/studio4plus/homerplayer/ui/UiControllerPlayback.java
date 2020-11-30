@@ -86,7 +86,7 @@ public class UiControllerPlayback {
 
     void stopRewindIfActive() {
         if (ffRewindController != null)
-            stopRewind(false);
+            stopRewind();
     }
 
     void startPlayback(@NonNull AudioBook book) {
@@ -113,7 +113,9 @@ public class UiControllerPlayback {
     }
 
     public void resumeFromRewind() {
-        playbackService.resumeFromRewind();
+        if (!isPlaybackStopped()) {
+            playbackService.resumeFromRewind();
+        }
     }
 
     public void startRewind(boolean isForward, @NonNull FFRewindTimer.Observer timerObserver) {
@@ -129,11 +131,11 @@ public class UiControllerPlayback {
         ffRewindController.start();
     }
 
-    public void stopRewind(boolean isPlaybackStopping) {
+    public void stopRewind() {
         if (ffRewindController != null) {
             analyticsTracker.onFfRewindFinished(
                     ffRewindController.isFF, ffRewindController.getRewindWallTimeMs());
-            if (!isPlaybackStopping) {
+            if (isPlaybackStopped()) {
                 playbackService.getAudioBookBeingPlayed().updateTotalPosition(
                         ffRewindController.getDisplayTimeMs());
             }
@@ -166,6 +168,10 @@ public class UiControllerPlayback {
         // TODO: once MediaSession is implemented, volume changes should be reported via its
         //  VolumeProviderCompat.
         showVolume();
+    }
+
+    private boolean isPlaybackStopped() {
+        return playbackService.getState() == PlaybackService.State.IDLE;
     }
 
     private static class FFRewindController implements FFRewindTimer.Observer {
