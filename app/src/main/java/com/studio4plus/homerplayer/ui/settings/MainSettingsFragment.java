@@ -11,6 +11,8 @@ import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 
+import java.util.Locale;
+
 import javax.inject.Inject;
 
 public class MainSettingsFragment extends BaseSettingsFragment {
@@ -75,7 +77,9 @@ public class MainSettingsFragment extends BaseSettingsFragment {
 
     private void updateVersionSummary() {
         Preference preference = findPreference(KEY_VERSION);
-        preference.setSummary(BuildConfig.VERSION_NAME);
+        String versionString = String.format(
+                Locale.US, "%s (%d)", BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
+        preference.setSummary(versionString);
     }
 
     private void updateKioskModeSummary() {
