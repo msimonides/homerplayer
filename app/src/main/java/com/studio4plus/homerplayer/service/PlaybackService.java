@@ -117,13 +117,12 @@ public class PlaybackService
     }
 
     public State getState() {
-        if (player == null) {
-            return State.IDLE;
-        } else if (durationQueryInProgress != null) {
+        if (durationQueryInProgress != null) {
             return State.PREPARATION;
-        } else {
-            Preconditions.checkNotNull(playbackInProgress);
+        } else if (playbackInProgress != null) {
             return State.PLAYBACK;
+        } else {
+            return State.IDLE;
         }
     }
 
