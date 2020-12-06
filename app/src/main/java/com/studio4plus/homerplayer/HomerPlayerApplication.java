@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Handler;
 import android.provider.MediaStore;
 
 import androidx.core.content.pm.PackageInfoCompat;
@@ -41,8 +40,13 @@ public class HomerPlayerApplication extends MultiDexApplication {
         component.inject(this);
 
         long currentVersionCode = getVersionCode();
-        if (isUpdate(globalSettings.lastVersionCode(), currentVersionCode)) {
-            onUpdate(globalSettings.lastVersionCode(), currentVersionCode);
+        long previousVersionCode = globalSettings.lastVersionCode();
+        if (isUpdate(previousVersionCode, currentVersionCode)) {
+            onUpdate(previousVersionCode);
+        }
+        if (previousVersionCode < currentVersionCode) {
+            // This is true both for fresh installations and updates.
+            globalSettings.setLastVersionCode(currentVersionCode);
         }
 
         getContentResolver().registerContentObserver(
@@ -75,11 +79,10 @@ public class HomerPlayerApplication extends MultiDexApplication {
         }
     }
 
-    private void onUpdate(long previousVersionCode, long currentVersionCode) {
+    private void onUpdate(long previousVersionCode) {
         if (previousVersionCode < 56) {
             globalSettings.setVolumeControlsEnabled(false);
         }
-        globalSettings.setLastVersionCode(currentVersionCode);
     }
 
     private long getVersionCode() {
