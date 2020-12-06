@@ -28,7 +28,7 @@ public class MainSettingsFragment extends BaseSettingsFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        HomerPlayerApplication.getComponent(getActivity()).inject(this);
+        HomerPlayerApplication.getComponent(requireActivity()).inject(this);
         super.onCreate(savedInstanceState);
     }
 
@@ -37,16 +37,13 @@ public class MainSettingsFragment extends BaseSettingsFragment {
         setPreferencesFromResource(R.xml.preferences_main, rootKey);
 
         ConfirmDialogPreference preferenceResetProgress =
-                (ConfirmDialogPreference) findPreference(KEY_RESET_ALL_BOOK_PROGRESS);
-        preferenceResetProgress.setOnConfirmListener(new ConfirmDialogPreference.OnConfirmListener() {
-            @Override
-            public void onConfirmed() {
-                audioBookManager.resetAllBookProgress();
-                Toast.makeText(
-                        getActivity(),
-                        R.string.pref_reset_all_book_progress_done,
-                        Toast.LENGTH_SHORT).show();
-            }
+                getPreference(KEY_RESET_ALL_BOOK_PROGRESS);
+        preferenceResetProgress.setOnConfirmListener(() -> {
+            audioBookManager.resetAllBookProgress();
+            Toast.makeText(
+                    getActivity(),
+                    R.string.pref_reset_all_book_progress_done,
+                    Toast.LENGTH_SHORT).show();
         });
         setupFaq();
         updateVersionSummary();
@@ -55,8 +52,6 @@ public class MainSettingsFragment extends BaseSettingsFragment {
     @Override
     public void onStart() {
         super.onStart();
-
-        SharedPreferences sharedPreferences = getSharedPreferences();
         updateKioskModeSummary();
     }
 
@@ -76,15 +71,14 @@ public class MainSettingsFragment extends BaseSettingsFragment {
     }
 
     private void updateVersionSummary() {
-        Preference preference = findPreference(KEY_VERSION);
+        Preference preference = getPreference(KEY_VERSION);
         String versionString = String.format(
                 Locale.US, "%s (%d)", BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
         preference.setSummary(versionString);
     }
 
     private void updateKioskModeSummary() {
-        Preference kioskModeScreen =
-                findPreference(GlobalSettings.KEY_KIOSK_MODE_SCREEN);
+        Preference kioskModeScreen = getPreference(GlobalSettings.KEY_KIOSK_MODE_SCREEN);
 
         int summaryStringId = R.string.pref_kiosk_mode_screen_summary_disabled;
         if (globalSettings.isFullKioskModeEnabled())
@@ -95,14 +89,11 @@ public class MainSettingsFragment extends BaseSettingsFragment {
     }
 
     private void setupFaq() {
-        Preference preference = findPreference(KEY_FAQ);
+        Preference preference = getPreference(KEY_FAQ);
         preference.setSummary(getString(R.string.pref_help_faq_summary, FAQ_URL));
-        preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                openUrl(FAQ_URL);
-                return true;
-            }
+        preference.setOnPreferenceClickListener(preference1 -> {
+            openUrl(FAQ_URL);
+            return true;
         });
     }
 }
