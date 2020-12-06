@@ -135,7 +135,7 @@ public class UiControllerPlayback {
         if (ffRewindController != null) {
             analyticsTracker.onFfRewindFinished(
                     ffRewindController.isFF, ffRewindController.getRewindWallTimeMs());
-            if (isPlaybackStopped()) {
+            if (!isPlaybackStopped()) {
                 playbackService.getAudioBookBeingPlayed().updateTotalPosition(
                         ffRewindController.getDisplayTimeMs());
             }
