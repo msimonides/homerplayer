@@ -1,0 +1,16 @@
+<i>Homer Player</i> is an audiobook player for the elderly. Its simple user interface makes it easy to operate for seniors and people with poor vision (or both). It features simplicity so far you can even use it in "single application mode" (kiosk), to make the Android device a dedicated Audio Book Reader the user cannot "accidentally close and get lost on".
+
+<b>Features:</b>
+
+- simplicity: just a list of audiobooks and a "start" button,
+- flip-to-stop: there's no need to press any buttons to pause playback, just put the device face down on a table,
+- low-vision friendly interface: book titles are read aloud and high contrast, large UI elements are used,
+- adjust speed: slow down playback for those hard of hearing.
+
+<b>Single application mode (kiosk):</b>
+
+With this mode enabled the user cannot exit the application so they don't need to know how to use a tablet.
+
+Perfect for building a dedicated audiobook player for your grandparents.
+
+Let me know if you need help, like the app or hate it.
