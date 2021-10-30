@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
         controller.onActivityStart();
         orientationDelegate.onStart();
         batteryStatusProvider.start();
-        kioskModeHandler.onActivityStart();
+        kioskModeHandler.onActivityStart(this);
         handleIntent(getIntent());
     }
 
@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
             // Start animations.
             batteryStatusIndicator.startAnimations();
 
-            kioskModeHandler.onFocusGained();
+            kioskModeHandler.onFocusGained(this);
         }
     }
 
@@ -240,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
                 boolean enable = intent.getBooleanExtra(ENABLE_EXTRA, false);
                 if (globalSettings.isFullKioskModeEnabled() != enable) {
                     globalSettings.setFullKioskModeEnabledNow(enable);
-                    kioskModeSwitcher.onFullKioskModeEnabled(enable);
+                    kioskModeSwitcher.onFullKioskModeEnabled(this, enable);
 
                     // For some reason clearing the preferred Home activity only takes effect if the
                     // application exits (finishing the activity doesn't help).

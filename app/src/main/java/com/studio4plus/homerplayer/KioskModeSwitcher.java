@@ -1,6 +1,7 @@
 package com.studio4plus.homerplayer;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -9,6 +10,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
+
+import androidx.annotation.NonNull;
 
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.events.KioskModeChanged;
@@ -38,13 +41,13 @@ public class KioskModeSwitcher {
         return Build.VERSION.SDK_INT >= 21 && API21.isLockTaskPermitted(context);
     }
 
-    public void onFullKioskModeEnabled(boolean fullKioskEnabled) {
+    public void onFullKioskModeEnabled(@NonNull Activity activity, boolean fullKioskEnabled) {
         Preconditions.checkState(!fullKioskEnabled || isLockTaskPermitted());
 
         if (globalSettings.isSimpleKioskModeEnabled())
-            onSimpleKioskModeEnabled(!fullKioskEnabled);
+            onSimpleKioskModeEnabled(activity, !fullKioskEnabled);
 
-        eventBus.post(new KioskModeChanged(KioskModeChanged.Type.FULL, fullKioskEnabled));
+        eventBus.post(new KioskModeChanged(activity, KioskModeChanged.Type.FULL, fullKioskEnabled));
 
         if (fullKioskEnabled)
             API21.setPreferredHomeActivity(context, MainActivity.class);
@@ -52,14 +55,14 @@ public class KioskModeSwitcher {
             API21.clearPreferredHomeActivity(context);
     }
 
-    public void onSimpleKioskModeEnabled(boolean enable) {
+    public void onSimpleKioskModeEnabled(@NonNull Activity activity, boolean enable) {
         if (globalSettings.isFullKioskModeEnabled() & enable)
             return;
 
         HomeActivity.setEnabled(context, enable);
         if (enable)
             triggerHomeAppSelectionIfNecessary();
-        eventBus.post(new KioskModeChanged(KioskModeChanged.Type.SIMPLE, enable));
+        eventBus.post(new KioskModeChanged(activity, KioskModeChanged.Type.SIMPLE, enable));
     }
 
     private void triggerHomeAppSelectionIfNecessary() {

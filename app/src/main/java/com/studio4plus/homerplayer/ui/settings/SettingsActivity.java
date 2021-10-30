@@ -75,7 +75,7 @@ public class SettingsActivity
         orientationDelegate.onStart();
         blockEventsOnStart();
         eventBus.post(new SettingsEnteredEvent());
-        kioskModeHandler.onActivityStart();
+        kioskModeHandler.onActivityStart(this);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class SettingsActivity
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
-            kioskModeHandler.onFocusGained();
+            kioskModeHandler.onFocusGained(this);
         }
     }
 

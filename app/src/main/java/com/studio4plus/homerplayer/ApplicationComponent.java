@@ -3,7 +3,6 @@ package com.studio4plus.homerplayer;
 import android.content.Context;
 import android.content.res.Resources;
 import android.media.AudioManager;
-import android.net.Uri;
 
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.battery.BatteryStatusProvider;
@@ -15,6 +14,7 @@ import com.studio4plus.homerplayer.service.AudioBookPlayerModule;
 import com.studio4plus.homerplayer.service.DemoSamplesInstallerService;
 import com.studio4plus.homerplayer.service.PlaybackService;
 import com.studio4plus.homerplayer.ui.BatteryStatusIndicator;
+import com.studio4plus.homerplayer.ui.KioskModeHandler;
 import com.studio4plus.homerplayer.ui.classic.ClassicPlaybackUi;
 import com.studio4plus.homerplayer.ui.classic.FragmentBookItem;
 import com.studio4plus.homerplayer.ui.classic.ClassicBookList;
@@ -22,10 +22,8 @@ import com.studio4plus.homerplayer.ui.classic.ClassicNoBooksUi;
 import com.studio4plus.homerplayer.ui.settings.KioskSettingsFragment;
 import com.studio4plus.homerplayer.ui.settings.MainSettingsFragment;
 import com.studio4plus.homerplayer.ui.settings.PlaybackSettingsFragment;
-import com.studio4plus.homerplayer.ui.settings.SettingsActivity;
 import com.studio4plus.homerplayer.ui.classic.FragmentPlayback;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
@@ -59,6 +57,7 @@ public interface ApplicationComponent {
     Context getContext();
     EventBus getEventBus();
     GlobalSettings getGlobalSettings();
+    KioskModeHandler getKioskModeHandler();
     KioskModeSwitcher getKioskModeSwitcher();
     MediaStoreUpdateObserver getMediaStoreUpdateObserver();
     Resources getResources();

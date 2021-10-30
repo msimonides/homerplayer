@@ -2,31 +2,30 @@ package com.studio4plus.homerplayer.ui;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.os.Build;
 import android.view.View;
+
+import androidx.annotation.NonNull;
 
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.events.KioskModeChanged;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import de.greenrobot.event.EventBus;
 
-@ActivityScope
+@Singleton
 public class KioskModeHandler {
 
-    private static final String SCREEN_LOCK_PREFS = "ScreenLocker";
-    private static final String PREF_SCREEN_LOCK_ENABLED = "screen_lock_enabled";
-
-    private final Activity activity;
     private final GlobalSettings globalSettings;
     private final EventBus eventBus;
     private boolean keepNavigation = false;
 
+    private boolean isLockEnabled = false;
+
     @Inject
-    KioskModeHandler(Activity activity, GlobalSettings settings, EventBus eventBus) {
-        this.activity = activity;
+    public KioskModeHandler(GlobalSettings settings, EventBus eventBus) {
         this.globalSettings = settings;
         this.eventBus = eventBus;
     }
@@ -35,10 +34,8 @@ public class KioskModeHandler {
         this.keepNavigation = keepNavigation;
     }
 
-    public void onActivityStart() {
-        if (!globalSettings.isFullKioskModeEnabled() && isLockTaskEnabled())
-            lockTask(false);
-        setUiFlagsAndLockTask();
+    public void onActivityStart(@NonNull Activity activity) {
+        setUiFlagsAndLockTask(activity);
         eventBus.register(this);
     }
 
@@ -46,18 +43,18 @@ public class KioskModeHandler {
         eventBus.unregister(this);
     }
 
-    public void onFocusGained() {
-        setUiFlagsAndLockTask();
+    public void onFocusGained(@NonNull Activity activity) {
+        setUiFlagsAndLockTask(activity);
     }
 
     @SuppressWarnings("unused")
     public void onEvent(KioskModeChanged event) {
         if (event.type == KioskModeChanged.Type.FULL)
-            lockTask(event.isEnabled);
-        setNavigationVisibility(!event.isEnabled);
+            lockTask(event.activity, event.isEnabled);
+        setNavigationVisibility(event.activity, !event.isEnabled);
     }
 
-    private void setUiFlagsAndLockTask() {
+    private void setUiFlagsAndLockTask(@NonNull Activity activity) {
         int visibilitySetting = View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
         if (!keepNavigation) {
             visibilitySetting |= View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -66,13 +63,13 @@ public class KioskModeHandler {
 
         activity.getWindow().getDecorView().setSystemUiVisibility(visibilitySetting);
         if (globalSettings.isAnyKioskModeEnabled())
-            setNavigationVisibility(false);
+            setNavigationVisibility(activity, false);
 
         if (globalSettings.isFullKioskModeEnabled())
-            lockTask(true);
+            lockTask(activity, true);
     }
 
-    private void setNavigationVisibility(boolean show) {
+    private void setNavigationVisibility(@NonNull Activity activity, boolean show) {
         if (Build.VERSION.SDK_INT < 19 || keepNavigation)
             return;
 
@@ -90,18 +87,14 @@ public class KioskModeHandler {
         decorView.setSystemUiVisibility(visibilitySetting);
     }
 
-    private boolean isLockTaskEnabled() {
-        return activity.getSharedPreferences(SCREEN_LOCK_PREFS, Context.MODE_PRIVATE)
-                .getBoolean(PREF_SCREEN_LOCK_ENABLED, false);
-    }
-
-    private void lockTask(boolean isLocked) {
-        activity.getSharedPreferences(SCREEN_LOCK_PREFS, Context.MODE_PRIVATE).edit()
-                .putBoolean(PREF_SCREEN_LOCK_ENABLED, isLocked).apply();
-        if (isLocked)
-            API21.startLockTask(activity);
-        else
-            API21.stopLockTask(activity);
+    private void lockTask(@NonNull Activity activity, boolean isLocked) {
+        if (isLockEnabled != isLocked) {
+            isLockEnabled = isLocked;
+            if (isLocked)
+                API21.startLockTask(activity);
+            else
+                API21.stopLockTask(activity);
+        }
     }
     @TargetApi(21)
     private static class API21 {
