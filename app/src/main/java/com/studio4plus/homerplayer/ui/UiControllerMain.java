@@ -115,7 +115,7 @@ public class UiControllerMain implements ServiceConnection {
 
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(PlaybackFatalErrorEvent event) {
-        mainUi.onPlaybackError(event.path);
+        mainUi.onPlaybackError(event.uri);
     }
 
     void playCurrentAudiobook() {

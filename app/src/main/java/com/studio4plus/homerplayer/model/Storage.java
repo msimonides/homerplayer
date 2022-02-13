@@ -66,8 +66,6 @@ public class Storage implements AudioBook.UpdateObserver {
 
                 if (fileIndex >= 0)
                     audioBook.restore(colourScheme, fileIndex, seek, durations);
-                else
-                    audioBook.restoreOldFormat(colourScheme, fileName, seek, durations);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

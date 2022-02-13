@@ -1,6 +1,7 @@
 package com.studio4plus.homerplayer.ui;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 import com.studio4plus.homerplayer.crashreporting.CrashReporting;
@@ -20,7 +21,7 @@ public class SnippetPlayer implements PlaybackController.Observer {
     private static final long PLAYBACK_TIME_MS = 5000;
 
     private static final String TAG = "SnippetPlayer";
-    private PlaybackController playbackController;
+    final private PlaybackController playbackController;
     private long startPositionMs = -1;
     private boolean isPlaying = false;
 
@@ -35,7 +36,7 @@ public class SnippetPlayer implements PlaybackController.Observer {
         AudioBook.Position position = audioBook.getLastPosition();
 
         isPlaying = true;
-        playbackController.start(position.file, position.seekPosition);
+        playbackController.start(position.uri, position.seekPosition);
     }
 
     public void stop() {
@@ -47,7 +48,7 @@ public class SnippetPlayer implements PlaybackController.Observer {
     }
 
     @Override
-    public void onDuration(File file, long durationMs) {}
+    public void onDuration(Uri uri, long durationMs) {}
 
     @Override
     public void onPlaybackProgressed(long currentPositionMs) {
@@ -67,8 +68,8 @@ public class SnippetPlayer implements PlaybackController.Observer {
     public void onPlaybackStopped(long currentPositionMs) {}
 
     @Override
-    public void onPlaybackError(File path) {
-        CrashReporting.log(Log.DEBUG, TAG,"Unable to play snippet: " + path.toString());
+    public void onPlaybackError(Uri uri) {
+        CrashReporting.log(Log.DEBUG, TAG,"Unable to play snippet: " + uri.toString());
     }
 
     @Override

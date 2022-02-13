@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Handler;
 import androidx.annotation.NonNull;
 import android.app.Service;
@@ -257,7 +258,7 @@ public class PlaybackService
             controller.setObserver(this);
             AudioBook.Position position = audioBook.getLastPosition();
             long startPositionMs = Math.max(0, position.seekPosition - jumpBackMs);
-            controller.start(position.file, startPositionMs);
+            controller.start(position.uri, startPositionMs);
             handler.postDelayed(updatePosition, UPDATE_TIME_MS);
             resetSleepTimer();
         }
@@ -274,7 +275,7 @@ public class PlaybackService
 
         public void resumeFromRewind() {
             AudioBook.Position position = audioBook.getLastPosition();
-            controller.start(position.file, position.seekPosition);
+            controller.start(position.uri, position.seekPosition);
             handler.postDelayed(updatePosition, UPDATE_TIME_MS);
             resetSleepTimer();
         }
@@ -290,8 +291,8 @@ public class PlaybackService
         }
 
         @Override
-        public void onDuration(File file, long durationMs) {
-            audioBook.offerFileDuration(file, durationMs);
+        public void onDuration(Uri uri, long durationMs) {
+            audioBook.offerFileDuration(uri, durationMs);
         }
 
         @Override
@@ -301,7 +302,7 @@ public class PlaybackService
                     (hasMoreToPlay ? "more to play" : "finished"));
             if (hasMoreToPlay) {
                 AudioBook.Position position = audioBook.getLastPosition();
-                controller.start(position.file, position.seekPosition);
+                controller.start(position.uri, position.seekPosition);
             } else {
                 audioBook.resetPosition();
                 PlaybackService.this.onPlaybackEnded();
@@ -315,8 +316,8 @@ public class PlaybackService
         }
 
         @Override
-        public void onPlaybackError(File path) {
-            eventBus.post(new PlaybackFatalErrorEvent(path));
+        public void onPlaybackError(Uri uri) {
+            eventBus.post(new PlaybackFatalErrorEvent(uri));
         }
 
         @Override
@@ -334,8 +335,8 @@ public class PlaybackService
         private DurationQuery(Player player, AudioBook audioBook) {
             this.audioBook = audioBook;
 
-            List<File> files = audioBook.getFilesWithNoDuration();
-            controller = player.createDurationQuery(files);
+            List<Uri> uris = audioBook.getFilesWithNoDuration();
+            controller = player.createDurationQuery(uris);
             controller.start(this);
         }
 
@@ -344,8 +345,8 @@ public class PlaybackService
         }
 
         @Override
-        public void onDuration(File file, long durationMs) {
-            audioBook.offerFileDuration(file, durationMs);
+        public void onDuration(Uri uri, long durationMs) {
+            audioBook.offerFileDuration(uri, durationMs);
         }
 
         @Override
@@ -363,8 +364,8 @@ public class PlaybackService
         }
 
         @Override
-        public void onPlayerError(File path) {
-            eventBus.post(new PlaybackFatalErrorEvent(path));
+        public void onPlayerError(Uri uri) {
+            eventBus.post(new PlaybackFatalErrorEvent(uri));
         }
     }
 

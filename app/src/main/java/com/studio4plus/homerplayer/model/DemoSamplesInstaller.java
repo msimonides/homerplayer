@@ -3,12 +3,13 @@ package com.studio4plus.homerplayer.model;
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import com.github.saturngod.Decompress;
 import com.google.common.io.Files;
 import com.studio4plus.homerplayer.crashreporting.CrashReporting;
-import com.studio4plus.homerplayer.filescanner.FileScanner;
+import com.studio4plus.homerplayer.demosamples.DemoSamplesFolderProvider;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,41 +28,41 @@ import javax.inject.Inject;
 
 public class DemoSamplesInstaller {
 
-    private final File audioBooksDirectory;
     private final Locale locale;
     private final Context context;
+    private final DemoSamplesFolderProvider samplesFolderProvider;
 
     @Inject
     @MainThread
-    public DemoSamplesInstaller(Context context, Locale locale, AudioBookManager audioBookManager) {
+    public DemoSamplesInstaller(
+            @NonNull Context context,
+            @NonNull Locale locale,
+            @NonNull DemoSamplesFolderProvider samplesFolderProvider) {
         this.context = context;
-        this.audioBooksDirectory = audioBookManager.getDefaultAudioBooksDirectory();
         this.locale = locale;
+        this.samplesFolderProvider = samplesFolderProvider;
     }
 
     @WorkerThread
-    public boolean installBooksFromZip(File zipPath) throws IOException {
-        File tempFolder = Files.createTempDir();
+    public void installBooksFromZip(File zipPath) throws IOException {
+        File tempFolder = ensureTempFolder();
         InputStream inputStream = new BufferedInputStream(new FileInputStream(zipPath));
         Decompress decompress = new Decompress(inputStream, tempFolder.getAbsolutePath());
         decompress.unzip();
-        boolean anythingInstalled = installBooks(tempFolder);
-        deleteFolderWithFiles(tempFolder);
-
-        return anythingInstalled;
+        File samplesFolder = samplesFolderProvider.demoFolder();
+        boolean success = installBooks(samplesFolder, tempFolder);
+        deleteFolderRecursively(tempFolder);
+        if (!success) {
+            deleteFolderRecursively(samplesFolder);
+        }
     }
 
     @WorkerThread
-    private boolean installBooks(File sourceDirectory) {
-        if (!audioBooksDirectory.exists()) {
-            if (!audioBooksDirectory.mkdirs())
-                return false;
-        }
-
+    private boolean installBooks(@NonNull File destinationDirectory, @NonNull File sourceDirectory) {
         boolean anythingInstalled = false;
         File books[] = sourceDirectory.listFiles();
         for (File bookDirectory : books) {
-            boolean success = installSingleBook(bookDirectory, audioBooksDirectory);
+            boolean success = installSingleBook(bookDirectory, destinationDirectory);
             if (success)
                 anythingInstalled = true;
         }
@@ -86,9 +87,6 @@ public class DemoSamplesInstaller {
             return false;
 
         try {
-            File sampleIndicator = new File(bookDirectory, FileScanner.SAMPLE_BOOK_FILE_NAME);
-            Files.touch(sampleIndicator);
-
             File files[] = sourceBookDirectory.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String filename) {
@@ -109,7 +107,7 @@ public class DemoSamplesInstaller {
 
             return true;
         } catch(IOException exception) {
-            deleteFolderWithFiles(bookDirectory);
+            deleteFolderRecursively(bookDirectory);
             CrashReporting.logException(exception);
             return false;
         }
@@ -136,12 +134,25 @@ public class DemoSamplesInstaller {
      * Deletes files from a directory, non-recursive.
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void deleteFolderWithFiles(File directory) {
-        File files[] = directory.listFiles();
+    private void deleteFolderRecursively(File directory) {
+        File[] files = directory.listFiles();
         for (File file : files) {
-            file.delete();
+            if (file.isDirectory()) {
+                deleteFolderRecursively(file);
+            } else {
+                file.delete();
+            }
         }
         directory.delete();
+    }
+
+    private File ensureTempFolder() {
+        File cacheDir = context.getCacheDir();
+        File tempFolder = new File(cacheDir, "demo_samples_tmp");
+        if (!tempFolder.exists()) {
+            tempFolder.mkdirs();
+        }
+        return tempFolder;
     }
 
     private static final String TITLES_FILE_NAME = "titles.json";

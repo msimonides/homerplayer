@@ -8,19 +8,17 @@ import android.os.Looper;
 import androidx.annotation.NonNull;
 
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.mp3.Mp3Extractor;
-import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.FileDataSource;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.events.PlaybackErrorEvent;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,8 +41,8 @@ public class Player {
         return new PlaybackControllerImpl(new Handler(Looper.myLooper()));
     }
 
-    public DurationQueryController createDurationQuery(List<File> files) {
-        return new DurationQueryControllerImpl(files);
+    public DurationQueryController createDurationQuery(List<Uri> uris) {
+        return new DurationQueryControllerImpl(uris);
     }
 
     public void setPlaybackSpeed(float speed) {
@@ -57,33 +55,21 @@ public class Player {
         exoPlayer.setVolume(volume);
     }
 
-    private void prepareAudioFile(File file, long startPositionMs) {
-        Uri fileUri = Uri.fromFile(file);
-        MediaSource source = getExtractorMediaSourceFactory().createMediaSource(fileUri);
-
+    private void prepareAudioFile(Uri uri, long startPositionMs) {
+        MediaItem mediaItem = MediaItem.fromUri(uri);
+        exoPlayer.setMediaItem(mediaItem);
         exoPlayer.seekTo(startPositionMs);
-        exoPlayer.prepare(source, false, true);
-    }
-
-    private ProgressiveMediaSource.Factory getExtractorMediaSourceFactory() {
-        if (mediaSourceFactory == null) {
-            DataSource.Factory dataSourceFactory = new FileDataSource.Factory();
-            DefaultExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-            extractorsFactory.setMp3ExtractorFlags(Mp3Extractor.FLAG_ENABLE_CONSTANT_BITRATE_SEEKING);
-            mediaSourceFactory = new ProgressiveMediaSource.Factory(
-                    dataSourceFactory, extractorsFactory);
-        }
-        return mediaSourceFactory;
+        exoPlayer.prepare();
     }
 
     private class PlaybackControllerImpl implements
             com.google.android.exoplayer2.Player.Listener,
             PlaybackController {
 
-        private File currentFile;
+        private Uri currentUri;
         private Observer observer;
         private int lastPlaybackState;
-        private Handler handler;
+        final private Handler handler;
         private final Runnable updateProgressTask = this::updateProgress;
 
         private PlaybackControllerImpl(Handler handler) {
@@ -99,11 +85,11 @@ public class Player {
         }
 
         @Override
-        public void start(File currentFile, long startPositionMs) {
+        public void start(Uri currentUri, long startPositionMs) {
             Preconditions.checkNotNull(observer);
-            this.currentFile = currentFile;
+            this.currentUri = currentUri;
             exoPlayer.setPlayWhenReady(true);
-            prepareAudioFile(currentFile, startPositionMs);
+            prepareAudioFile(currentUri, startPositionMs);
         }
 
         @Override
@@ -138,7 +124,7 @@ public class Player {
 
             switch(playbackState) {
                 case com.google.android.exoplayer2.Player.STATE_READY:
-                    observer.onDuration(currentFile, exoPlayer.getDuration());
+                    observer.onDuration(currentUri, exoPlayer.getDuration());
                     updateProgress();
                     break;
                 case com.google.android.exoplayer2.Player.STATE_ENDED:
@@ -160,13 +146,13 @@ public class Player {
                     error.getMessage(),
                     exoPlayer.getDuration(),
                     exoPlayer.getCurrentPosition(),
-                    getFormatDescription()));
+                    exoPlayer.getAudioFormat() != null ? exoPlayer.getAudioFormat().toString() : "unknown"));
             if (error.errorCode == PlaybackException.ERROR_CODE_IO_READ_POSITION_OUT_OF_RANGE) {
                 // May happen with files that have seeking or length information.
                 observer.onPlaybackEnded();
                 return;
             }
-            observer.onPlaybackError(currentFile);
+            observer.onPlaybackError(currentUri);
         }
 
         private void updateProgress() {
@@ -182,31 +168,20 @@ public class Player {
 
             handler.postDelayed(updateProgressTask, delayMs);
         }
-
-        private String getFormatDescription() {
-            Format format = exoPlayer.getAudioFormat();
-            if (format != null) {
-                return format.toString();
-            } else {
-                String fileName = currentFile.getName();
-                int suffixIndex = fileName.lastIndexOf('.');
-                return suffixIndex != -1 ? fileName.substring(suffixIndex) : "";
-            }
-        }
     }
 
     private class DurationQueryControllerImpl implements
             com.google.android.exoplayer2.Player.EventListener,
             DurationQueryController {
 
-        private final Iterator<File> iterator;
-        private File currentFile;
+        private final Iterator<Uri> iterator;
+        private Uri uri;
         private Observer observer;
         private boolean releaseOnIdle = false;
 
-        private DurationQueryControllerImpl(List<File> files) {
-            Preconditions.checkArgument(!files.isEmpty());
-            this.iterator = files.iterator();
+        private DurationQueryControllerImpl(List<Uri> uris) {
+            Preconditions.checkArgument(!uris.isEmpty());
+            this.iterator = uris.iterator();
         }
 
         @Override
@@ -227,7 +202,7 @@ public class Player {
         public void onPlaybackStateChanged(int playbackState) {
             switch(playbackState) {
                 case com.google.android.exoplayer2.Player.STATE_READY:
-                    observer.onDuration(currentFile, exoPlayer.getDuration());
+                    observer.onDuration(uri, exoPlayer.getDuration());
                     boolean hasNext = processNextFile();
                     if (!hasNext)
                         exoPlayer.stop();
@@ -247,14 +222,14 @@ public class Player {
         @Override
         public void onPlayerError(@NonNull PlaybackException error) {
             releaseOnIdle = true;
-            observer.onPlayerError(currentFile);
+            observer.onPlayerError(uri);
         }
 
         private boolean processNextFile() {
             boolean hasNext = iterator.hasNext();
             if (hasNext) {
-                currentFile = iterator.next();
-                prepareAudioFile(currentFile, 0);
+                uri = iterator.next();
+                prepareAudioFile(uri, 0);
             }
             return hasNext;
         }

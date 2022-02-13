@@ -1,5 +1,7 @@
 package com.studio4plus.homerplayer.filescanner;
 
+import android.net.Uri;
+
 import com.google.common.base.Preconditions;
 
 import java.io.File;
@@ -7,15 +9,14 @@ import java.io.File;
 public class FileSet {
 
     public final String id;
-    public final String directoryName;
-    public final File[] files;
+    public final String name;
+    public final Uri[] uris;
     public final boolean isDemoSample;
 
-    public FileSet(String id, File absolutePath, File[] files, boolean isDemoSample) {
-        Preconditions.checkArgument(absolutePath.isDirectory());
+    public FileSet(String id, String name, Uri[] uris, boolean isDemoSample) {
         this.id = id;
-        this.directoryName = absolutePath.getName();
-        this.files = files;
+        this.name = name;
+        this.uris = uris;
         this.isDemoSample = isDemoSample;
     }
 

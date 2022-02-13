@@ -1,5 +1,6 @@
 package com.studio4plus.homerplayer.model;
 
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.MainThread;
@@ -7,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.studio4plus.homerplayer.ApplicationScope;
+import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.concurrency.SimpleFuture;
 import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
@@ -15,7 +17,6 @@ import com.studio4plus.homerplayer.events.MediaStoreUpdateEvent;
 import com.studio4plus.homerplayer.filescanner.FileScanner;
 import com.studio4plus.homerplayer.filescanner.FileSet;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,7 +28,7 @@ import javax.inject.Inject;
 import de.greenrobot.event.EventBus;
 
 @ApplicationScope
-public class AudioBookManager {
+public class AudioBookManager implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     @NonNull
     private final List<AudioBook> audioBooks = new ArrayList<>();
@@ -44,12 +45,15 @@ public class AudioBookManager {
 
     @Inject
     @MainThread
-    public AudioBookManager(
-            @NonNull EventBus eventBus, @NonNull FileScanner fileScanner, @NonNull Storage storage) {
+    public AudioBookManager(@NonNull EventBus eventBus,
+                            @NonNull FileScanner fileScanner,
+                            @NonNull Storage storage,
+                            @NonNull SharedPreferences sharedPreferences) {
         this.fileScanner = fileScanner;
         this.storage = storage;
         this.eventBus = eventBus;
         eventBus.register(this);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -91,11 +95,6 @@ public class AudioBookManager {
             if (book.getId().equals(id))
                 return book;
         return null;
-    }
-
-    @MainThread
-    public File getDefaultAudioBooksDirectory() {
-        return fileScanner.getDefaultAudioBooksDirectory();
     }
 
     @MainThread
@@ -199,6 +198,13 @@ public class AudioBookManager {
     public void resetAllBookProgress() {
         for (AudioBook book : audioBooks) {
             book.resetPosition();
+        }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @NonNull String key) {
+        if (key.equals(GlobalSettings.KEY_AUDIOBOOKS_FOLDER)) {
+            scanFiles();
         }
     }
 

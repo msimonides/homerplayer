@@ -1,8 +1,15 @@
 package com.studio4plus.homerplayer.ui.settings;
 
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.preference.Preference;
+
 import android.widget.Toast;
 
 import com.studio4plus.homerplayer.BuildConfig;
@@ -18,6 +25,7 @@ import javax.inject.Inject;
 public class MainSettingsFragment extends BaseSettingsFragment {
 
     private static final String KEY_RESET_ALL_BOOK_PROGRESS = "reset_all_book_progress_preference";
+    private static final String KEY_AUDIOBOOKS_FOLDER = "audiobooks_folder_preference";
     private static final String KEY_FAQ = "faq_preference";
     private static final String KEY_VERSION = "version_preference";
 
@@ -25,6 +33,9 @@ public class MainSettingsFragment extends BaseSettingsFragment {
 
     @Inject public AudioBookManager audioBookManager;
     @Inject public GlobalSettings globalSettings;
+
+    private final ActivityResultLauncher<Uri> openDocumentTreeContract =
+            registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(), this::onAudiobooksFolderSet);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,6 +56,7 @@ public class MainSettingsFragment extends BaseSettingsFragment {
                     R.string.pref_reset_all_book_progress_done,
                     Toast.LENGTH_SHORT).show();
         });
+        setupAudiobooksFolder();
         setupFaq();
         updateVersionSummary();
     }
@@ -67,6 +79,8 @@ public class MainSettingsFragment extends BaseSettingsFragment {
             case GlobalSettings.KEY_KIOSK_MODE:
                 updateKioskModeSummary();
                 break;
+            case GlobalSettings.KEY_AUDIOBOOKS_FOLDER:
+                updateAudiobooksFolderSummary();
         }
     }
 
@@ -86,6 +100,35 @@ public class MainSettingsFragment extends BaseSettingsFragment {
         else if (globalSettings.isSimpleKioskModeEnabled())
             summaryStringId = R.string.pref_kiosk_mode_screen_summary_simple;
         kioskModeScreen.setSummary(summaryStringId);
+    }
+
+    private void setupAudiobooksFolder() {
+        Preference preference = getPreference(KEY_AUDIOBOOKS_FOLDER);
+        preference.setOnPreferenceClickListener(ignore -> {
+            String currentFolder = globalSettings.audiobooksFolder();
+            Uri currentFolderUri = (currentFolder != null) ? Uri.parse(currentFolder) : null;
+            openDocumentTreeContract.launch(currentFolderUri);
+            return true;
+        });
+        updateAudiobooksFolderSummary();
+    }
+
+    private void updateAudiobooksFolderSummary() {
+        Preference preference = getPreference(KEY_AUDIOBOOKS_FOLDER);
+        String folderUriString = globalSettings.audiobooksFolder();
+        if (folderUriString != null) {
+            DocumentFile documentFile = DocumentFile.fromTreeUri(requireContext(), Uri.parse(folderUriString));
+            preference.setSummary(documentFile.getName());
+        } else {
+            preference.setSummary("");
+        }
+
+    }
+
+    private void onAudiobooksFolderSet(@Nullable Uri documentTreeUri) {
+        if (documentTreeUri != null) {
+            globalSettings.setAudiobooksFolder(documentTreeUri.toString());
+        }
     }
 
     private void setupFaq() {

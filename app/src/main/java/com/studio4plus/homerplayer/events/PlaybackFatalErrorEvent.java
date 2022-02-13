@@ -1,11 +1,11 @@
 package com.studio4plus.homerplayer.events;
 
-import java.io.File;
+import android.net.Uri;
 
 public class PlaybackFatalErrorEvent {
-    public final File path;
+    public final Uri uri;
 
-    public PlaybackFatalErrorEvent(File path) {
-        this.path = path;
+    public PlaybackFatalErrorEvent(Uri uri) {
+        this.uri = uri;
     }
 }

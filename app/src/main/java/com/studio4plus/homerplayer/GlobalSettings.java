@@ -1,11 +1,15 @@
 package com.studio4plus.homerplayer;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.studio4plus.homerplayer.model.LibraryContentType;
 import com.studio4plus.homerplayer.ui.ColorTheme;
@@ -46,17 +50,42 @@ public class GlobalSettings {
     private static final String KEY_SETTINGS_HINT_SHOWN = "hints.settings.hint_shown";
     private static final String KEY_FLIPTOSTOP_HINT_SHOWN = "hints.fliptostop.hint_shown";
 
+    public static final String KEY_AUDIOBOOKS_FOLDER = "audiobooks_folder";
+
     private static final String KEY_BOOKS_EVER_INSTALLED = "action_history.books_ever_installed";
     private static final String KEY_SETTINGS_EVER_ENTERED = "action_history.settings_ever_entered";
     private static final String KEY_LAST_STARTED_VERSION_CODE = "last_version_code";
 
+    private final ContentResolver contentResolver;
     private final Resources resources;
     private final SharedPreferences sharedPreferences;
 
     @Inject
-    public GlobalSettings(Resources resources, SharedPreferences sharedPreferences) {
+    public GlobalSettings(
+            @NonNull ContentResolver contentResolver,
+            @NonNull Resources resources,
+            @NonNull SharedPreferences sharedPreferences) {
+        this.contentResolver = contentResolver;
         this.resources = resources;
         this.sharedPreferences = sharedPreferences;
+    }
+
+    @Nullable
+    public String audiobooksFolder() {
+        return sharedPreferences.getString(KEY_AUDIOBOOKS_FOLDER, null);
+    }
+
+    public void setAudiobooksFolder(@Nullable String newFolder) {
+        String oldFolder = audiobooksFolder();
+        if (oldFolder != null) {
+            contentResolver.releasePersistableUriPermission(Uri.parse(oldFolder), Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+        if (newFolder != null) {
+            contentResolver.takePersistableUriPermission(Uri.parse(newFolder), Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+        sharedPreferences.edit()
+                .putString(KEY_AUDIOBOOKS_FOLDER, newFolder)
+                .apply();
     }
 
     public int getJumpBackPreferenceMs() {
