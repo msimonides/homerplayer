@@ -3,7 +3,7 @@
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.2'
@@ -23,13 +23,13 @@ plugins {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
 ext {
-    compileSdkVersion = 29
+    compileSdkVersion = 31
     targetSdkVersion = 29
-    version_appcompat = "1.2.0"
+    version_appcompat = "1.4.1"
     version_firebase_bom = "25.12.0"
 }
