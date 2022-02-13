@@ -1,10 +1,10 @@
-import java.security.MessageDigest
-
 buildscript {
     repositories {
-        maven { url 'https://maven.fabric.io/public' }
+        google()
     }
 }
+import java.security.MessageDigest
+
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.crashlytics'
