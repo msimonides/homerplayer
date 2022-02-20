@@ -34,19 +34,46 @@ public class FileScanner {
         this.applicationContext = applicationContext;
     }
 
-    // TODO: implement legacy scanning for apps that were updated from an earlier version.
     public SimpleFuture<List<FileSet>> scanAudioBooksDirectories() {
-        String audiobooksFolderString = globalSettings.audiobooksFolder();
-        if (audiobooksFolderString != null) {
+        DemoSamplesFolderProvider samplesFolderProvider = new DemoSamplesFolderProvider(applicationContext);
+        ScanFilesTask.FolderProvider demoFolderProvider =
+                () -> Collections.singletonList(samplesFolderProvider.demoFolder());
+        if (globalSettings.legacyFileAccessMode()) {
             final Callable<List<FileSet>> task =
-                    new ScanDocumentTreeTask(applicationContext, Uri.parse(audiobooksFolderString));
+                    new ScanWithFallbackTask(
+                            new ScanFilesTask(new LegacyFolderProvider(applicationContext), false),
+                            new ScanFilesTask(demoFolderProvider, true));
             return ioExecutor.postTask(task);
+        }
+        String audiobooksFolderString = globalSettings.audiobooksFolder();
+        final Callable<List<FileSet>> task;
+        if (audiobooksFolderString != null) {
+            task = new ScanDocumentTreeTask(applicationContext, Uri.parse(audiobooksFolderString));
         } else {
-            DemoSamplesFolderProvider samplesFolderProvider = new DemoSamplesFolderProvider(applicationContext);
-            final Callable<List<FileSet>> task = new ScanFilesTask(
-                    () -> Collections.singletonList(samplesFolderProvider.demoFolder()),
-                    true);
-            return ioExecutor.postTask(task);
+            task = new ScanFilesTask(demoFolderProvider, true);
+        }
+        return ioExecutor.postTask(task);
+    }
+
+    private static class ScanWithFallbackTask implements Callable<List<FileSet>> {
+
+        private final Callable<List<FileSet>> scanMainContentTask;
+        private final Callable<List<FileSet>> scanDemoSamplesTask;
+
+        private ScanWithFallbackTask(
+                Callable<List<FileSet>> scanMainContentTask,
+                Callable<List<FileSet>> scanDemoSamplesTask) {
+            this.scanMainContentTask = scanMainContentTask;
+            this.scanDemoSamplesTask = scanDemoSamplesTask;
+        }
+
+        @Override
+        public List<FileSet> call() throws Exception {
+            List<FileSet> mainContent = scanMainContentTask.call();
+            if (mainContent.isEmpty()) {
+                return scanDemoSamplesTask.call();
+            }
+            return mainContent;
         }
     }
 }

@@ -55,6 +55,7 @@ public class GlobalSettings {
     private static final String KEY_BOOKS_EVER_INSTALLED = "action_history.books_ever_installed";
     private static final String KEY_SETTINGS_EVER_ENTERED = "action_history.settings_ever_entered";
     private static final String KEY_LAST_STARTED_VERSION_CODE = "last_version_code";
+    private static final String KEY_LEGACY_FILE_ACCESS_MODE = "legacy_file_access";
 
     private final ContentResolver contentResolver;
     private final Resources resources;
@@ -86,6 +87,14 @@ public class GlobalSettings {
         sharedPreferences.edit()
                 .putString(KEY_AUDIOBOOKS_FOLDER, newFolder)
                 .apply();
+    }
+
+    public boolean legacyFileAccessMode() {
+        return sharedPreferences.getBoolean(KEY_LEGACY_FILE_ACCESS_MODE, false);
+    }
+
+    public void setLegacyFileAccessMode() {
+        sharedPreferences.edit().putBoolean(KEY_LEGACY_FILE_ACCESS_MODE, true).apply();
     }
 
     public int getJumpBackPreferenceMs() {

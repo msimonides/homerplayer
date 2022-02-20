@@ -115,6 +115,7 @@ public class MainSettingsFragment extends BaseSettingsFragment {
 
     private void updateAudiobooksFolderSummary() {
         Preference preference = getPreference(KEY_AUDIOBOOKS_FOLDER);
+        preference.setVisible(!globalSettings.legacyFileAccessMode());
         String folderUriString = globalSettings.audiobooksFolder();
         if (folderUriString != null) {
             DocumentFile documentFile = DocumentFile.fromTreeUri(requireContext(), Uri.parse(folderUriString));
@@ -122,7 +123,6 @@ public class MainSettingsFragment extends BaseSettingsFragment {
         } else {
             preference.setSummary("");
         }
-
     }
 
     private void onAudiobooksFolderSet(@Nullable Uri documentTreeUri) {
