@@ -56,7 +56,6 @@
     <string name="pref_screen_orientation">Orientation de l\'écran</string>
     <string name="pref_kiosk_mode_screen_title">Empêcher de quitter l\'application (mode kiosque)…</string>
     <string name="pref_help_faq_summary">Aller sur le site web: %s</string>
-    <string name="permission_rationale_download_samples">La permissoin d\'accéder au stockage de l\'appareil est nécessaire pour permettre à Home Player de télécharger les examples de livres audio.</string>
     <string name="permission_rationale_scan_audiobooks">La persmission d\'accéder au stockage de l\'appareil est nécessaire pour que Home Player puisse accéder aux livres audio.</string>
     <string name="pref_kiosk_mode_simple_summary_old_version">Android 4.4 ou plus récent est requis</string>
     <string name="pref_kiosk_mode_full_summary_old_version">Android 5.0 ou plus récent est requis</string>
