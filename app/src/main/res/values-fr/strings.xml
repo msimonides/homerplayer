@@ -5,8 +5,6 @@
     <string name="playback_service_notification">Lecture en cours du livre audio</string>
     <string name="pref_jump_back_entry_disabled">Désactivé</string>
     <string name="pref_ff_rewind_sound_summary_on">Activé</string>
-    <string name="noBooksMessage">Il n\'y a pas de livres audio sur l\'appareil</string>
-    <string name="copyBooksInstructionMessage">Copiez les livres audio dans le dossier &lt;b>/%s&lt;/b></string>
     <string name="hint_settings">Tapotez 5 fois pour afficher les paramètres</string>
     <string name="settings_title">Paramètres</string>
     <string name="pref_help_faq_title">Aide : Questions Fréquement posées</string>

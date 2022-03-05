@@ -5,19 +5,22 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.ApplicationComponent;
+import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.crashreporting.CrashReporting;
@@ -37,6 +40,10 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
     private ProgressUi progressUi;
 
     public @Inject @Named("AUDIOBOOKS_DIRECTORY") String audioBooksDirectoryName;
+    public @Inject GlobalSettings globalSettings;
+
+    private final ActivityResultLauncher<Uri> openDocumentTreeContract =
+            registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(), this::onAudiobooksFolderSet);
 
     @Override
     public View onCreateView(
@@ -47,13 +54,11 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
         ApplicationComponent component = HomerPlayerApplication.getComponent(view.getContext());
         component.inject(this);
 
-        TextView noBooksPath = view.findViewById(R.id.noBooksPath);
-        String directoryMessage =
-                getString(R.string.copyBooksInstructionMessage, audioBooksDirectoryName);
-        noBooksPath.setText(Html.fromHtml(directoryMessage));
-
         Button downloadSamplesButton = view.findViewById(R.id.downloadSamplesButton);
         downloadSamplesButton.setOnClickListener(v -> controller.startSamplesInstallation());
+
+        Button selectFolderButton = view.findViewById(R.id.selectAudiobooksFolderButton);
+        selectFolderButton.setOnClickListener(v -> openDocumentTreeContract.launch(null));
 
         final Context context = view.getContext();
         view.setOnTouchListener(new MultitapTouchListener(
@@ -95,6 +100,12 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
     public InstallProgressObserver showInstallProgress(boolean isAlreadyInstalling) {
         progressUi = new ProgressUi(view.getContext(), controller, isAlreadyInstalling);
         return progressUi;
+    }
+
+    private void onAudiobooksFolderSet(@Nullable Uri documentTreeUri) {
+        if (documentTreeUri != null) {
+            globalSettings.setAudiobooksFolder(documentTreeUri.toString());
+        }
     }
 
     private class ProgressUi implements InstallProgressObserver {

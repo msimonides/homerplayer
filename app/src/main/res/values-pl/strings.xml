@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="noBooksMessage">Na urządzeniu nie ma żadnych audiobooków.</string>
-    <string name="copyBooksInstructionMessage">Wgraj audiobooki do folderu &lt;b>/%s&lt;/b></string>
     <string name="demo_samples_service_notification_download">Pobieranie przykładowych audiobooków</string>
     <string name="demo_samples_service_notification_install">Instalacja przykładowych audiobooków</string>
     <string name="playback_service_notification">Odtwarzanie audiobooka</string>

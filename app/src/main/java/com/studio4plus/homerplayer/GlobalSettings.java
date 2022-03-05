@@ -82,6 +82,7 @@ public class GlobalSettings {
             contentResolver.releasePersistableUriPermission(Uri.parse(oldFolder), Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
         if (newFolder != null) {
+            setLegacyFileAccessMode(false);
             contentResolver.takePersistableUriPermission(Uri.parse(newFolder), Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
         sharedPreferences.edit()
@@ -93,8 +94,8 @@ public class GlobalSettings {
         return sharedPreferences.getBoolean(KEY_LEGACY_FILE_ACCESS_MODE, false);
     }
 
-    public void setLegacyFileAccessMode() {
-        sharedPreferences.edit().putBoolean(KEY_LEGACY_FILE_ACCESS_MODE, true).apply();
+    public void setLegacyFileAccessMode(boolean isEnabled) {
+        sharedPreferences.edit().putBoolean(KEY_LEGACY_FILE_ACCESS_MODE, isEnabled).apply();
     }
 
     public int getJumpBackPreferenceMs() {
