@@ -2,6 +2,8 @@ package com.studio4plus.homerplayer.filescanner;
 
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+
 import com.google.common.base.Preconditions;
 
 import java.io.File;
@@ -13,7 +15,7 @@ public class FileSet {
     public final Uri[] uris;
     public final boolean isDemoSample;
 
-    public FileSet(String id, String name, Uri[] uris, boolean isDemoSample) {
+    public FileSet(@NonNull String id, @NonNull String name, @NonNull Uri[] uris, boolean isDemoSample) {
         this.id = id;
         this.name = name;
         this.uris = uris;

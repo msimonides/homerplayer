@@ -42,9 +42,11 @@
 
         <activity
             android:name=".ui.settings.SettingsActivity"
-            android:label="@string/settings_title"
-            android:excludeFromRecents="true">
-        </activity>
+            android:label="@string/settings_title" />
+
+        <activity
+            android:name=".ui.settings.SettingsFoldersActivity"
+            android:label="@string/settings_folders_title" />
 
         <activity
             android:name=".ui.HomeActivity"

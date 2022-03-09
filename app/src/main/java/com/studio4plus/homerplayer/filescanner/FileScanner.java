@@ -1,6 +1,9 @@
 package com.studio4plus.homerplayer.filescanner;
 
+import static com.studio4plus.homerplayer.util.CollectionUtils.map;
+
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -13,6 +16,7 @@ import com.studio4plus.homerplayer.demosamples.DemoSamplesFolderProvider;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
@@ -45,10 +49,10 @@ public class FileScanner {
                             new ScanFilesTask(demoFolderProvider, true));
             return ioExecutor.postTask(task);
         }
-        String audiobooksFolderString = globalSettings.audiobooksFolder();
+        Set<String> audiobooksFolderStrings = globalSettings.audiobooksFolders();
         final Callable<List<FileSet>> task;
-        if (audiobooksFolderString != null) {
-            task = new ScanDocumentTreeTask(applicationContext, Uri.parse(audiobooksFolderString));
+        if (!audiobooksFolderStrings.isEmpty()) {
+            task = new ScanDocumentTreeTask(applicationContext, map(audiobooksFolderStrings, Uri::parse));
         } else {
             task = new ScanFilesTask(demoFolderProvider, true);
         }

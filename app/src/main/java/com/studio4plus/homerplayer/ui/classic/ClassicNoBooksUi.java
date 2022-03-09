@@ -5,11 +5,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -28,6 +25,7 @@ import com.studio4plus.homerplayer.ui.MultitapTouchListener;
 import com.studio4plus.homerplayer.ui.UiControllerNoBooks;
 import com.studio4plus.homerplayer.ui.NoBooksUi;
 import com.studio4plus.homerplayer.ui.settings.SettingsActivity;
+import com.studio4plus.homerplayer.ui.settings.SettingsFoldersActivity;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -42,9 +40,6 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
     public @Inject @Named("AUDIOBOOKS_DIRECTORY") String audioBooksDirectoryName;
     public @Inject GlobalSettings globalSettings;
 
-    private final ActivityResultLauncher<Uri> openDocumentTreeContract =
-            registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(), this::onAudiobooksFolderSet);
-
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater,
@@ -58,7 +53,8 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
         downloadSamplesButton.setOnClickListener(v -> controller.startSamplesInstallation());
 
         Button selectFolderButton = view.findViewById(R.id.selectAudiobooksFolderButton);
-        selectFolderButton.setOnClickListener(v -> openDocumentTreeContract.launch(null));
+        selectFolderButton.setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), SettingsFoldersActivity.class)));
 
         final Context context = view.getContext();
         view.setOnTouchListener(new MultitapTouchListener(
@@ -100,12 +96,6 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
     public InstallProgressObserver showInstallProgress(boolean isAlreadyInstalling) {
         progressUi = new ProgressUi(view.getContext(), controller, isAlreadyInstalling);
         return progressUi;
-    }
-
-    private void onAudiobooksFolderSet(@Nullable Uri documentTreeUri) {
-        if (documentTreeUri != null) {
-            globalSettings.setAudiobooksFolder(documentTreeUri.toString());
-        }
     }
 
     private class ProgressUi implements InstallProgressObserver {

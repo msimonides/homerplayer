@@ -203,7 +203,7 @@ public class AudioBookManager implements SharedPreferences.OnSharedPreferenceCha
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @NonNull String key) {
-        if (key.equals(GlobalSettings.KEY_AUDIOBOOKS_FOLDER)) {
+        if (key.equals(GlobalSettings.KEY_AUDIOBOOKS_FOLDERS) || key.equals(GlobalSettings.KEY_LEGACY_FILE_ACCESS_MODE)) {
             scanFiles();
         }
     }

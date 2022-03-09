@@ -16,6 +16,7 @@ public class OrientationActivityDelegate
     public OrientationActivityDelegate(@NonNull Activity activity, GlobalSettings globalSettings) {
         this.activity = activity;
         this.globalSettings = globalSettings;
+        updateOrientation();
     }
 
     public void onStart() {

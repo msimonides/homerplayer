@@ -48,6 +48,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    buildFeatures {
+        viewBinding true
+    }
+
     defaultConfig {
         applicationId "com.studio4plus.homerplayer"
         minSdkVersion 21
@@ -135,6 +139,7 @@ dependencies {
     implementation 'androidx.media:media:1.5.0'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.preference:preference:1.2.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
 
     implementation 'com.google.guava:guava:24.1-android'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'

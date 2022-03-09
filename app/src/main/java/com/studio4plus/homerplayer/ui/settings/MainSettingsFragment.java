@@ -1,15 +1,15 @@
 package com.studio4plus.homerplayer.ui.settings;
 
+import static com.studio4plus.homerplayer.util.CollectionUtils.map;
+
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.Nullable;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.preference.Preference;
 
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.studio4plus.homerplayer.BuildConfig;
@@ -18,7 +18,10 @@ import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -31,11 +34,9 @@ public class MainSettingsFragment extends BaseSettingsFragment {
 
     private static final String FAQ_URL = "https://goo.gl/1RVxFW";
 
+    @Inject public AudiobooksFolderManager folderManager;
     @Inject public AudioBookManager audioBookManager;
     @Inject public GlobalSettings globalSettings;
-
-    private final ActivityResultLauncher<Uri> openDocumentTreeContract =
-            registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(), this::onAudiobooksFolderSet);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +66,7 @@ public class MainSettingsFragment extends BaseSettingsFragment {
     public void onStart() {
         super.onStart();
         updateKioskModeSummary();
+        updateAudiobooksFolderSummary();
     }
 
     @Override
@@ -79,7 +81,7 @@ public class MainSettingsFragment extends BaseSettingsFragment {
             case GlobalSettings.KEY_KIOSK_MODE:
                 updateKioskModeSummary();
                 break;
-            case GlobalSettings.KEY_AUDIOBOOKS_FOLDER:
+            case GlobalSettings.KEY_AUDIOBOOKS_FOLDERS:
                 updateAudiobooksFolderSummary();
         }
     }
@@ -105,9 +107,7 @@ public class MainSettingsFragment extends BaseSettingsFragment {
     private void setupAudiobooksFolder() {
         Preference preference = getPreference(KEY_AUDIOBOOKS_FOLDER);
         preference.setOnPreferenceClickListener(ignore -> {
-            String currentFolder = globalSettings.audiobooksFolder();
-            Uri currentFolderUri = (currentFolder != null) ? Uri.parse(currentFolder) : null;
-            openDocumentTreeContract.launch(currentFolderUri);
+            startActivity(new Intent(requireContext(), SettingsFoldersActivity.class));
             return true;
         });
         updateAudiobooksFolderSummary();
@@ -116,18 +116,15 @@ public class MainSettingsFragment extends BaseSettingsFragment {
     private void updateAudiobooksFolderSummary() {
         Preference preference = getPreference(KEY_AUDIOBOOKS_FOLDER);
         preference.setVisible(!globalSettings.legacyFileAccessMode());
-        String folderUriString = globalSettings.audiobooksFolder();
-        if (folderUriString != null) {
-            DocumentFile documentFile = DocumentFile.fromTreeUri(requireContext(), Uri.parse(folderUriString));
-            preference.setSummary(documentFile.getName());
+        Set<String> folderUriStrings = globalSettings.audiobooksFolders();
+        if (folderUriStrings.isEmpty()) {
+            preference.setSummary(R.string.pref_folder_audiobooks_summery_empty);
         } else {
-            preference.setSummary("");
-        }
-    }
-
-    private void onAudiobooksFolderSet(@Nullable Uri documentTreeUri) {
-        if (documentTreeUri != null) {
-            globalSettings.setAudiobooksFolder(documentTreeUri.toString());
+            List<DocumentFile> folders = folderManager.getFolders();
+            List<String> folderNames = map(folders, DocumentFile::getName);
+            Collections.sort(folderNames);
+            String summary = TextUtils.join(", ", folderNames);
+            preference.setSummary(summary);
         }
     }
 

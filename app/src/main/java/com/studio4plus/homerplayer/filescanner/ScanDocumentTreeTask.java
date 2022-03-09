@@ -2,7 +2,6 @@ package com.studio4plus.homerplayer.filescanner;
 
 import android.content.Context;
 import android.net.Uri;
-import android.provider.DocumentsContract;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
@@ -12,7 +11,9 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 public class ScanDocumentTreeTask implements Callable<List<FileSet>> {
@@ -20,19 +21,23 @@ public class ScanDocumentTreeTask implements Callable<List<FileSet>> {
     @NonNull
     private final Context context;
     @NonNull
-    private final Uri audiobooksFolderUri;
+    private final Collection<Uri> audiobooksFolderUris;
 
     public ScanDocumentTreeTask(
             @NonNull Context context,
-            @NonNull Uri audiobooksFolderUri) {
+            @NonNull Collection<Uri> audiobooksFolderUris) {
         this.context = context;
-        this.audiobooksFolderUri = audiobooksFolderUri;
+        this.audiobooksFolderUris = audiobooksFolderUris;
     }
 
     @Override
     public List<FileSet> call() throws Exception {
-        DocumentFile folder = DocumentFile.fromTreeUri(context, audiobooksFolderUri);
-        return scanAudiobooks(folder.listFiles());
+        List<FileSet> filesets = new ArrayList<>();
+        for (Uri uri : audiobooksFolderUris) {
+            DocumentFile folder = DocumentFile.fromTreeUri(context, uri);
+            filesets.addAll(scanAudiobooks(folder.listFiles()));
+        }
+        return filesets;
     }
 
     private List<FileSet> scanAudiobooks(@NonNull DocumentFile[] audiobookFolders) {
@@ -60,7 +65,8 @@ public class ScanDocumentTreeTask implements Callable<List<FileSet>> {
                         digest.update(bufferLong);
                     }
                     String id = Base64.encodeToString(digest.digest(), Base64.NO_PADDING | Base64.NO_WRAP);
-                    fileSets.add(new FileSet(id, audiobookFolder.getName(), uris.toArray(new Uri[]{}), false));
+                    String name = Objects.requireNonNull(audiobookFolder.getName());
+                    fileSets.add(new FileSet(id, name, uris.toArray(new Uri[]{}), false));
                 } catch (NoSuchAlgorithmException e) {
                     // Never happens.
                     e.printStackTrace();
