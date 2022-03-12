@@ -24,6 +24,7 @@ class ClassicMainUi implements MainUi {
     @Inject
     ClassicMainUi(@NonNull AppCompatActivity activity) {
         this.activity = activity;
+        showPage(new ClassicInitUi(), false);
     }
 
     @NonNull @Override
