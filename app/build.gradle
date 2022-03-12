@@ -114,7 +114,9 @@ android.applicationVariants.all { variant ->
                 into outputDir
 
                 doFirst {
-                    expand(version: output.apkData.versionName, apkChecksum: computeApkChecksum(output.outputFile))
+                    expand(
+                            version: output.variantOutput.versionName.get(),
+                            apkChecksum: computeApkChecksum(output.outputFile))
                 }
             }
         }
