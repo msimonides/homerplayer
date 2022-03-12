@@ -21,11 +21,9 @@ import com.studio4plus.homerplayer.ui.classic.ClassicNoBooksUi;
 import com.studio4plus.homerplayer.ui.settings.KioskSettingsFragment;
 import com.studio4plus.homerplayer.ui.settings.MainSettingsFragment;
 import com.studio4plus.homerplayer.ui.settings.PlaybackSettingsFragment;
-import com.studio4plus.homerplayer.ui.settings.SettingsActivity;
 import com.studio4plus.homerplayer.ui.classic.FragmentPlayback;
 import com.studio4plus.homerplayer.ui.settings.SettingsFoldersActivity;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;

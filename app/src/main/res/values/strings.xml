@@ -22,7 +22,7 @@
     <string name="permission_rationale_scan_audiobooks">Storage permission is needed by Homer Player to access the audiobook files.</string>
     <string name="pref_color_theme_title">Color theme</string>
     <string name="pref_color_theme_default_value" translatable="false">CLASSIC_REGULAR</string>
-    <string name="pref_folder_audiobooks">Audiobooks folder</string>
+    <string name="pref_folder_audiobooks">Audiobooks folders</string>
     <string name="pref_folder_audiobooks_summery_empty">None</string>
     <string name="pref_help_faq_title">Help: Frequently Asked Questions</string>
     <string name="pref_help_faq_summary">Go to website: %s</string>
