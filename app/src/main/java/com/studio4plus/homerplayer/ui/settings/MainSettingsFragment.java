@@ -6,9 +6,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.preference.Preference;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -17,6 +20,7 @@ import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.model.AudioBookManager;
+import com.studio4plus.homerplayer.util.LifecycleAwareRunnable;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +41,8 @@ public class MainSettingsFragment extends BaseSettingsFragment {
     @Inject public AudiobooksFolderManager folderManager;
     @Inject public AudioBookManager audioBookManager;
     @Inject public GlobalSettings globalSettings;
+
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -119,6 +125,7 @@ public class MainSettingsFragment extends BaseSettingsFragment {
         Set<String> folderUriStrings = globalSettings.audiobooksFolders();
         if (folderUriStrings.isEmpty()) {
             preference.setSummary(R.string.pref_folder_audiobooks_summery_empty);
+            new BlinkPrefSummary(mainHandler, preference);
         } else {
             List<DocumentFile> folders = folderManager.getFolders();
             List<String> folderNames = map(folders, DocumentFile::getName);
@@ -135,5 +142,28 @@ public class MainSettingsFragment extends BaseSettingsFragment {
             openUrl(FAQ_URL);
             return true;
         });
+    }
+
+    private static class BlinkPrefSummary extends LifecycleAwareRunnable {
+
+        private final Preference preference;
+        private final CharSequence summary;
+        private int count = 6;
+
+        private static final int DELAY_MS = 500;
+
+        public BlinkPrefSummary(@NonNull Handler handler, @NonNull Preference preference) {
+            super(handler);
+            this.preference = preference;
+            this.summary = preference.getSummary();
+            handler.postDelayed(this, DELAY_MS);
+        }
+
+        @Override
+        public void run() {
+            preference.setSummary((count % 2 == 0) ? " " : summary);
+            if (--count > 0)
+                handler.postDelayed(this, DELAY_MS);
+        }
     }
 }

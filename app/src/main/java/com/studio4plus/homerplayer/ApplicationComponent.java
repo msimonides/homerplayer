@@ -3,7 +3,6 @@ package com.studio4plus.homerplayer;
 import android.content.Context;
 import android.content.res.Resources;
 import android.media.AudioManager;
-import android.net.Uri;
 
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.battery.BatteryStatusProvider;
