@@ -155,9 +155,9 @@ dependencies {
 
     developmentImplementation project(':app:crashreporting-noop')
     gitHubImplementation project(':app:crashreporting-noop')
-    playStoreImplementation project(':app:crashreporting-firebase')
+    playStoreImplementation project(':app:crashreporting-noop')
 
     developmentImplementation project(':app:analytics-noop')
     gitHubImplementation project(':app:analytics-noop')
-    playStoreImplementation project(':app:analytics-firebase')
+    playStoreImplementation project(':app:analytics-noop')
 }
