@@ -28,6 +28,9 @@ public class BatteryStatusIndicator {
     static {
         BATTERY_DRAWABLE.put(ChargeLevel.CRITICAL, R.drawable.battery_critical);
         BATTERY_DRAWABLE.put(ChargeLevel.LEVEL_1, R.drawable.battery_red_1);
+        BATTERY_DRAWABLE.put(ChargeLevel.LEVEL_2, R.drawable.battery_2);
+        BATTERY_DRAWABLE.put(ChargeLevel.LEVEL_3, R.drawable.battery_3);
+        BATTERY_DRAWABLE.put(ChargeLevel.FULL, R.drawable.battery_3);
 
         CHARGING_DRAWABLE.put(ChargeLevel.CRITICAL, R.drawable.battery_charging_0);
         CHARGING_DRAWABLE.put(ChargeLevel.LEVEL_1, R.drawable.battery_charging_0);
