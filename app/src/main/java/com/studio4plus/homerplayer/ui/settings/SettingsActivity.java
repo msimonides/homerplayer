@@ -83,7 +83,6 @@ public class SettingsActivity
         super.onStop();
         orientationDelegate.onStop();
         cancelBlockEventOnStart();
-        kioskModeHandler.onActivityStop();
     }
 
     @Override

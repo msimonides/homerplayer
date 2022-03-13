@@ -142,7 +142,6 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
     protected void onStop() {
         controller.onActivityStop();
         orientationDelegate.onStop();
-        kioskModeHandler.onActivityStop();
         super.onStop();
         batteryStatusProvider.stop();
     }

@@ -3,7 +3,6 @@ package com.studio4plus.homerplayer.ui;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -20,7 +19,6 @@ import de.greenrobot.event.EventBus;
 public class KioskModeHandler {
 
     private final GlobalSettings globalSettings;
-    private final EventBus eventBus;
     private boolean keepNavigation = false;
 
     private boolean isLockEnabled = false;
@@ -28,7 +26,7 @@ public class KioskModeHandler {
     @Inject
     public KioskModeHandler(GlobalSettings settings, EventBus eventBus) {
         this.globalSettings = settings;
-        this.eventBus = eventBus;
+        eventBus.register(this);
     }
 
     public void setKeepNavigation(Boolean keepNavigation) {
@@ -37,11 +35,6 @@ public class KioskModeHandler {
 
     public void onActivityStart(@NonNull Activity activity) {
         setUiFlagsAndLockTask(activity);
-        eventBus.register(this);
-    }
-
-    public void onActivityStop() {
-        eventBus.unregister(this);
     }
 
     public void onFocusGained(@NonNull Activity activity) {
