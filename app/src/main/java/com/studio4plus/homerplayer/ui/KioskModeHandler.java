@@ -3,6 +3,7 @@ package com.studio4plus.homerplayer.ui;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -96,6 +97,7 @@ public class KioskModeHandler {
                 API21.stopLockTask(activity);
         }
     }
+
     @TargetApi(21)
     private static class API21 {
         static void startLockTask(Activity activity) {

@@ -9,11 +9,12 @@
     android:paddingTop="@dimen/bookListItemPaddingVertical"
     android:paddingBottom="@dimen/bookListItemPaddingVertical">
 
-    <TextView
-        android:id="@+id/noBooksPath"
+    <Button
+        android:id="@+id/downloadSamplesButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/copyBooksInstructionTextSize"/>
+        android:textSize="@dimen/copyBooksInstructionTextSize"
+        android:text="@string/noBooksDownloadSamplesButton"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -23,11 +24,11 @@
         android:layout_marginBottom="@dimen/copyBooksInstructionTextSize"
         android:text="@string/noBooksOrMessage"/>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/downloadSamplesButton"
+    <Button
+        android:id="@+id/selectAudiobooksFolderButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="@dimen/copyBooksInstructionTextSize"
-        android:text="@string/noBooksDownloadSamplesButton"/>
+        android:text="@string/noBooksSelectAudiobooksFolderButton" />
 
 </LinearLayout>

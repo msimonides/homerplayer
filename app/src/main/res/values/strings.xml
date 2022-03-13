@@ -3,25 +3,27 @@
     <string name="demo_samples_service_notification_download">Downloading sample audiobooks</string>
     <string name="demo_samples_service_notification_install">Installing sample audiobooks</string>
     <string name="playback_service_notification">Audiobook playing</string>
-    <string name="noBooksMessage">There are no audio books on the device.</string>
-    <string name="copyBooksInstructionMessage">Copy audio books to folder &lt;b>/%s&lt;/b></string>
     <string name="device_admin_label" translatable="false">Homer Player</string>
     <string name="device_admin_description" translatable="false">Homer Player</string>
+    <string name="folder_add">Add…</string>
+    <string name="folder_remove_description">Remove</string>
     <string name="hint_browsing">Swipe\nto browse titles</string>
     <string name="hint_settings">Tap 5x\nfor settings</string>
     <string name="hint_flip_to_stop">Put the device with screen down to stop</string>
     <string name="back_suppressed_by_kiosk">Exit blocked (kiosk mode is enabled)</string>
     <string name="notificationChannelPlayback">Audio playback</string>
     <string name="settings_title">Settings</string>
+    <string name="settings_folders_title">Audiobook Folders</string>
     <string name="settings_device_owner_required_alert">The application must be a "device owner". See http://goo.gl/46gevp</string>
     <string name="permission_rationale_title">Permission needed</string>
     <string name="permission_rationale_try_again">Try again</string>
     <string name="permission_rationale_settings">Open settings</string>
     <string name="permission_rationale_exit">Exit app</string>
-    <string name="permission_rationale_download_samples">Storage permission is needed by Homer Player to save downloaded audiobook samples.</string>
     <string name="permission_rationale_scan_audiobooks">Storage permission is needed by Homer Player to access the audiobook files.</string>
     <string name="pref_color_theme_title">Color theme</string>
     <string name="pref_color_theme_default_value" translatable="false">CLASSIC_REGULAR</string>
+    <string name="pref_folder_audiobooks">Audiobooks folders</string>
+    <string name="pref_folder_audiobooks_summery_empty">None</string>
     <string name="pref_help_faq_title">Help: Frequently Asked Questions</string>
     <string name="pref_help_faq_summary">Go to website: %s</string>
     <string name="pref_kiosk_mode_screen_title">Prevent exiting the application (kiosk mode)…</string>
@@ -70,8 +72,10 @@
     <string name="button_start">Start</string>
     <string name="button_stop">Stop</string>
     <string name="multi_tap_prompt">%d more to go</string>
+    <string name="noBooksMessageOnSample">Tap 5x for settings and select audiobooks folder</string>
     <string name="noBooksOrMessage">or</string>
     <string name="noBooksDownloadSamplesButton">Download book samples</string>
+    <string name="noBooksSelectAudiobooksFolderButton">Choose audiobooks folder</string>
     <string name="playbackErrorToast">Unable to play file:\n%s</string>
     <string name="samplesDownloadErrorTitle">Error</string>
     <string name="samplesDownloadErrorMessage">Download and installation failed.</string>

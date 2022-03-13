@@ -6,18 +6,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.ApplicationComponent;
+import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.crashreporting.CrashReporting;
@@ -25,6 +25,7 @@ import com.studio4plus.homerplayer.ui.MultitapTouchListener;
 import com.studio4plus.homerplayer.ui.UiControllerNoBooks;
 import com.studio4plus.homerplayer.ui.NoBooksUi;
 import com.studio4plus.homerplayer.ui.settings.SettingsActivity;
+import com.studio4plus.homerplayer.ui.settings.SettingsFoldersActivity;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -37,6 +38,7 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
     private ProgressUi progressUi;
 
     public @Inject @Named("AUDIOBOOKS_DIRECTORY") String audioBooksDirectoryName;
+    public @Inject GlobalSettings globalSettings;
 
     @Override
     public View onCreateView(
@@ -47,13 +49,12 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
         ApplicationComponent component = HomerPlayerApplication.getComponent(view.getContext());
         component.inject(this);
 
-        TextView noBooksPath = view.findViewById(R.id.noBooksPath);
-        String directoryMessage =
-                getString(R.string.copyBooksInstructionMessage, audioBooksDirectoryName);
-        noBooksPath.setText(Html.fromHtml(directoryMessage));
-
         Button downloadSamplesButton = view.findViewById(R.id.downloadSamplesButton);
         downloadSamplesButton.setOnClickListener(v -> controller.startSamplesInstallation());
+
+        Button selectFolderButton = view.findViewById(R.id.selectAudiobooksFolderButton);
+        selectFolderButton.setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), SettingsFoldersActivity.class)));
 
         final Context context = view.getContext();
         view.setOnTouchListener(new MultitapTouchListener(

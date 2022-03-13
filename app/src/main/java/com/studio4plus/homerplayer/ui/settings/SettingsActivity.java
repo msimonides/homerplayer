@@ -45,13 +45,14 @@ public class SettingsActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.settings_activity);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.settings_activity);
         ActivityComponent activityComponent = DaggerActivityComponent.builder()
                 .applicationComponent(HomerPlayerApplication.getComponent(this))
                 .activityModule(new ActivityModule(this))
                 .build();
         activityComponent.inject(this);
+        orientationDelegate = new OrientationActivityDelegate(this, globalSettings);
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -59,7 +60,6 @@ public class SettingsActivity
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         kioskModeHandler.setKeepNavigation(true);
-        orientationDelegate = new OrientationActivityDelegate(this, globalSettings);
 
         // Display the fragment as the main content.
         getSupportFragmentManager().beginTransaction()

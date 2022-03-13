@@ -6,7 +6,6 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.text.Html;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,10 +59,7 @@ public class FragmentBookItem extends BookListChildFragment {
 
             if (book.isDemoSample()) {
                 TextView copyBooksInstruction =
-                        (TextView) view.findViewById(R.id.copyBooksInstruction);
-                String directoryMessage =
-                        getString(R.string.copyBooksInstructionMessage, audioBooksDirectoryName);
-                copyBooksInstruction.setText(Html.fromHtml(directoryMessage));
+                        view.findViewById(R.id.copyBooksInstruction);
                 copyBooksInstruction.setTextColor(textColour);
                 copyBooksInstruction.setVisibility(View.VISIBLE);
             }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:paddingVertical="4dp"
+    android:paddingHorizontal="16dp">
+
+    <TextView
+        android:id="@+id/name"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAlignment="viewStart"
+        tools:text="Audiobooks"/>
+
+    <ImageView
+        android:id="@+id/buttonRemove"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:paddingVertical="8dp"
+        android:src="@android:drawable/ic_delete"
+        android:contentDescription="@string/folder_remove_description" />
+
+</LinearLayout>

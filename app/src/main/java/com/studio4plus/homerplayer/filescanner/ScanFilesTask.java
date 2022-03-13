@@ -1,13 +1,12 @@
 package com.studio4plus.homerplayer.filescanner;
 
-import android.content.Context;
-import android.os.Environment;
+import android.net.Uri;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.util.Base64;
 
 import com.studio4plus.homerplayer.util.DirectoryFilter;
-import com.studio4plus.homerplayer.util.FilesystemUtil;
 import com.studio4plus.homerplayer.util.OrFilter;
 
 import java.io.File;
@@ -23,14 +22,19 @@ import java.util.concurrent.Callable;
 
 public class ScanFilesTask implements Callable<List<FileSet>> {
 
+    interface FolderProvider {
+        @NonNull
+        List<File> getFolders();
+    }
+
     private static final String[] SUPPORTED_SUFFIXES = { ".m4a", ".m4b", ".mp3", ".ogg" };
 
-    private final @NonNull Context applicationContext;
-    private final @NonNull String audioBooksDirectoryName;
+    private final FolderProvider folderProvider;
+    private final boolean demoSamples;
 
-    ScanFilesTask(@NonNull Context applicationContext, @NonNull String audioBooksDirectoryName) {
-        this.applicationContext = applicationContext;
-        this.audioBooksDirectoryName = audioBooksDirectoryName;
+    ScanFilesTask(@NonNull FolderProvider folderProvider, boolean demoSamples) {
+        this.folderProvider = folderProvider;
+        this.demoSamples = demoSamples;
     }
 
     @Override
@@ -40,14 +44,8 @@ public class ScanFilesTask implements Callable<List<FileSet>> {
 
     private List<FileSet> scanAudioBooksDirectories() {
         List<FileSet> fileSets = new ArrayList<>();
-        List<File> dirsToScan = FilesystemUtil.listRootDirs(applicationContext);
-        File defaultStorage = Environment.getExternalStorageDirectory();
-        if (!containsByValue(dirsToScan, defaultStorage))
-            dirsToScan.add(defaultStorage);
-
-        for (File rootDir : dirsToScan) {
-            File audioBooksDir = new File(rootDir, audioBooksDirectoryName);
-            scanAndAppendBooks(audioBooksDir, fileSets);
+        for (File folder : folderProvider.getFolders()) {
+            scanAndAppendBooks(folder, fileSets);
         }
         return fileSets;
     }
@@ -85,9 +83,11 @@ public class ScanFilesTask implements Callable<List<FileSet>> {
             }
             String id = Base64.encodeToString(digest.digest(), Base64.NO_PADDING | Base64.NO_WRAP);
             if (allFiles.length > 0) {
-                File sampleIndicator = new File(bookDirectory, FileScanner.SAMPLE_BOOK_FILE_NAME);
-                boolean isDemoSample = sampleIndicator.exists();
-                return new FileSet(id, bookDirectory, allFiles, isDemoSample);
+                Uri[] uris = new Uri[allFiles.length];
+                for (int i = 0; i < allFiles.length; ++i) {
+                    uris[i] = Uri.fromFile(allFiles[i]);
+                }
+                return new FileSet(id, bookDirectory.getName(), uris, demoSamples);
             } else {
                 return null;
             }
@@ -135,13 +135,6 @@ public class ScanFilesTask implements Callable<List<FileSet>> {
                 allFiles.add(file);
             }
         }
-    }
-
-    private <Type> boolean containsByValue(List<Type> items, Type needle) {
-        for (Type item : items)
-            if (item.equals(needle))
-                return true;
-        return false;
     }
 
     private static boolean isAudioFile(File file) {

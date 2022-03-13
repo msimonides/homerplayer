@@ -1,10 +1,11 @@
 package com.studio4plus.homerplayer.model;
 
+import android.net.Uri;
+
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.filescanner.FileSet;
 import com.studio4plus.homerplayer.util.DebugUtil;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,12 +21,12 @@ public class AudioBook {
     public class Position {
         public final int fileIndex;
         public final long seekPosition;
-        public final File file;
+        public final Uri uri;
 
         public Position(int fileIndex, long seekPosition) {
             this.fileIndex = fileIndex;
             this.seekPosition = seekPosition;
-            this.file = fileSet.files[fileIndex];
+            this.uri = fileSet.uris[fileIndex];
         }
     }
 
@@ -40,7 +41,7 @@ public class AudioBook {
     public AudioBook(FileSet fileSet) {
         this.fileSet = fileSet;
         this.lastPosition = new Position(0, 0);
-        this.fileDurations = new ArrayList<>(fileSet.files.length);
+        this.fileDurations = new ArrayList<>(fileSet.uris.length);
     }
 
     public void setUpdateObserver(UpdateObserver updateObserver) {
@@ -48,7 +49,7 @@ public class AudioBook {
     }
 
     public String getTitle() {
-        return directoryToTitle(fileSet.directoryName);
+        return fileSet.name;
     }
 
     public String getId() {
@@ -73,25 +74,25 @@ public class AudioBook {
         return totalDuration;
     }
 
-    public void offerFileDuration(File file, long durationMs) {
-        int index = Arrays.asList(fileSet.files).indexOf(file);
+    public void offerFileDuration(Uri uri, long durationMs) {
+        int index = Arrays.asList(fileSet.uris).indexOf(uri);
         Preconditions.checkState(index >= 0);
         Preconditions.checkState(index <= fileDurations.size(), "Duration set out of order.");
 
         // Only set the duration if unknown.
         if (index == fileDurations.size()) {
             fileDurations.add(durationMs);
-            if (fileDurations.size() == fileSet.files.length)
-                totalDuration = fileDurationSum(fileSet.files.length);
+            if (fileDurations.size() == fileSet.uris.length)
+                totalDuration = fileDurationSum(fileSet.uris.length);
             notifyUpdateObserver();
         }
     }
 
-    public List<File> getFilesWithNoDuration() {
-        int count = fileSet.files.length;
+    public List<Uri> getFilesWithNoDuration() {
+        int count = fileSet.uris.length;
         int firstIndex = fileDurations.size();
-        List<File> files = new ArrayList<>(count - firstIndex);
-        files.addAll(Arrays.asList(fileSet.files).subList(firstIndex, count));
+        List<Uri> files = new ArrayList<>(count - firstIndex);
+        files.addAll(Arrays.asList(fileSet.uris).subList(firstIndex, count));
         return files;
     }
 
@@ -138,7 +139,7 @@ public class AudioBook {
     public boolean advanceFile() {
         DebugUtil.verifyIsOnMainThread();
         int newIndex = lastPosition.fileIndex + 1;
-        boolean hasMoreFiles = newIndex < fileSet.files.length;
+        boolean hasMoreFiles = newIndex < fileSet.uris.length;
         if (hasMoreFiles) {
             lastPosition = new Position(newIndex, 0);
             notifyUpdateObserver();
@@ -158,31 +159,8 @@ public class AudioBook {
             this.colourScheme = colourScheme;
         if (fileDurations != null) {
             this.fileDurations = fileDurations;
-            if (fileDurations.size() == fileSet.files.length)
+            if (fileDurations.size() == fileSet.uris.length)
                 this.totalDuration = fileDurationSum(fileDurations.size());
-        }
-    }
-
-    void restoreOldFormat(
-            ColourScheme colourScheme, String fileName, long seekPosition, List<Long> fileDurations) {
-        if (colourScheme != null)
-            this.colourScheme = colourScheme;
-        if (fileDurations != null) {
-            this.fileDurations = fileDurations;
-            if (fileDurations.size() == fileSet.files.length)
-                this.totalDuration = fileDurationSum(fileDurations.size());
-        }
-
-        int fileIndex = -1;
-        for (int i = 0; i < fileSet.files.length; ++i) {
-            String path = fileSet.files[i].getAbsolutePath();
-            if (path.endsWith(fileName)) {
-                fileIndex = i;
-                break;
-            }
-        }
-        if (fileIndex >= 0) {
-            lastPosition = new Position(fileIndex, seekPosition);
         }
     }
 

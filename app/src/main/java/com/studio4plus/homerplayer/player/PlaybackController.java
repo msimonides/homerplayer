@@ -1,11 +1,11 @@
 package com.studio4plus.homerplayer.player;
 
-import java.io.File;
+import android.net.Uri;
 
 public interface PlaybackController {
 
     interface Observer {
-        void onDuration(File file, long durationMs);
+        void onDuration(Uri uri, long durationMs);
 
         /**
          * Playback position progressed. Called more or less once per second of playback in media
@@ -25,9 +25,8 @@ public interface PlaybackController {
 
         /**
          * Error playing file.
-         * @param path
          */
-        void onPlaybackError(File path);
+        void onPlaybackError(Uri uri);
 
         /**
          * The player has been released.
@@ -36,7 +35,7 @@ public interface PlaybackController {
     }
 
     void setObserver(Observer observer);
-    void start(File file, long positionPosition);
+    void start(Uri uri, long positionPosition);
     void pause();
     void stop();
     void release();

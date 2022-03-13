@@ -21,6 +21,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:textSize="@dimen/copyBooksInstructionTextSize"
+        android:text="@string/noBooksMessageOnSample"
         android:visibility="gone"
         android:layout_alignParentTop="true"/>
 

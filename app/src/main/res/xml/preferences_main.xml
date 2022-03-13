@@ -20,6 +20,9 @@
         app:title="@string/pref_reset_all_book_progress"
         android:dialogTitle="@string/pref_reset_all_book_progress_dialog_title" />
     <Preference
+        app:key="audiobooks_folder_preference"
+        app:title="@string/pref_folder_audiobooks" />
+    <Preference
         app:key="faq_preference"
         app:title="@string/pref_help_faq_title" />
     <Preference

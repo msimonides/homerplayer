@@ -3,7 +3,6 @@ package com.studio4plus.homerplayer.ui;
 import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
@@ -16,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.common.base.Preconditions;
+import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.crashreporting.CrashReporting;
@@ -37,6 +37,7 @@ public class UiControllerMain implements ServiceConnection {
     private final @NonNull AudioBookManager audioBookManager;
     private final @NonNull EventBus eventBus;
     private final @NonNull AnalyticsTracker analyticsTracker;
+    private final @NonNull GlobalSettings globalSettings;
     private final @NonNull UiControllerNoBooks.Factory noBooksControllerFactory;
     private final @NonNull UiControllerBookList.Factory bookListControllerFactory;
     private final @NonNull UiControllerPlayback.Factory playbackControllerFactory;
@@ -55,6 +56,7 @@ public class UiControllerMain implements ServiceConnection {
                      @NonNull AudioBookManager audioBookManager,
                      @NonNull EventBus eventBus,
                      @NonNull AnalyticsTracker analyticsTracker,
+                     @NonNull GlobalSettings globalSettings,
                      @NonNull UiControllerNoBooks.Factory noBooksControllerFactory,
                      @NonNull UiControllerBookList.Factory bookListControllerFactory,
                      @NonNull UiControllerPlayback.Factory playbackControllerFactory) {
@@ -63,6 +65,7 @@ public class UiControllerMain implements ServiceConnection {
         this.audioBookManager = audioBookManager;
         this.eventBus = eventBus;
         this.analyticsTracker = analyticsTracker;
+        this.globalSettings = globalSettings;
         this.noBooksControllerFactory = noBooksControllerFactory;
         this.bookListControllerFactory = bookListControllerFactory;
         this.playbackControllerFactory = playbackControllerFactory;
@@ -115,7 +118,7 @@ public class UiControllerMain implements ServiceConnection {
 
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(PlaybackFatalErrorEvent event) {
-        mainUi.onPlaybackError(event.path);
+        mainUi.onPlaybackError(event.uri);
     }
 
     void playCurrentAudiobook() {
@@ -155,31 +158,16 @@ public class UiControllerMain implements ServiceConnection {
                     if (canRetry) {
                         dialogBuilder.setPositiveButton(
                                 R.string.permission_rationale_try_again,
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        PermissionUtils.checkAndRequestPermission(
-                                                activity, permissions, PERMISSION_REQUEST_FOR_BOOK_SCAN);
-                                    }
-                                });
+                                (dialogInterface, i) -> PermissionUtils.checkAndRequestPermission(
+                                        activity, permissions, PERMISSION_REQUEST_FOR_BOOK_SCAN));
                     } else {
                         analyticsTracker.onPermissionRationaleShown("audiobooksScan");
                         dialogBuilder.setPositiveButton(
                                 R.string.permission_rationale_settings,
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        PermissionUtils.openAppSettings(activity);
-                                    }
-                                });
+                                (dialogInterface, i) -> PermissionUtils.openAppSettings(activity));
                     }
                     dialogBuilder.setNegativeButton(
-                            R.string.permission_rationale_exit, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    activity.finish();
-                                }
-                            })
+                            R.string.permission_rationale_exit, (dialogInterface, i) -> activity.finish())
                     .create().show();
                 }
                 break;
@@ -190,12 +178,14 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     private void scanAudioBookFiles() {
-        if (PermissionUtils.checkAndRequestPermission(
+        boolean needsPermissions = globalSettings.legacyFileAccessMode();
+        if (!needsPermissions || PermissionUtils.checkAndRequestPermission(
                 activity,
                 new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE },
-                PERMISSION_REQUEST_FOR_BOOK_SCAN))
+                PERMISSION_REQUEST_FOR_BOOK_SCAN)) {
             audioBookManager.scanFiles();
+        }
     }
 
     private void  maybeSetInitialState() {
@@ -325,11 +315,6 @@ public class UiControllerMain implements ServiceConnection {
         public void onBooksChanged(@NonNull UiControllerMain mainController) {
             if (mainController.hasAnyBooks())
                 mainController.changeState(StateFactory.BOOK_LIST);
-        }
-
-        @Override
-        void onRequestPermissionResult(int code, @NonNull int[] grantResults) {
-            controller.onRequestPermissionResult(code, grantResults);
         }
 
         @Override

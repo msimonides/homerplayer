@@ -5,14 +5,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.net.Uri;
 import android.widget.Toast;
 
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.ui.BookListUi;
 import com.studio4plus.homerplayer.ui.MainUi;
 import com.studio4plus.homerplayer.ui.NoBooksUi;
-
-import java.io.File;
 
 import javax.inject.Inject;
 
@@ -24,6 +24,7 @@ class ClassicMainUi implements MainUi {
     @Inject
     ClassicMainUi(@NonNull AppCompatActivity activity) {
         this.activity = activity;
+        showPage(new ClassicInitUi(), false);
     }
 
     @NonNull @Override
@@ -46,8 +47,9 @@ class ClassicMainUi implements MainUi {
     }
 
     @Override
-    public void onPlaybackError(File path) {
-        String message = activity.getString(R.string.playbackErrorToast, path.toString());
+    public void onPlaybackError(Uri uri) {
+        // TODO: The Uri probably isn't meaningful to anyone.
+        String message = activity.getString(R.string.playbackErrorToast, uri.toString());
         Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
     }
 

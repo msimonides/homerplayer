@@ -1,6 +1,7 @@
 package com.studio4plus.homerplayer;
 
 import android.app.Application;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -38,6 +39,11 @@ public class ApplicationModule {
     @Provides @ApplicationScope
     Context provideContext() {
         return application;
+    }
+
+    @Provides
+    ContentResolver provideContentResolver() {
+        return application.getContentResolver();
     }
 
     @Provides

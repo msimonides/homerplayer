@@ -1,14 +1,14 @@
 package com.studio4plus.homerplayer.player;
 
-import java.io.File;
+import android.net.Uri;
 
 public interface DurationQueryController {
 
     interface Observer {
-        void onDuration(File file, long durationMs);
+        void onDuration(Uri uri, long durationMs);
         void onFinished();
         void onPlayerReleased();
-        void onPlayerError(File path);
+        void onPlayerError(Uri uri);
     }
 
     void start(Observer observer);
