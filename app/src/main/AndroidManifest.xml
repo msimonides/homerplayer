@@ -33,7 +33,8 @@
             android:name=".ui.MainActivity"
             android:launchMode="singleTask"
             android:clearTaskOnLaunch="true"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/AppThemeStartup">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

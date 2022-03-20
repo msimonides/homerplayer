@@ -5,6 +5,9 @@
     <style name="AppTheme.Base" parent="Theme.AppCompat.NoActionBar">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
         <item name="volumeChangeIndicatorStyle">@style/Widget.VolumeChangeIndicator</item>
+    </style>
+
+    <style name="AppThemeStartup" parent="AppTheme.Base">
         <item name="android:windowBackground">#000000</item>
     </style>
 
