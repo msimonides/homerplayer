@@ -28,7 +28,6 @@ import com.studio4plus.homerplayer.player.DurationQueryController;
 import com.studio4plus.homerplayer.player.PlaybackController;
 import com.studio4plus.homerplayer.player.Player;
 
-import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -304,7 +303,6 @@ public class PlaybackService
                 AudioBook.Position position = audioBook.getLastPosition();
                 controller.start(position.uri, position.seekPosition);
             } else {
-                audioBook.resetPosition();
                 PlaybackService.this.onPlaybackEnded();
                 controller.release();
             }
