@@ -5,12 +5,15 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
+
 import com.studio4plus.homerplayer.battery.BatteryStatus;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.battery.ChargeLevel;
 import com.studio4plus.homerplayer.events.BatteryStatusChangeEvent;
 
 import java.util.EnumMap;
+import java.util.Objects;
 
 import de.greenrobot.event.EventBus;
 
@@ -18,6 +21,9 @@ public class BatteryStatusIndicator {
 
     private final ImageView indicatorView;
     private final EventBus eventBus;
+
+    @Nullable
+    private Integer currentDrawable;
 
     private static final EnumMap<ChargeLevel, Integer> BATTERY_DRAWABLE =
             new EnumMap<>(ChargeLevel.class);
@@ -39,10 +45,14 @@ public class BatteryStatusIndicator {
         CHARGING_DRAWABLE.put(ChargeLevel.FULL, R.drawable.battery_3);
     }
 
-    public BatteryStatusIndicator(ImageView indicatorView, EventBus eventBus) {
+    public BatteryStatusIndicator(
+            ImageView indicatorView, EventBus eventBus, @Nullable BatteryStatus status) {
         this.indicatorView = indicatorView;
         this.eventBus = eventBus;
         this.eventBus.registerSticky(this);
+        if (status != null) {
+            updateBatteryStatus(status);
+        }
     }
 
     public void startAnimations() {
@@ -60,7 +70,11 @@ public class BatteryStatusIndicator {
         Integer statusDrawable = batteryStatus.isCharging
                 ? CHARGING_DRAWABLE.get(batteryStatus.chargeLevel)
                 : BATTERY_DRAWABLE.get(batteryStatus.chargeLevel);
+        // Don't update the drawables if not needed to avoid restarting the animation which may
+        // look a bit weird.
+        if (Objects.equals(statusDrawable, currentDrawable)) return;
 
+        currentDrawable = statusDrawable;
         if (statusDrawable == null) {
             indicatorView.setVisibility(View.GONE);
         } else {

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.studio4plus.homerplayer.ApplicationScope;
 import com.studio4plus.homerplayer.events.BatteryStatusChangeEvent;
@@ -20,6 +21,9 @@ public class BatteryStatusProvider extends BroadcastReceiver {
     private final Context applicationContext;
     private final EventBus eventBus;
 
+    @Nullable
+    private BatteryStatus lastStatus;
+
     @Inject
     public BatteryStatusProvider(@ApplicationScope Context applicationContext, EventBus eventBus) {
         this.applicationContext = applicationContext;
@@ -30,22 +34,27 @@ public class BatteryStatusProvider extends BroadcastReceiver {
     public void start() {
         Intent batteryStatusIntent = applicationContext.registerReceiver(this, batteryStatusIntentFilter);
         if (batteryStatusIntent != null)
-            notifyBatteryStatus(getBatteryStatus(batteryStatusIntent));
+            updateBatteryStatus(getBatteryStatus(batteryStatusIntent));
     }
 
     public void stop() {
         applicationContext.unregisterReceiver(this);
     }
 
-
     @Override
     public void onReceive(Context context, Intent intent) {
         if (batteryStatusIntentFilter.matchAction(intent.getAction())) {
-            notifyBatteryStatus(getBatteryStatus(intent));
+            updateBatteryStatus(getBatteryStatus(intent));
         }
     }
 
-    private void notifyBatteryStatus(BatteryStatus batteryStatus) {
+    @Nullable
+    public BatteryStatus getLastStatus() {
+        return lastStatus;
+    }
+
+    private void updateBatteryStatus(BatteryStatus batteryStatus) {
+        lastStatus = batteryStatus;
         eventBus.postSticky(new BatteryStatusChangeEvent(batteryStatus));
     }
 

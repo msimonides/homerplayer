@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
         controller.onActivityCreated();
 
         batteryStatusIndicator = new BatteryStatusIndicator(
-                findViewById(R.id.batteryStatusIndicator), eventBus);
+                findViewById(R.id.batteryStatusIndicator), eventBus, batteryStatusProvider.getLastStatus());
 
         orientationDelegate = new OrientationActivityDelegate(this, globalSettings);
 
