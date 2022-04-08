@@ -111,8 +111,11 @@ public class SettingsFoldersActivity extends AppCompatActivity {
 
         private FolderEntry(@NonNull Context context, @NonNull String uri) {
             this.uri = uri;
-            name = Objects.requireNonNull(
-                    DocumentFile.fromTreeUri(context, Uri.parse(uri)).getName());
+            DocumentFile documentFile =
+                    Objects.requireNonNull(DocumentFile.fromTreeUri(context, Uri.parse(uri)));
+            name = (documentFile.getName() != null)
+                    ? documentFile.getName()
+                    : documentFile.getUri().toString();
         }
 
         @Override
