@@ -78,7 +78,7 @@ public class UiControllerNoBooks {
     public void abortSamplesInstallation() {
         Preconditions.checkState(DemoSamplesInstallerService.isDownloading()
                 || DemoSamplesInstallerService.isInstalling());
-        CrashReporting.log(Log.DEBUG, TAG, "abortSamplesInstallation, isDownloading: " +
+        CrashReporting.log(Log.INFO, TAG, "abortSamplesInstallation, isDownloading: " +
                 DemoSamplesInstallerService.isDownloading());
         // Can't cancel installation.
         if (DemoSamplesInstallerService.isDownloading()) {
@@ -96,7 +96,7 @@ public class UiControllerNoBooks {
 
     private void showInstallProgress(boolean isAlreadyInstalling) {
         Preconditions.checkState(progressReceiver == null);
-        CrashReporting.log(Log.DEBUG, TAG, "showInstallProgress, " +
+        CrashReporting.log(Log.INFO, TAG, "showInstallProgress, " +
                 (isAlreadyInstalling ? "installation in progress" : "starting installation"));
         NoBooksUi.InstallProgressObserver uiProgressObserver =
                 ui.showInstallProgress(isAlreadyInstalling);
@@ -111,7 +111,7 @@ public class UiControllerNoBooks {
 
     private void stopProgressReceiver() {
         Preconditions.checkState(progressReceiver != null);
-        CrashReporting.log(Log.DEBUG, TAG, "stopProgressReceiver");
+        CrashReporting.log(Log.INFO, TAG, "stopProgressReceiver");
         LocalBroadcastManager.getInstance(activity).unregisterReceiver(progressReceiver);
         progressReceiver.stop();
         progressReceiver = null;
@@ -137,7 +137,7 @@ public class UiControllerNoBooks {
             if (observer == null)
                 return;
 
-            CrashReporting.log(Log.DEBUG, TAG, "progress receiver: " + intent.getAction());
+            CrashReporting.log(Log.INFO, TAG, "progress receiver: " + intent.getAction());
             if (DemoSamplesInstallerService.BROADCAST_DOWNLOAD_PROGRESS_ACTION.equals(
                     intent.getAction())) {
                 int transferredBytes = intent.getIntExtra(

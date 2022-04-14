@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -11,11 +12,7 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.PlaybackParameters;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.mp3.Mp3Extractor;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.FileDataSource;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.events.PlaybackErrorEvent;
 
@@ -25,6 +22,8 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 
 public class Player {
+
+    private static final String TAG = "Player";
 
     private final ExoPlayer exoPlayer;
     private final EventBus eventBus;
@@ -141,14 +140,17 @@ public class Player {
         }
 
         @Override
-        public void onPlayerError(PlaybackException error) {
+        public void onPlayerError(@NonNull PlaybackException error) {
+            String audioFormat =
+                    exoPlayer.getAudioFormat() != null ? exoPlayer.getAudioFormat().toString() : "unknown";
+            Log.e(TAG, "Player error. Format: " + audioFormat + "; uri: " + currentUri, error);
             eventBus.post(new PlaybackErrorEvent(
                     error.getMessage(),
                     exoPlayer.getDuration(),
                     exoPlayer.getCurrentPosition(),
-                    exoPlayer.getAudioFormat() != null ? exoPlayer.getAudioFormat().toString() : "unknown"));
+                    audioFormat));
             if (error.errorCode == PlaybackException.ERROR_CODE_IO_READ_POSITION_OUT_OF_RANGE) {
-                // May happen with files that have seeking or length information.
+                // May happen with files that have no seeking or length information.
                 observer.onPlaybackEnded();
                 return;
             }
@@ -221,6 +223,9 @@ public class Player {
 
         @Override
         public void onPlayerError(@NonNull PlaybackException error) {
+            String audioFormat =
+                    exoPlayer.getAudioFormat() != null ? exoPlayer.getAudioFormat().toString() : "unknown";
+            Log.e(TAG, "Player error. Format: " + audioFormat + "; uri: " + uri, error);
             releaseOnIdle = true;
             observer.onPlayerError(uri);
         }

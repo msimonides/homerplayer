@@ -94,7 +94,7 @@ public class UiControllerPlayback {
     }
 
     public void stopPlayback() {
-        CrashReporting.log(Log.DEBUG, TAG, "UiControllerPlayback.stopPlayback");
+        CrashReporting.log(Log.INFO, TAG, "UiControllerPlayback.stopPlayback");
         playbackService.stopPlayback();
     }
 

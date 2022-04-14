@@ -51,16 +51,18 @@
     <string name="pref_jump_back_entry_disabled">Disabled</string>
     <string name="pref_jump_back_title">Jump back when resuming playback</string>
     <string name="pref_jump_back_summary">Jump %s back</string>
+    <string name="pref_reset_all_book_progress">Rewind all books to the beginning…</string>
+    <string name="pref_reset_all_book_progress_dialog_title">Reset listening progress on all books?</string>
+    <string name="pref_reset_all_book_progress_done">Book progress reset</string>
+    <string name="pref_screen_orientation">Screen orientation</string>
+    <string name="pref_screen_orientation_default_value" translatable="false">LANDSCAPE_AUTO</string>
+    <string name="pref_share_diagnostic_log_title">Share diagnostic log</string>
+    <string name="pref_share_diagnostic_log_summary">Send diagnostic log to developer to report an issue</string>
     <string name="pref_sleep_timer_entry_disabled">Disable</string>
     <string name="pref_sleep_timer_title">Sleep timer</string>
     <string name="pref_sleep_timer_summary">Pause after %s of inactivity</string>
     <string name="pref_sleep_timer_summary_disabled">Disabled</string>
     <string name="pref_sleep_timer_default_value" translatable="false">0</string>
-    <string name="pref_screen_orientation">Screen orientation</string>
-    <string name="pref_screen_orientation_default_value" translatable="false">LANDSCAPE_AUTO</string>
-    <string name="pref_reset_all_book_progress">Rewind all books to the beginning…</string>
-    <string name="pref_reset_all_book_progress_dialog_title">Reset listening progress on all books?</string>
-    <string name="pref_reset_all_book_progress_done">Book progress reset</string>
     <string name="pref_ui_options_screen_title">User interface…</string>
     <string name="pref_version_title">Version</string>
     <string name="pref_volume_controls">Volume controls on playback screen</string>

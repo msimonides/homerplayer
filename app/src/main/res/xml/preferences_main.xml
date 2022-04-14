@@ -26,6 +26,10 @@
         app:key="faq_preference"
         app:title="@string/pref_help_faq_title" />
     <Preference
+        app:key="share_logs_preference"
+        app:title="@string/pref_share_diagnostic_log_title"
+        app:summary="@string/pref_share_diagnostic_log_summary" />
+    <Preference
         app:key="version_preference"
         app:title="@string/pref_version_title"/>
 </PreferenceScreen>

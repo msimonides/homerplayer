@@ -54,6 +54,8 @@
     <string name="pref_reset_all_book_progress">Przewiń wszystkie książki na początek…</string>
     <string name="pref_reset_all_book_progress_dialog_title">Przewinąć książki na początek?</string>
     <string name="pref_reset_all_book_progress_done">Książki przewinięte</string>
+    <string name="pref_share_diagnostic_log_title">Udostępnij logi diagnostyczne</string>
+    <string name="pref_share_diagnostic_log_summary">Wyślij logi diagnostyczne do twórcy aplikacji aby zgłosić problem</string>
     <string name="pref_ui_options_screen_title">Interfejs użytkownika…</string>
     <string name="pref_version_title">Wersja</string>
     <string name="pref_volume_controls">Przyciski głośności na ekranie odtwarzania</string>

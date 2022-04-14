@@ -69,7 +69,7 @@ public class SnippetPlayer implements PlaybackController.Observer {
 
     @Override
     public void onPlaybackError(Uri uri) {
-        CrashReporting.log(Log.DEBUG, TAG,"Unable to play snippet: " + uri.toString());
+        CrashReporting.log(Log.INFO, TAG,"Unable to play snippet: " + uri.toString());
     }
 
     @Override

@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.SystemClock;
 import android.provider.DocumentsContract;
 import android.util.Base64;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -72,7 +71,6 @@ public class ScanDocumentTreeTask implements Callable<List<FileSet>> {
         }
         Collections.sort(filesets, (a, b) -> a.name.compareTo(b.name));
         long end = SystemClock.elapsedRealtime();
-        Log.d("ListTest", "time: " + (end - start) + "ms");
         return filesets;
     }
 

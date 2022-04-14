@@ -78,7 +78,7 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     void onActivityStart() {
-        CrashReporting.log(Log.DEBUG, TAG,"UI: onActivityStart");
+        CrashReporting.log(Log.INFO, TAG,"UI: onActivityStart");
         scanAudioBookFiles();
     }
 
@@ -88,13 +88,13 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     void onActivityPause() {
-        CrashReporting.log(Log.DEBUG, TAG, "UI: onActivityPause, state: " + currentState.debugName());
+        CrashReporting.log(Log.INFO, TAG, "UI: onActivityPause, state: " + currentState.debugName());
         currentState.onActivityPause();
         isRunning = false;
     }
 
     void onActivityStop() {
-        CrashReporting.log(Log.DEBUG, TAG,
+        CrashReporting.log(Log.INFO, TAG,
                 "UI: leave state " + currentState.debugName() + " (activity stop)");
         currentState.onLeaveState();
         currentState = new InitState();
@@ -128,7 +128,7 @@ public class UiControllerMain implements ServiceConnection {
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder service) {
-        CrashReporting.log(Log.DEBUG, TAG, "onServiceConnected");
+        CrashReporting.log(Log.INFO, TAG, "onServiceConnected");
         Preconditions.checkState(playbackService == null);
         playbackService = ((PlaybackService.ServiceBinder) service).getService();
         maybeSetInitialState();
@@ -136,7 +136,7 @@ public class UiControllerMain implements ServiceConnection {
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        CrashReporting.log(Log.DEBUG, TAG, "onServiceDisconnected");
+        CrashReporting.log(Log.INFO, TAG, "onServiceDisconnected");
         playbackService = null;
     }
 
@@ -213,11 +213,11 @@ public class UiControllerMain implements ServiceConnection {
 
     private void changeState(StateFactory newStateFactory) {
         if (!isRunning)
-            CrashReporting.log(Log.DEBUG, TAG, "UI(!): changing state while activity is paused");
+            CrashReporting.log(Log.INFO, TAG, "UI(!): changing state while activity is paused");
 
-        CrashReporting.log(Log.DEBUG, TAG, "UI: leave state: " + currentState.debugName());
+        CrashReporting.log(Log.INFO, TAG, "UI: leave state: " + currentState.debugName());
         currentState.onLeaveState();
-        CrashReporting.log(Log.DEBUG, TAG,"UI: create state: " + newStateFactory.name());
+        CrashReporting.log(Log.INFO, TAG,"UI: create state: " + newStateFactory.name());
         currentState = newStateFactory.create(this, currentState);
     }
 

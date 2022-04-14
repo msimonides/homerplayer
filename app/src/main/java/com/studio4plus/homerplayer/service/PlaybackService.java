@@ -81,7 +81,7 @@ public class PlaybackService
 
     @Override
     public void onDestroy() {
-        CrashReporting.log(Log.DEBUG, TAG, "PlaybackService.onDestroy");
+        CrashReporting.log(Log.INFO, TAG, "PlaybackService.onDestroy");
         super.onDestroy();
         stopPlayback();
     }
@@ -107,10 +107,10 @@ public class PlaybackService
         startForeground(NOTIFICATION_ID, notification);
 
         if (book.getTotalDurationMs() == AudioBook.UNKNOWN_POSITION) {
-            CrashReporting.log(Log.DEBUG, TAG,"PlaybackService.startPlayback: create DurationQuery");
+            CrashReporting.log(Log.INFO, TAG,"PlaybackService.startPlayback: create DurationQuery");
             durationQueryInProgress = new DurationQuery(player, book);
         } else {
-            CrashReporting.log(Log.DEBUG, TAG,"PlaybackService.startPlayback: create AudioBookPlayback");
+            CrashReporting.log(Log.INFO, TAG,"PlaybackService.startPlayback: create AudioBookPlayback");
             playbackInProgress = new AudioBookPlayback(
                     player, handler, book, globalSettings.getJumpBackPreferenceMs());
         }
@@ -152,13 +152,13 @@ public class PlaybackService
         else if (playbackInProgress != null)
             playbackInProgress.stop();
 
-        CrashReporting.log(Log.DEBUG, TAG, "PlaybackService.stopPlayback");
+        CrashReporting.log(Log.INFO, TAG, "PlaybackService.stopPlayback");
         onPlaybackEnded();
     }
 
     @Override
     public void onFaceDownStill() {
-        CrashReporting.log(Log.DEBUG, TAG, "PlaybackService.onFaceDownStill");
+        CrashReporting.log(Log.INFO, TAG, "PlaybackService.onFaceDownStill");
         stopPlayback();
     }
 
@@ -173,7 +173,7 @@ public class PlaybackService
         // Notifications should request TRANSIENT_CAN_DUCK so they won't interfere.
         if (focusChange == AudioManager.AUDIOFOCUS_LOSS ||
                 focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
-            CrashReporting.log(Log.DEBUG, TAG, "PlaybackService.onAudioFocusChange");
+            CrashReporting.log(Log.INFO, TAG, "PlaybackService.onAudioFocusChange");
             stopPlayback();
         }
     }
@@ -196,7 +196,7 @@ public class PlaybackService
     }
 
     private void onPlayerReleased() {
-        CrashReporting.log(Log.DEBUG, TAG, "PlaybackService.onPlayerReleased");
+        CrashReporting.log(Log.INFO, TAG, "PlaybackService.onPlayerReleased");
         if (playbackInProgress != null || durationQueryInProgress != null) {
             onPlaybackEnded();
         }
@@ -297,7 +297,7 @@ public class PlaybackService
         @Override
         public void onPlaybackEnded() {
             boolean hasMoreToPlay = audioBook.advanceFile();
-            CrashReporting.log(Log.DEBUG, TAG, "PlaybackService.AudioBookPlayback.onPlaybackEnded: " +
+            CrashReporting.log(Log.INFO, TAG, "PlaybackService.AudioBookPlayback.onPlaybackEnded: " +
                     (hasMoreToPlay ? "more to play" : "finished"));
             if (hasMoreToPlay) {
                 AudioBook.Position position = audioBook.getLastPosition();
@@ -349,7 +349,7 @@ public class PlaybackService
 
         @Override
         public void onFinished() {
-            CrashReporting.log(Log.DEBUG, TAG, "PlaybackService.DurationQuery.onFinished");
+            CrashReporting.log(Log.INFO, TAG, "PlaybackService.DurationQuery.onFinished");
             Preconditions.checkState(durationQueryInProgress == this);
             durationQueryInProgress = null;
             playbackInProgress = new AudioBookPlayback(
@@ -390,7 +390,7 @@ public class PlaybackService
             currentVolume -= VOLUME_DOWN_STEP;
             player.setPlaybackVolume(currentVolume);
             if (currentVolume <= 0) {
-                CrashReporting.log(Log.DEBUG, TAG, "SleepFadeOut stop");
+                CrashReporting.log(Log.INFO, TAG, "SleepFadeOut stop");
                 stopPlayback();
             } else {
                 handler.postDelayed(this, STEP_INTERVAL_MS);

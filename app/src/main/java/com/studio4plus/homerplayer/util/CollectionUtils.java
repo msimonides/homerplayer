@@ -25,4 +25,12 @@ public class CollectionUtils {
                 return true;
         return false;
     }
+
+    public static <Type> boolean any(@NonNull Collection<Type> collection, @NonNull Predicate<Type> predicate) {
+        for (Type item : collection) {
+            if (predicate.isTrue(item))
+                return true;
+        }
+        return false;
+    }
 }
