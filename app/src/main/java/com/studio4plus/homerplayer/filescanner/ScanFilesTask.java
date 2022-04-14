@@ -27,8 +27,6 @@ public class ScanFilesTask implements Callable<List<FileSet>> {
         List<File> getFolders();
     }
 
-    private static final String[] SUPPORTED_SUFFIXES = { ".m4a", ".m4b", ".mp3", ".ogg" };
-
     private final FolderProvider folderProvider;
     private final boolean demoSamples;
 
@@ -139,7 +137,7 @@ public class ScanFilesTask implements Callable<List<FileSet>> {
 
     private static boolean isAudioFile(File file) {
         String lowerCaseFileName = file.getName().toLowerCase();
-        for (String suffix : SUPPORTED_SUFFIXES)
+        for (String suffix : FileScanner.SUPPORTED_SUFFIXES)
             if (lowerCaseFileName.endsWith(suffix))
                 return true;
 

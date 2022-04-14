@@ -113,7 +113,7 @@ public class ScanDocumentTreeTask implements Callable<List<FileSet>> {
                 String mimeType = cursor.getString(2);
                 if (isFolder(mimeType)) {
                     scanAudiobook(rootUri, documentId, files, filePath);
-                } else if (mimeType.startsWith("audio/")) {
+                } else if (CollectionUtils.any(FileScanner.SUPPORTED_SUFFIXES, documentId::endsWith)) {
                     long size = cursor.getLong(3);
                     Uri uri = DocumentsContract.buildDocumentUriUsingTree(rootUri, documentId);
                     files.add(new FileItem(filePath, uri, size));

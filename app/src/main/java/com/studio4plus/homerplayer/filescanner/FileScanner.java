@@ -3,7 +3,6 @@ package com.studio4plus.homerplayer.filescanner;
 import static com.studio4plus.homerplayer.util.CollectionUtils.map;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -14,6 +13,8 @@ import com.studio4plus.homerplayer.concurrency.BackgroundExecutor;
 import com.studio4plus.homerplayer.concurrency.SimpleFuture;
 import com.studio4plus.homerplayer.demosamples.DemoSamplesFolderProvider;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,9 @@ import javax.inject.Named;
 
 @ApplicationScope
 public class FileScanner {
+
+    public static final Collection<String> SUPPORTED_SUFFIXES = Arrays.asList(".m4a", ".m4b", ".mp3", ".ogg");
+
     private final GlobalSettings globalSettings;
     private final BackgroundExecutor ioExecutor;
     private final Context applicationContext;
