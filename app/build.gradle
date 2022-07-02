@@ -153,6 +153,11 @@ dependencies {
 
     implementation 'com.github.ozodrukh:CircularReveal:2.0.1@aar'
 
+    def lumberjackVersion = '5.2.5'
+    implementation "com.github.MFlisar.Lumberjack:lumberjack-library:$lumberjackVersion"
+    implementation "com.github.MFlisar.Lumberjack:lumberjack-filelogger:$lumberjackVersion"
+    implementation "com.github.MFlisar.Lumberjack:lumberjack-java-wrapper:$lumberjackVersion"
+
     developmentImplementation project(':app:crashreporting-noop')
     gitHubImplementation project(':app:crashreporting-noop')
     playStoreImplementation project(':app:crashreporting-noop')

@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import timber.log.Timber;
 
 public class Player {
 
@@ -143,7 +144,7 @@ public class Player {
         public void onPlayerError(@NonNull PlaybackException error) {
             String audioFormat =
                     exoPlayer.getAudioFormat() != null ? exoPlayer.getAudioFormat().toString() : "unknown";
-            Log.e(TAG, "Player error. Format: " + audioFormat + "; uri: " + currentUri, error);
+            Timber.e(error, "Player error. Format %s; uri: %s", audioFormat, currentUri.toString());
             eventBus.post(new PlaybackErrorEvent(
                     error.getMessage(),
                     exoPlayer.getDuration(),
@@ -225,7 +226,7 @@ public class Player {
         public void onPlayerError(@NonNull PlaybackException error) {
             String audioFormat =
                     exoPlayer.getAudioFormat() != null ? exoPlayer.getAudioFormat().toString() : "unknown";
-            Log.e(TAG, "Player error. Format: " + audioFormat + "; uri: " + uri, error);
+            Timber.e(error, "Player error. Format: %s; uri: %s", audioFormat, uri.toString());
             releaseOnIdle = true;
             observer.onPlayerError(uri);
         }

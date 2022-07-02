@@ -29,6 +29,7 @@ import com.studio4plus.homerplayer.service.PlaybackService;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import timber.log.Timber;
 
 public class UiControllerMain implements ServiceConnection {
 
@@ -43,7 +44,6 @@ public class UiControllerMain implements ServiceConnection {
     private final @NonNull UiControllerPlayback.Factory playbackControllerFactory;
 
     private static final int PERMISSION_REQUEST_FOR_BOOK_SCAN = 1;
-    private static final String TAG = "UiControllerMain";
 
     private @Nullable PlaybackService playbackService;
 
@@ -78,7 +78,7 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     void onActivityStart() {
-        CrashReporting.log(Log.INFO, TAG,"UI: onActivityStart");
+        Timber.i("UI: onActivityStart");
         scanAudioBookFiles();
     }
 
@@ -88,14 +88,13 @@ public class UiControllerMain implements ServiceConnection {
     }
 
     void onActivityPause() {
-        CrashReporting.log(Log.INFO, TAG, "UI: onActivityPause, state: " + currentState.debugName());
+        Timber.i("UI: onActivityPause, state: %s", currentState.debugName());
         currentState.onActivityPause();
         isRunning = false;
     }
 
     void onActivityStop() {
-        CrashReporting.log(Log.INFO, TAG,
-                "UI: leave state " + currentState.debugName() + " (activity stop)");
+        Timber.i("UI: leave state %s (activity stop)", currentState.debugName());
         currentState.onLeaveState();
         currentState = new InitState();
     }
@@ -128,7 +127,7 @@ public class UiControllerMain implements ServiceConnection {
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder service) {
-        CrashReporting.log(Log.INFO, TAG, "onServiceConnected");
+        Timber.i("onServiceConnected");
         Preconditions.checkState(playbackService == null);
         playbackService = ((PlaybackService.ServiceBinder) service).getService();
         maybeSetInitialState();
@@ -136,7 +135,7 @@ public class UiControllerMain implements ServiceConnection {
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        CrashReporting.log(Log.INFO, TAG, "onServiceDisconnected");
+        Timber.i("onServiceDisconnected");
         playbackService = null;
     }
 
@@ -213,11 +212,11 @@ public class UiControllerMain implements ServiceConnection {
 
     private void changeState(StateFactory newStateFactory) {
         if (!isRunning)
-            CrashReporting.log(Log.INFO, TAG, "UI(!): changing state while activity is paused");
+            Timber.i("UI(!): changing state while activity is paused");
 
-        CrashReporting.log(Log.INFO, TAG, "UI: leave state: " + currentState.debugName());
+        Timber.i("UI: leave state: %s", currentState.debugName());
         currentState.onLeaveState();
-        CrashReporting.log(Log.INFO, TAG,"UI: create state: " + newStateFactory.name());
+        Timber.i("UI: create state: %s", newStateFactory.name());
         currentState = newStateFactory.create(this, currentState);
     }
 

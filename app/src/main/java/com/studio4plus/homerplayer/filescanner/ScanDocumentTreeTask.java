@@ -3,7 +3,6 @@ package com.studio4plus.homerplayer.filescanner;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.SystemClock;
 import android.provider.DocumentsContract;
 import android.util.Base64;
 
@@ -20,6 +19,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
+
+import timber.log.Timber;
 
 public class ScanDocumentTreeTask implements Callable<List<FileSet>> {
 
@@ -65,12 +66,10 @@ public class ScanDocumentTreeTask implements Callable<List<FileSet>> {
     @Override
     public List<FileSet> call() throws Exception {
         List<FileSet> filesets = new ArrayList<>();
-        long start = SystemClock.elapsedRealtime();
         for (Uri uri : audiobooksFolderUris) {
             filesets.addAll(scanAudiobooks(uri));
         }
         Collections.sort(filesets, (a, b) -> a.name.compareTo(b.name));
-        long end = SystemClock.elapsedRealtime();
         return filesets;
     }
 
@@ -78,6 +77,7 @@ public class ScanDocumentTreeTask implements Callable<List<FileSet>> {
         Uri childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(
                 treeUri, DocumentsContract.getTreeDocumentId(treeUri));
 
+        Timber.d("Scan audiobooks in: %s", treeUri.toString());
         List<FileSet> fileSets = new ArrayList<>();
         try(Cursor cursor =
                     context.getContentResolver().query(childrenUri, DOCUMENTS_PROJECTION, null, null, null)) {
@@ -104,7 +104,6 @@ public class ScanDocumentTreeTask implements Callable<List<FileSet>> {
             @NonNull List<FileItem> files,
             @NonNull String path) {
         Uri childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(rootUri, folderDocId);
-
         try(Cursor cursor =
                     context.getContentResolver().query(childrenUri, DOCUMENTS_PROJECTION, null, null, SORT_BY_NAME)) {
             while(cursor.moveToNext()) {
@@ -114,6 +113,7 @@ public class ScanDocumentTreeTask implements Callable<List<FileSet>> {
                 if (isFolder(mimeType)) {
                     scanAudiobook(rootUri, documentId, files, filePath);
                 } else if (CollectionUtils.any(FileScanner.SUPPORTED_SUFFIXES, documentId::endsWith)) {
+                    Timber.d(filePath);
                     long size = cursor.getLong(3);
                     Uri uri = DocumentsContract.buildDocumentUriUsingTree(rootUri, documentId);
                     files.add(new FileItem(filePath, uri, size));

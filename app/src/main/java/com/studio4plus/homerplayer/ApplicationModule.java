@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
 
+import com.michaelflisar.lumberjack.FileLoggingSetup;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.analytics.StatsLogger;
 import com.studio4plus.homerplayer.concurrency.BackgroundExecutor;
@@ -106,5 +107,14 @@ public class ApplicationModule {
         ioThread.start();
         Handler ioHandler = new Handler(ioThread.getLooper());
         return new BackgroundExecutor(new Handler(applicationContext.getMainLooper()), ioHandler);
+    }
+
+    @Provides @Singleton
+    FileLoggingSetup provideFileLoggingSetup(@NonNull Context applicationContext) {
+        return new FileLoggingSetup.NumberedFiles(
+                applicationContext.getFileStreamPath("").getAbsolutePath(),
+                true,
+                "500KB",
+                new FileLoggingSetup.Setup(2, "%d %marker%-5level %msg%n", "log", "log"));
     }
 }

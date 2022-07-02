@@ -20,6 +20,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import timber.log.Timber;
+
 public class ScanFilesTask implements Callable<List<FileSet>> {
 
     interface FolderProvider {
@@ -59,6 +61,8 @@ public class ScanFilesTask implements Callable<List<FileSet>> {
                         fileSets.add(fileSet);
                 }
             }
+        } else {
+            Timber.w("Audiobooks folder not accessible: %s", audioBooksDir.getAbsolutePath());
         }
     }
 
@@ -109,6 +113,13 @@ public class ScanFilesTask implements Callable<List<FileSet>> {
 
         FileFilter filesAndDirectoriesFilter = new OrFilter(audioFiles, new DirectoryFilter());
         addFilesRecursive(directory, filesAndDirectoriesFilter, files);
+        Timber.d("Audiobook files in: %s", directory.getAbsolutePath());
+        for (File file : files) {
+            // Note: this way of getting a relative path has its problems but should be safe in
+            // this case.
+            String relativePath = file.getAbsolutePath().substring(directory.getAbsolutePath().length());
+            Timber.d(relativePath);
+        }
         return files.toArray(new File[files.size()]);
     }
 

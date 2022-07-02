@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements SpeakerProvider {
 
@@ -203,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
                 try {
                     startActivity(installIntent);
                 } catch (ActivityNotFoundException e) {
-                    Log.w("MainActivity", "No activity to handle Text-to-Speech data installation.");
+                    Timber.w(e, "No activity to handle Text-to-Speech data installation.");
                     if (ttsDeferred != null) {
                         ttsDeferred.setException(e);
                         ttsDeferred = null;
@@ -225,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
                 startActivityForResult(checkIntent, TTS_CHECK_CODE);
                 ttsDeferred = result;
             } catch (ActivityNotFoundException e) {
-                Log.w("MainActivity", "Text-to-Speech not available");
+                Timber.w("Text-to-Speech not available");
                 result.setException(e);
                 // ttsDeferred stays unset because the result is delivered.
             }

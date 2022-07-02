@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import timber.log.Timber;
+
 public class Decompress {
     private InputStream _zipInputStream;
     private String _location;
@@ -58,7 +60,7 @@ public class Decompress {
             zin.close();
 
         } catch(Exception e) {
-            Log.e("Decompress", "unzip", e);
+            Timber.e(e, "unzip");
         }
 
     }
@@ -82,7 +84,7 @@ public class Decompress {
             }
         }
         catch(Exception e){
-            Log.w("creating file error", e.toString());
+            Timber.e(e, "creating file error");
         }
     }
 }

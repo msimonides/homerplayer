@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import timber.log.Timber;
 
 public class UiControllerPlayback {
 
@@ -94,7 +95,7 @@ public class UiControllerPlayback {
     }
 
     public void stopPlayback() {
-        CrashReporting.log(Log.INFO, TAG, "UiControllerPlayback.stopPlayback");
+        Timber.i("UiControllerPlayback.stopPlayback");
         playbackService.stopPlayback();
     }
 

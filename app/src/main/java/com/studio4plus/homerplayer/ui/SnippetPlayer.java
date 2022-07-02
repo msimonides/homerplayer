@@ -12,6 +12,7 @@ import com.studio4plus.homerplayer.player.Player;
 import java.io.File;
 
 import de.greenrobot.event.EventBus;
+import timber.log.Timber;
 
 /**
  * Plays the current audiobook for a short amount of time. Just to demonstrate.
@@ -20,7 +21,6 @@ public class SnippetPlayer implements PlaybackController.Observer {
 
     private static final long PLAYBACK_TIME_MS = 5000;
 
-    private static final String TAG = "SnippetPlayer";
     final private PlaybackController playbackController;
     private long startPositionMs = -1;
     private boolean isPlaying = false;
@@ -69,7 +69,7 @@ public class SnippetPlayer implements PlaybackController.Observer {
 
     @Override
     public void onPlaybackError(Uri uri) {
-        CrashReporting.log(Log.INFO, TAG,"Unable to play snippet: " + uri.toString());
+        Timber.i("Unable to play snippet: %s", uri.toString());
     }
 
     @Override

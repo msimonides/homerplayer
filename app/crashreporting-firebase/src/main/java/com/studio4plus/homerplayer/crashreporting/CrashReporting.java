@@ -25,7 +25,6 @@ public class CrashReporting {
     @Deprecated
     public static void log(int priority, @NonNull String tag, @NonNull String msg) {
         crashlytics.log(tag + ": " + msg);
-        Log.println(priority, tag, msg);
     }
 
     public static void logException(@NonNull Throwable e) {

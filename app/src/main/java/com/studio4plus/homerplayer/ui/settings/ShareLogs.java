@@ -1,19 +1,26 @@
 package com.studio4plus.homerplayer.ui.settings;
 
 import android.content.Context;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 
+import com.michaelflisar.lumberjack.FileLoggingSetup;
 import com.studio4plus.homerplayer.ApplicationScope;
+import com.studio4plus.homerplayer.BuildConfig;
+import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.concurrency.BackgroundExecutor;
 import com.studio4plus.homerplayer.concurrency.SimpleFuture;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -25,19 +32,27 @@ public class ShareLogs {
     @NonNull
     private final BackgroundExecutor ioExecutor;
     @NonNull
+    private final FileLoggingSetup fileLoggingSetup;
+    @NonNull
+    private final GlobalSettings globalSettings;
+    @NonNull
     private final Context appContext;
 
     @Inject
     public ShareLogs(
             @ApplicationScope @NonNull Context appContext,
-            @Named("IO_EXECUTOR") @NonNull BackgroundExecutor ioExecutor) {
+            @NonNull FileLoggingSetup fileLoggingSetup,
+            @Named("IO_EXECUTOR") @NonNull BackgroundExecutor ioExecutor,
+            @NonNull GlobalSettings globalSettings) {
         this.ioExecutor = ioExecutor;
+        this.fileLoggingSetup = fileLoggingSetup;
+        this.globalSettings = globalSettings;
         this.appContext = appContext;
     }
 
     public SimpleFuture<File> shareLogs() {
         File logsFolder = logsFolder();
-        SimpleFuture<File> resultFuture = ioExecutor.postTask(new SaveLog(logsFolder));
+        SimpleFuture<File> resultFuture = ioExecutor.postTask(new SaveLog(logsFolder, fileLoggingSetup, globalSettings));
         ioExecutor.postTask(new ClearOldLogs(logsFolder));
         return resultFuture;
     }
@@ -51,9 +66,17 @@ public class ShareLogs {
 
         @NonNull
         private final File outputFolder;
+        @NonNull
+        private final FileLoggingSetup fileLoggingSetup;
+        @NonNull
+        private final GlobalSettings globalSettings;
 
-        private SaveLog(@NonNull File outputFolder) {
+        private SaveLog(@NonNull File outputFolder,
+                        @NonNull FileLoggingSetup fileLoggingSetup,
+                        @NonNull GlobalSettings globalSettings) {
             this.outputFolder = outputFolder;
+            this.fileLoggingSetup = fileLoggingSetup;
+            this.globalSettings = globalSettings;
         }
 
         @Override
@@ -63,21 +86,47 @@ public class ShareLogs {
 
             File outputFile = File.createTempFile("Homer_log_", ".txt", outputFolder);
             OutputStream outputStream = new FileOutputStream(outputFile);
-            Process process = Runtime.getRuntime().exec(new String[]{ "logcat", "-b", "main", "-d", "*:I" });
-            InputStream inputStream = process.getInputStream();
+            List<File> files = fileLoggingSetup.getAllExistingLogFiles();
             try {
-                byte[] buffer = new byte[65535];
-                int read = inputStream.read(buffer);
-                while (read != -1) {
-                    outputStream.write(buffer, 0, read);
-                    read = inputStream.read(buffer);
+                for (File file : files) {
+                    append(outputStream, file);
                 }
             } finally {
-                inputStream.close();
+                appendStatus(outputStream);
                 outputStream.close();
             }
-
             return outputFile;
+        }
+
+        private void append(@NonNull OutputStream outputStream, @NonNull File file) {
+            try {
+                InputStream inputStream = new FileInputStream(file);
+                try {
+                    byte[] buffer = new byte[65535];
+                    int read = inputStream.read(buffer);
+                    while (read != -1) {
+                        outputStream.write(buffer, 0, read);
+                        read = inputStream.read(buffer);
+                    }
+                } finally {
+                    inputStream.close();
+                }
+            } catch(IOException e) {
+                PrintWriter writer = new PrintWriter(outputStream);
+                writer.println("Error while appending file " + file.getName());
+                writer.println("  " + e);
+            }
+        }
+
+        private void appendStatus(@NonNull OutputStream outputStream) {
+            PrintWriter writer = new PrintWriter(outputStream);
+            writer.println("Manufacturer: " + Build.MANUFACTURER + "; " + Build.BRAND);
+            writer.println("Model: " + Build.MODEL);
+            writer.println("Android API: " + Build.VERSION.SDK_INT);
+            writer.println("App Version: " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ") " + BuildConfig.FLAVOR);
+            writer.println("Legacy file access mode: " + globalSettings.legacyFileAccessMode());
+            writer.println("Audiobooks folders: " + globalSettings.audiobooksFolders());
+            writer.flush();
         }
     }
 

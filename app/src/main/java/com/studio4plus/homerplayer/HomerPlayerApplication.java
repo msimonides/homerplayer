@@ -9,6 +9,8 @@ import android.provider.MediaStore;
 import androidx.core.content.pm.PackageInfoCompat;
 import androidx.multidex.MultiDexApplication;
 
+import com.michaelflisar.lumberjack.FileLoggingSetup;
+import com.michaelflisar.lumberjack.FileLoggingTree;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.ui.HomeActivity;
@@ -16,16 +18,18 @@ import com.studio4plus.homerplayer.service.NotificationUtil;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public class HomerPlayerApplication extends MultiDexApplication {
 
     private static final String AUDIOBOOKS_DIRECTORY = "AudioBooks";
 
     private ApplicationComponent component;
 
-
     @Inject public MediaStoreUpdateObserver mediaStoreUpdateObserver;
     @Inject public GlobalSettings globalSettings;
     @Inject public AnalyticsTracker analyticsTracker;  // Force creation of the tracker early.
+    @Inject public FileLoggingSetup fileLoggingSetup;
 
     @Override
     public void onCreate() {
@@ -38,6 +42,12 @@ public class HomerPlayerApplication extends MultiDexApplication {
                 .audioBookManagerModule(new AudioBookManagerModule(AUDIOBOOKS_DIRECTORY))
                 .build();
         component.inject(this);
+
+        Timber.plant(new FileLoggingTree(fileLoggingSetup));
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
+        Timber.i("Application started");
 
         long currentVersionCode = getVersionCode();
         long previousVersionCode = globalSettings.lastVersionCode();

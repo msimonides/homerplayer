@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import timber.log.Timber;
 
 public class PlaybackService
         extends Service
@@ -47,7 +48,6 @@ public class PlaybackService
 
     private static final long FADE_OUT_DURATION_MS = TimeUnit.SECONDS.toMillis(10);
 
-    private static final String TAG = "PlaybackService";
     private static final int NOTIFICATION_ID = R.string.playback_service_notification;
     private static final PlaybackStoppingEvent PLAYBACK_STOPPING_EVENT = new PlaybackStoppingEvent();
     private static final PlaybackStoppedEvent PLAYBACK_STOPPED_EVENT = new PlaybackStoppedEvent();
@@ -81,7 +81,7 @@ public class PlaybackService
 
     @Override
     public void onDestroy() {
-        CrashReporting.log(Log.INFO, TAG, "PlaybackService.onDestroy");
+        Timber.i("PlaybackService.onDestroy");
         super.onDestroy();
         stopPlayback();
     }
@@ -107,10 +107,10 @@ public class PlaybackService
         startForeground(NOTIFICATION_ID, notification);
 
         if (book.getTotalDurationMs() == AudioBook.UNKNOWN_POSITION) {
-            CrashReporting.log(Log.INFO, TAG,"PlaybackService.startPlayback: create DurationQuery");
+            Timber.i("PlaybackService.startPlayback: create DurationQuery");
             durationQueryInProgress = new DurationQuery(player, book);
         } else {
-            CrashReporting.log(Log.INFO, TAG,"PlaybackService.startPlayback: create AudioBookPlayback");
+            Timber.i("PlaybackService.startPlayback: create AudioBookPlayback");
             playbackInProgress = new AudioBookPlayback(
                     player, handler, book, globalSettings.getJumpBackPreferenceMs());
         }
@@ -152,13 +152,13 @@ public class PlaybackService
         else if (playbackInProgress != null)
             playbackInProgress.stop();
 
-        CrashReporting.log(Log.INFO, TAG, "PlaybackService.stopPlayback");
+        Timber.i("PlaybackService.stopPlayback");
         onPlaybackEnded();
     }
 
     @Override
     public void onFaceDownStill() {
-        CrashReporting.log(Log.INFO, TAG, "PlaybackService.onFaceDownStill");
+        Timber.i("PlaybackService.onFaceDownStill");
         stopPlayback();
     }
 
@@ -173,7 +173,7 @@ public class PlaybackService
         // Notifications should request TRANSIENT_CAN_DUCK so they won't interfere.
         if (focusChange == AudioManager.AUDIOFOCUS_LOSS ||
                 focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
-            CrashReporting.log(Log.INFO, TAG, "PlaybackService.onAudioFocusChange");
+            Timber.i("PlaybackService.onAudioFocusChange");
             stopPlayback();
         }
     }
@@ -196,7 +196,7 @@ public class PlaybackService
     }
 
     private void onPlayerReleased() {
-        CrashReporting.log(Log.INFO, TAG, "PlaybackService.onPlayerReleased");
+        Timber.i("PlaybackService.onPlayerReleased");
         if (playbackInProgress != null || durationQueryInProgress != null) {
             onPlaybackEnded();
         }
@@ -297,7 +297,7 @@ public class PlaybackService
         @Override
         public void onPlaybackEnded() {
             boolean hasMoreToPlay = audioBook.advanceFile();
-            CrashReporting.log(Log.INFO, TAG, "PlaybackService.AudioBookPlayback.onPlaybackEnded: " +
+            Timber.i("PlaybackService.AudioBookPlayback.onPlaybackEnded: %s",
                     (hasMoreToPlay ? "more to play" : "finished"));
             if (hasMoreToPlay) {
                 AudioBook.Position position = audioBook.getLastPosition();
@@ -349,7 +349,7 @@ public class PlaybackService
 
         @Override
         public void onFinished() {
-            CrashReporting.log(Log.INFO, TAG, "PlaybackService.DurationQuery.onFinished");
+            Timber.i("PlaybackService.DurationQuery.onFinished");
             Preconditions.checkState(durationQueryInProgress == this);
             durationQueryInProgress = null;
             playbackInProgress = new AudioBookPlayback(
@@ -390,7 +390,7 @@ public class PlaybackService
             currentVolume -= VOLUME_DOWN_STEP;
             player.setPlaybackVolume(currentVolume);
             if (currentVolume <= 0) {
-                CrashReporting.log(Log.INFO, TAG, "SleepFadeOut stop");
+                Timber.i("SleepFadeOut stop");
                 stopPlayback();
             } else {
                 handler.postDelayed(this, STEP_INTERVAL_MS);

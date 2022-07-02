@@ -9,17 +9,15 @@ import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.util.Log;
-
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.SamplesMap;
-import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.service.DemoSamplesInstallerService;
 import com.studio4plus.homerplayer.events.DemoSamplesInstallationStartedEvent;
 
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import timber.log.Timber;
 
 public class UiControllerNoBooks {
 
@@ -42,7 +40,6 @@ public class UiControllerNoBooks {
         }
     }
 
-    private static final String TAG = "UiControllerBooks";
     static final int PERMISSION_REQUEST_DOWNLOADS = 100;
 
     private final @NonNull AppCompatActivity activity;
@@ -78,8 +75,7 @@ public class UiControllerNoBooks {
     public void abortSamplesInstallation() {
         Preconditions.checkState(DemoSamplesInstallerService.isDownloading()
                 || DemoSamplesInstallerService.isInstalling());
-        CrashReporting.log(Log.INFO, TAG, "abortSamplesInstallation, isDownloading: " +
-                DemoSamplesInstallerService.isDownloading());
+        Timber.i("abortSamplesInstallation, isDownloading: %b", DemoSamplesInstallerService.isDownloading());
         // Can't cancel installation.
         if (DemoSamplesInstallerService.isDownloading()) {
             activity.startService(DemoSamplesInstallerService.createCancelIntent(
@@ -96,8 +92,8 @@ public class UiControllerNoBooks {
 
     private void showInstallProgress(boolean isAlreadyInstalling) {
         Preconditions.checkState(progressReceiver == null);
-        CrashReporting.log(Log.INFO, TAG, "showInstallProgress, " +
-                (isAlreadyInstalling ? "installation in progress" : "starting installation"));
+        Timber.i("showInstallProgress, %s",
+                isAlreadyInstalling ? "installation in progress" : "starting installation");
         NoBooksUi.InstallProgressObserver uiProgressObserver =
                 ui.showInstallProgress(isAlreadyInstalling);
         progressReceiver = new DownloadProgressReceiver(uiProgressObserver);
@@ -111,7 +107,7 @@ public class UiControllerNoBooks {
 
     private void stopProgressReceiver() {
         Preconditions.checkState(progressReceiver != null);
-        CrashReporting.log(Log.INFO, TAG, "stopProgressReceiver");
+        Timber.i("stopProgressReceiver");
         LocalBroadcastManager.getInstance(activity).unregisterReceiver(progressReceiver);
         progressReceiver.stop();
         progressReceiver = null;
@@ -137,7 +133,7 @@ public class UiControllerNoBooks {
             if (observer == null)
                 return;
 
-            CrashReporting.log(Log.INFO, TAG, "progress receiver: " + intent.getAction());
+            Timber.d("progress receiver: %s", intent.getAction());
             if (DemoSamplesInstallerService.BROADCAST_DOWNLOAD_PROGRESS_ACTION.equals(
                     intent.getAction())) {
                 int transferredBytes = intent.getIntExtra(
