@@ -37,10 +37,10 @@ import javax.inject.Inject;
 
 public class SettingsFoldersActivity extends AppCompatActivity {
 
-    private final ActivityResultLauncher<Uri> openDocumentTreeContract =
-            registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(), this::onFolderSelected);
-
     @Inject public AudiobooksFolderManager folderManager;
+    @Inject public OnFolderSelected onFolderSelected;
+
+    private ActivityResultLauncher<Uri> openDocumentTreeContract;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,6 +50,8 @@ public class SettingsFoldersActivity extends AppCompatActivity {
         setContentView(views.getRoot());
 
         HomerPlayerApplication.getComponent(this).inject(this);
+        openDocumentTreeContract = registerForActivityResult(
+                new ActivityResultContracts.OpenDocumentTree(), onFolderSelected::onSelected);
 
         setSupportActionBar(views.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -96,10 +98,6 @@ public class SettingsFoldersActivity extends AppCompatActivity {
 
     private void addFolder() {
         openDocumentTreeContract.launch(null);
-    }
-
-    private void onFolderSelected(@Nullable Uri uri) {
-        if (uri != null) folderManager.addAudiobooksFolder(uri.toString());
     }
 
     private static class FolderEntry implements Comparable<FolderEntry> {

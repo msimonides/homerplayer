@@ -5,8 +5,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -24,6 +27,8 @@ import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.ui.MultitapTouchListener;
 import com.studio4plus.homerplayer.ui.UiControllerNoBooks;
 import com.studio4plus.homerplayer.ui.NoBooksUi;
+import com.studio4plus.homerplayer.ui.settings.AudiobooksFolderManager;
+import com.studio4plus.homerplayer.ui.settings.OnFolderSelected;
 import com.studio4plus.homerplayer.ui.settings.SettingsActivity;
 import com.studio4plus.homerplayer.ui.settings.SettingsFoldersActivity;
 
@@ -39,6 +44,18 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
 
     public @Inject @Named("AUDIOBOOKS_DIRECTORY") String audioBooksDirectoryName;
     public @Inject GlobalSettings globalSettings;
+    public @Inject OnFolderSelected onFolderSelected;
+
+    private ActivityResultLauncher<Uri> openDocumentTreeContract;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ApplicationComponent component = HomerPlayerApplication.getComponent(requireContext());
+        component.inject(this);
+        openDocumentTreeContract = registerForActivityResult(
+                new ActivityResultContracts.OpenDocumentTree(), onFolderSelected::onSelected);
+    }
 
     @Override
     public View onCreateView(
@@ -46,15 +63,12 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_no_books, container, false);
-        ApplicationComponent component = HomerPlayerApplication.getComponent(view.getContext());
-        component.inject(this);
 
         Button downloadSamplesButton = view.findViewById(R.id.downloadSamplesButton);
         downloadSamplesButton.setOnClickListener(v -> controller.startSamplesInstallation());
 
         Button selectFolderButton = view.findViewById(R.id.selectAudiobooksFolderButton);
-        selectFolderButton.setOnClickListener(v ->
-                startActivity(new Intent(requireContext(), SettingsFoldersActivity.class)));
+        selectFolderButton.setOnClickListener(v -> openDocumentTreeContract.launch(null));
 
         final Context context = view.getContext();
         view.setOnTouchListener(new MultitapTouchListener(
