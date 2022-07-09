@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -34,6 +33,7 @@ public class Player {
 
     public Player(Context context, EventBus eventBus) {
         exoPlayer = new ExoPlayer.Builder(context).build();
+        exoPlayer.addAnalyticsListener(new ExoLogger());
         this.eventBus = eventBus;
     }
 
