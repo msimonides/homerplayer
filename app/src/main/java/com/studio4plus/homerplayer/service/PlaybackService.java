@@ -12,6 +12,10 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import androidx.core.content.ContextCompat;
+import androidx.media.AudioAttributesCompat;
+import androidx.media.AudioFocusRequestCompat;
+import androidx.media.AudioManagerCompat;
+
 import android.util.Log;
 
 import com.google.common.base.Preconditions;
@@ -61,6 +65,7 @@ public class PlaybackService
     private DeviceMotionDetector motionDetector;
     private Handler handler;
     private final SleepFadeOut sleepFadeOut = new SleepFadeOut();
+    private final AudioFocusRequestCompat audioFocusRequest = createAudioFocusRequest();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -209,14 +214,13 @@ public class PlaybackService
     private void requestAudioFocus() {
         AudioManager audioManager =
                 (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-        audioManager.requestAudioFocus(
-                this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        AudioManagerCompat.requestAudioFocus(audioManager, audioFocusRequest);
     }
 
     private void dropAudioFocus() {
         AudioManager audioManager =
                 (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-        audioManager.abandonAudioFocus(this);
+        AudioManagerCompat.abandonAudioFocusRequest(audioManager, audioFocusRequest);
     }
 
     private void resetSleepTimer() {
@@ -228,6 +232,17 @@ public class PlaybackService
 
     private void stopSleepTimer() {
         sleepFadeOut.reset();
+    }
+
+    private AudioFocusRequestCompat createAudioFocusRequest() {
+        AudioAttributesCompat attributes = new AudioAttributesCompat.Builder()
+                .setUsage(AudioAttributesCompat.USAGE_MEDIA)
+                .setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC)
+                .build();
+        return new AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN)
+                .setOnAudioFocusChangeListener(this)
+                .setAudioAttributes(attributes)
+                .build();
     }
 
     private class AudioBookPlayback implements PlaybackController.Observer {
