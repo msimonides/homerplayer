@@ -9,7 +9,7 @@ import timber.log.Timber;
 
 public class ExoLogger extends EventLogger {
     public ExoLogger() {
-        super(null);
+        super();
     }
 
     @Override

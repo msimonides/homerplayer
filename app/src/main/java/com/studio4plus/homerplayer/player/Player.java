@@ -174,7 +174,7 @@ public class Player {
     }
 
     private class DurationQueryControllerImpl implements
-            com.google.android.exoplayer2.Player.EventListener,
+            com.google.android.exoplayer2.Player.Listener,
             DurationQueryController {
 
         private final Iterator<Uri> iterator;
