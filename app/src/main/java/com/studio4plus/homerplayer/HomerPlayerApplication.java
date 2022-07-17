@@ -35,7 +35,9 @@ public class HomerPlayerApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
-        CrashReporting.init(this);
+        if (!BuildConfig.DEBUG) {
+            CrashReporting.init(this);
+        }
 
         component = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))

@@ -11,6 +11,7 @@ import com.studio4plus.homerplayer.BuildConfig;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.concurrency.BackgroundExecutor;
 import com.studio4plus.homerplayer.concurrency.SimpleFuture;
+import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -126,6 +127,10 @@ public class ShareLogs {
             writer.println("App Version: " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ") " + BuildConfig.FLAVOR);
             writer.println("Legacy file access mode: " + globalSettings.legacyFileAccessMode());
             writer.println("Audiobooks folders: " + globalSettings.audiobooksFolders());
+            String crashreporting = CrashReporting.statusForDiagnosticLog();
+            if (crashreporting != null) {
+                writer.println(crashreporting);
+            }
             writer.flush();
         }
     }

@@ -5,8 +5,8 @@ buildscript {
 }
 import java.security.MessageDigest
 
-
 apply plugin: 'com.android.application'
+apply plugin: 'io.sentry.android.gradle'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -85,6 +85,16 @@ android {
     }
 }
 
+sentry {
+    includeProguardMapping = true
+    autoUploadProguardMapping = true
+    ignoredFlavors = ["development", "gitHub"]
+    ignoredBuildTypes = ["debug"]
+    autoInstallation {
+        enabled = false
+    }
+}
+
 android.applicationVariants.all { variant ->
     if (variant.name == 'gitHubRelease') {
         def matcher = variant.packageApplicationProvider.name =~ /^package(.*)$/
@@ -147,7 +157,7 @@ dependencies {
 
     developmentImplementation project(':app:crashreporting-noop')
     gitHubImplementation project(':app:crashreporting-noop')
-    playStoreImplementation project(':app:crashreporting-noop')
+    playStoreImplementation project(':app:crashreporting-sentry')
 
     developmentImplementation project(':app:analytics-noop')
     gitHubImplementation project(':app:analytics-noop')
