@@ -7,8 +7,6 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.1.1'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.5.2'
-        classpath 'com.google.gms:google-services:4.3.4'  // Google Services plugin
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -32,5 +30,4 @@ ext {
     compileSdkVersion = 31
     targetSdkVersion = 30
     version_appcompat = "1.4.2"
-    version_firebase_bom = "25.12.0"
 }

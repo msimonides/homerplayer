@@ -7,10 +7,6 @@ import java.security.MessageDigest
 
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.firebase.crashlytics'
-// Note: only tasks and code in the "official" flavor may use Google Services.
-// The "development" flavor supplies a fake google-services.json file.
-apply plugin: 'com.google.gms.google-services'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -62,7 +58,6 @@ android {
     }
     buildTypes {
         debug {
-            ext.enableCrashlytics = false
         }
         release {
             minifyEnabled true
@@ -73,24 +68,16 @@ android {
     flavorDimensions 'releaseType'
     productFlavors {
         development {
-            firebaseCrashlytics {
-                mappingFileUploadEnabled = false
-            }
             dimension 'releaseType'
         }
 
         // Builds for distribution on GitHub (intended mostly for dedicated device installations).
-        // - Firebase Analytics and Crashlytics disabled (for stores with Google-free apps),
         // - BIND_DEVICE_ADMIN permission added to allow device owner provisioning via QR code.
         gitHub {
-            firebaseCrashlytics {
-                mappingFileUploadEnabled = false
-            }
             dimension 'releaseType'
         }
 
         // Builds for distribution in the Play Store.
-        // - Firebase Analytics and Crashlytics enabled,
         // - BIND_DEVICE_ADMIN permission removed to comply with the policy.
         playStore {
             dimension 'releaseType'
