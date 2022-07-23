@@ -16,14 +16,14 @@ The following data is collected when you use the App:
 This includes but is not limited to information about how often the App is
 being used or which application features are used etc. This data contains
 no personally identifiable information and it is processed by a third party
-service Flurry Analytics.
+service Sentry.
 
 ### Stability monitoring
 
 This is data about application errors that cause the application to stop (so
 called "crashes"). Whenever such error occurs data about the application state
 at that moment is collected. This data is processed by a third party service
-Crashlytics.
+Sentry.
 
 ### Device data
 
@@ -37,15 +37,13 @@ memory and some state of the device, e.g. the current amount of free memory.
 The data described above is collected, stored and processed with the use of the
 following third party services:
 
-- Flurry Analytics: [Privacy Policy]( http://www.flurry.com/legal-privacy/privacy-policy)
-- Crashlytics: [Privacy
-  Policy](https://try.crashlytics.com/terms/privacy-policy.pdf)
+- Sentry [privacy policy](https://sentry.io/privacy/)
 
 ## Changes to this Privacy Policy
 
 The policy may be modified at any time. Any changes will be posted to this page.
 
-This policy was last modified on February 16, 2018.
+This policy was last modified on July 23, 2022.
 
 ## Contact
 
