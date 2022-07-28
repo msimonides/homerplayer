@@ -76,10 +76,12 @@
     - question: Can I put the audiobook files on a microSD card in the device?
       answer: >
         <p>
-        The application scans all available storage types (both internal memory
-        and any available SD cards). When it finds a folder <code>AudioBooks</code> in
-        the top directory it adds all audiobooks to the list. This way books from an SD
-        card and the internal storage are both available to the user.
+        Yes. When you set up the app you need to select one or more folders
+        with audiobooks - the folders can be on an installed SD card.
+        </p>
+        <p>
+        To add or remove audiobook folders tap the main Homer Player screen 5 times to
+        open settings and then choose "Audiobooks folders".
         </p>
 
 - section: Audiobooks compatibility
