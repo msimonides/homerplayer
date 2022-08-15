@@ -30,6 +30,9 @@
         app:title="@string/pref_share_diagnostic_log_title"
         app:summary="@string/pref_share_diagnostic_log_summary" />
     <Preference
+        app:key="privacy_policy_preference"
+        app:title="@string/pref_privacy_policy_title" />
+    <Preference
         app:key="version_preference"
         app:title="@string/pref_version_title"/>
 </PreferenceScreen>

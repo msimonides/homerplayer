@@ -42,10 +42,12 @@ public class MainSettingsFragment extends BaseSettingsFragment {
     private static final String KEY_RESET_ALL_BOOK_PROGRESS = "reset_all_book_progress_preference";
     private static final String KEY_AUDIOBOOKS_FOLDER = "audiobooks_folder_preference";
     private static final String KEY_FAQ = "faq_preference";
+    private static final String KEY_PRIVACY_POLICY = "privacy_policy_preference";
     private static final String KEY_SHARE_LOGS = "share_logs_preference";
     private static final String KEY_VERSION = "version_preference";
 
     private static final String FAQ_URL = "https://goo.gl/1RVxFW";
+    private static final String PRIVACY_POLICY_URL = "https://msimonides.github.io/homerplayer/privacy";
 
     @Inject public AudiobooksFolderManager folderManager;
     @Inject public AudioBookManager audioBookManager;
@@ -74,8 +76,9 @@ public class MainSettingsFragment extends BaseSettingsFragment {
                     Toast.LENGTH_SHORT).show();
         });
         setupAudiobooksFolder();
-        setupFaq();
         setupShareLogs();
+        setupWwwLink(KEY_FAQ, FAQ_URL);
+        setupWwwLink(KEY_PRIVACY_POLICY, PRIVACY_POLICY_URL);
         updateVersionSummary();
     }
 
@@ -146,15 +149,6 @@ public class MainSettingsFragment extends BaseSettingsFragment {
         }
     }
 
-    private void setupFaq() {
-        Preference preference = getPreference(KEY_FAQ);
-        preference.setSummary(getString(R.string.pref_help_faq_summary, FAQ_URL));
-        preference.setOnPreferenceClickListener(preference1 -> {
-            openUrl(FAQ_URL);
-            return true;
-        });
-    }
-
     private void setupShareLogs() {
         Preference preference = getPreference(KEY_SHARE_LOGS);
         preference.setOnPreferenceClickListener(pref -> {
@@ -185,6 +179,15 @@ public class MainSettingsFragment extends BaseSettingsFragment {
                 }
             });
 
+            return true;
+        });
+    }
+
+    private void setupWwwLink(@NonNull String key, @NonNull String url) {
+        Preference preference = getPreference(key);
+        preference.setSummary(getString(R.string.pref_help_faq_summary, url));
+        preference.setOnPreferenceClickListener(p -> {
+            openUrl(url);
             return true;
         });
     }

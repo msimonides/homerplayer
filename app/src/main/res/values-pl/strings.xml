@@ -48,6 +48,7 @@
     <string name="pref_no_browser_toast">Nie można otworzyć strony: brak przeglądarki.</string>
     <string name="pref_playback_options_screen_title">Ustawienia odtwarzania…</string>
     <string name="pref_playback_speed_title">Prędkość odtwarzania</string>
+    <string name="pref_privacy_policy_title">Polityka prywatności</string>
     <string name="pref_ff_rewind_sound">Dźwięk przewijania</string>
     <string name="pref_ff_rewind_sound_summary_on">Włączony</string>
     <string name="pref_ff_rewind_sound_summary_off">Wyłączony</string>

@@ -44,6 +44,7 @@
     <string name="pref_playback_options_screen_title">Playback settings…</string>
     <string name="pref_playback_speed_title">Playback speed</string>
     <string name="pref_playback_speed_default_value" translatable="false">1.0</string>
+    <string name="pref_privacy_policy_title">Privacy policy</string>
     <string name="pref_ff_rewind_sound">Fast-forward/rewind sound</string>
     <string name="pref_ff_rewind_sound_summary_on">Enabled</string>
     <string name="pref_ff_rewind_sound_summary_off">Disabled</string>

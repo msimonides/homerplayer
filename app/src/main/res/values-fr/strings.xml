@@ -49,6 +49,7 @@
     <string name="pref_jump_back_title">Revenir en arrière lors de la reprise de la lecture</string>
     <string name="pref_playback_speed_title">Vitesse de la lecture</string>
     <string name="pref_playback_options_screen_title">Paramètres de lecture…</string>
+    <string name="pref_privacy_policy_title">Politique de confidentialité</string>
     <string name="permission_rationale_exit">Quitter l\'application</string>
     <string name="permission_rationale_settings">Ouvrir les paramètres</string>
     <string name="permission_rationale_try_again">Réessayer</string>
