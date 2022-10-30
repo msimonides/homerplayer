@@ -6,10 +6,10 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
-import com.github.saturngod.Decompress;
 import com.google.common.io.Files;
 import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.demosamples.DemoSamplesFolderProvider;
+import com.studio4plus.homerplayer.demosamples.Unzipper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,10 +47,10 @@ public class DemoSamplesInstaller {
     public void installBooksFromZip(File zipPath) throws IOException {
         File tempFolder = ensureTempFolder();
         InputStream inputStream = new BufferedInputStream(new FileInputStream(zipPath));
-        Decompress decompress = new Decompress(inputStream, tempFolder.getAbsolutePath());
-        decompress.unzip();
         File samplesFolder = samplesFolderProvider.demoFolder();
-        boolean success = installBooks(samplesFolder, tempFolder);
+        boolean success =
+                Unzipper.unzip(inputStream, tempFolder.getAbsoluteFile())
+                && installBooks(samplesFolder, tempFolder);
         deleteFolderRecursively(tempFolder);
         if (!success) {
             deleteFolderRecursively(samplesFolder);
@@ -60,7 +60,7 @@ public class DemoSamplesInstaller {
     @WorkerThread
     private boolean installBooks(@NonNull File destinationDirectory, @NonNull File sourceDirectory) {
         boolean anythingInstalled = false;
-        File books[] = sourceDirectory.listFiles();
+        File[] books = sourceDirectory.listFiles();
         for (File bookDirectory : books) {
             boolean success = installSingleBook(bookDirectory, destinationDirectory);
             if (success)
