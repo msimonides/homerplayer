@@ -130,7 +130,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'de.greenrobot:eventbus:2.4.1'
 
-    implementation 'androidx.activity:activity:1.4.0'
+    implementation 'androidx.activity:activity:1.6.1'
     implementation "androidx.appcompat:appcompat:${rootProject.ext.version_appcompat}"
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.documentfile:documentfile:1.0.1'
@@ -142,10 +142,10 @@ dependencies {
 
     implementation 'com.google.guava:guava:24.1-android'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.18.0'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.18.1'
 
-    implementation 'com.google.dagger:dagger:2.40.5'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.40.1'
+    implementation 'com.google.dagger:dagger:2.44'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.44'
     compileOnly 'org.glassfish:javax.annotation:10.0-b28'
 
     implementation 'com.github.ozodrukh:CircularReveal:2.0.1@aar'
