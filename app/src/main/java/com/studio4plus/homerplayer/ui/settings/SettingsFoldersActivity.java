@@ -94,7 +94,7 @@ public class SettingsFoldersActivity extends AppCompatActivity {
     }
 
     private void addFolder() {
-        openDocumentTreeContract.launch(null);
+        OpenDocumentTreeUtils.launchWithErrorHandling(this, openDocumentTreeContract);
     }
 
     private static class FolderEntry implements Comparable<FolderEntry> {

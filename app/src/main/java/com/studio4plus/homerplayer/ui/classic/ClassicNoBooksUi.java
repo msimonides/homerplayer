@@ -27,14 +27,12 @@ import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.ui.MultitapTouchListener;
 import com.studio4plus.homerplayer.ui.UiControllerNoBooks;
 import com.studio4plus.homerplayer.ui.NoBooksUi;
-import com.studio4plus.homerplayer.ui.settings.AudiobooksFolderManager;
 import com.studio4plus.homerplayer.ui.settings.OnFolderSelected;
+import com.studio4plus.homerplayer.ui.settings.OpenDocumentTreeUtils;
 import com.studio4plus.homerplayer.ui.settings.SettingsActivity;
-import com.studio4plus.homerplayer.ui.settings.SettingsFoldersActivity;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
 
 public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
 
@@ -68,7 +66,8 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
         downloadSamplesButton.setOnClickListener(v -> controller.startSamplesInstallation());
 
         Button selectFolderButton = view.findViewById(R.id.selectAudiobooksFolderButton);
-        selectFolderButton.setOnClickListener(v -> openDocumentTreeContract.launch(null));
+        selectFolderButton.setOnClickListener(
+                v -> OpenDocumentTreeUtils.launchWithErrorHandling(requireActivity(), openDocumentTreeContract));
 
         final Context context = view.getContext();
         view.setOnTouchListener(new MultitapTouchListener(

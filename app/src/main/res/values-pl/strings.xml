@@ -13,6 +13,7 @@
     <string name="settings_title">Ustawienia</string>
     <string name="settings_folders_title">Foldery z audiobookami</string>
     <string name="settings_device_owner_required_alert">Aplikacja musi być ustawiona jako "device owner". Szczegóły: http://goo.gl/46gevp</string>
+    <string name="settings_folders_no_opendocumenttree_alert">Nie można otworzyć ekranu wyboru plików.\n\nUpewnij się, że manager plików jest zainstalowany.</string>
     <string name="permission_rationale_title">Potrzebne uprawnienia</string>
     <string name="permission_rationale_try_again">Spróbuj ponownie</string>
     <string name="permission_rationale_settings">Otwórz ustawienia</string>

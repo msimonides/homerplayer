@@ -15,6 +15,7 @@
     <string name="settings_title">Settings</string>
     <string name="settings_folders_title">Audiobook Folders</string>
     <string name="settings_device_owner_required_alert">The application must be a "device owner". See http://goo.gl/46gevp</string>
+    <string name="settings_folders_no_opendocumenttree_alert">Unable to open file selection screen.\n\nMake sure a file manager app is installed.</string>
     <string name="permission_rationale_title">Permission needed</string>
     <string name="permission_rationale_try_again">Try again</string>
     <string name="permission_rationale_settings">Open settings</string>
