@@ -29,7 +29,6 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:label="@string/app_name"
             android:name=".ui.MainActivity"
             android:launchMode="singleTask"
             android:clearTaskOnLaunch="true"
@@ -62,8 +61,12 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.PlaybackService" android:exported="false"/>
-        <service android:name=".service.DemoSamplesInstallerService" android:exported="false"/>
+        <service android:name=".service.PlaybackService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+        <service android:name=".service.DemoSamplesInstallerService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
 
         <receiver android:name=".HomerPlayerDeviceAdmin"
             android:label="@string/device_admin_label"

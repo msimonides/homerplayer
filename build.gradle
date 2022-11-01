@@ -29,6 +29,6 @@ allprojects {
 
 ext {
     compileSdkVersion = 33
-    targetSdkVersion = 30
+    targetSdkVersion = 31
     version_appcompat = "1.5.1"
 }
