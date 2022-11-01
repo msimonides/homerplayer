@@ -12,19 +12,18 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import android.util.Log;
 
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
-import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
 import com.studio4plus.homerplayer.events.PlaybackFatalErrorEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppedEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.service.PlaybackService;
+import com.studio4plus.homerplayer.ui.settings.AudiobooksFolderManager;
 
 import javax.inject.Inject;
 
@@ -36,6 +35,7 @@ public class UiControllerMain implements ServiceConnection {
     private final @NonNull AppCompatActivity activity;
     private final @NonNull MainUi mainUi;
     private final @NonNull AudioBookManager audioBookManager;
+    private final @NonNull AudiobooksFolderManager folderManager;
     private final @NonNull EventBus eventBus;
     private final @NonNull AnalyticsTracker analyticsTracker;
     private final @NonNull GlobalSettings globalSettings;
@@ -54,6 +54,7 @@ public class UiControllerMain implements ServiceConnection {
     UiControllerMain(@NonNull AppCompatActivity activity,
                      @NonNull MainUi mainUi,
                      @NonNull AudioBookManager audioBookManager,
+                     @NonNull AudiobooksFolderManager folderManager,
                      @NonNull EventBus eventBus,
                      @NonNull AnalyticsTracker analyticsTracker,
                      @NonNull GlobalSettings globalSettings,
@@ -63,6 +64,7 @@ public class UiControllerMain implements ServiceConnection {
         this.activity = activity;
         this.mainUi = mainUi;
         this.audioBookManager = audioBookManager;
+        this.folderManager = folderManager;
         this.eventBus = eventBus;
         this.analyticsTracker = analyticsTracker;
         this.globalSettings = globalSettings;
@@ -118,6 +120,7 @@ public class UiControllerMain implements ServiceConnection {
     @SuppressWarnings({"UnusedDeclaration"})
     public void onEvent(PlaybackFatalErrorEvent event) {
         mainUi.onPlaybackError(event.uri);
+        scanAudioBookFiles(); // It's possible files have been deleted or modified.
     }
 
     void playCurrentAudiobook() {
@@ -183,7 +186,7 @@ public class UiControllerMain implements ServiceConnection {
                 new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE },
                 PERMISSION_REQUEST_FOR_BOOK_SCAN)) {
-            audioBookManager.scanFiles();
+            folderManager.updateFolders();
         }
     }
 

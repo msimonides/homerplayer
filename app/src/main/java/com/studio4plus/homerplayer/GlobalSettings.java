@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import com.studio4plus.homerplayer.model.LibraryContentType;
 import com.studio4plus.homerplayer.ui.ColorTheme;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -84,6 +85,14 @@ public class GlobalSettings {
     public boolean removeAudiobooksFolder(@NonNull String folderUri) {
         Set<String> folderUris = new HashSet<>(audiobooksFolders());
         boolean isRemoved = folderUris.remove(folderUri);
+        if (isRemoved)
+            sharedPreferences.edit().putStringSet(KEY_AUDIOBOOKS_FOLDERS, folderUris).apply();
+        return isRemoved;
+    }
+
+    public boolean removeAudiobooksFolders(@NonNull Collection<String> toRemove) {
+        Set<String> folderUris = new HashSet<>(audiobooksFolders());
+        boolean isRemoved = folderUris.removeAll(toRemove);
         if (isRemoved)
             sharedPreferences.edit().putStringSet(KEY_AUDIOBOOKS_FOLDERS, folderUris).apply();
         return isRemoved;

@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.preference.Preference;
@@ -17,6 +18,7 @@ import androidx.preference.Preference;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Toast;
 
 import com.studio4plus.homerplayer.BuildConfig;
@@ -28,10 +30,10 @@ import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.util.LifecycleAwareRunnable;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -63,6 +65,13 @@ public class MainSettingsFragment extends BaseSettingsFragment {
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        folderManager.observeFolders().observe(
+                getViewLifecycleOwner(), this::updateAudiobooksFolderSummary);
+    }
+
+    @Override
     public void onCreatePreferences(Bundle bundle, String rootKey) {
         setPreferencesFromResource(R.xml.preferences_main, rootKey);
 
@@ -86,7 +95,6 @@ public class MainSettingsFragment extends BaseSettingsFragment {
     public void onStart() {
         super.onStart();
         updateKioskModeSummary();
-        updateAudiobooksFolderSummary();
     }
 
     @Override
@@ -101,8 +109,6 @@ public class MainSettingsFragment extends BaseSettingsFragment {
             case GlobalSettings.KEY_KIOSK_MODE:
                 updateKioskModeSummary();
                 break;
-            case GlobalSettings.KEY_AUDIOBOOKS_FOLDERS:
-                updateAudiobooksFolderSummary();
         }
     }
 
@@ -130,18 +136,15 @@ public class MainSettingsFragment extends BaseSettingsFragment {
             startActivity(new Intent(requireContext(), SettingsFoldersActivity.class));
             return true;
         });
-        updateAudiobooksFolderSummary();
     }
 
-    private void updateAudiobooksFolderSummary() {
+    private void updateAudiobooksFolderSummary(@NonNull Collection<DocumentFile> folders) {
         Preference preference = getPreference(KEY_AUDIOBOOKS_FOLDER);
         preference.setVisible(!globalSettings.legacyFileAccessMode());
-        Set<String> folderUriStrings = globalSettings.audiobooksFolders();
-        if (folderUriStrings.isEmpty()) {
+        if (folders.isEmpty()) {
             preference.setSummary(R.string.pref_folder_audiobooks_summery_empty);
             new BlinkPrefSummary(mainHandler, preference);
         } else {
-            List<DocumentFile> folders = folderManager.getFolders();
             List<String> folderNames = map(folders, DocumentFile::getName);
             Collections.sort(folderNames);
             String summary = TextUtils.join(", ", folderNames);

@@ -62,15 +62,12 @@ public class SettingsFoldersActivity extends AppCompatActivity {
                 new ConcatAdapter(new AddAdapter(this::addFolder), foldersAdapter));
         views.listFolders.setLayoutManager(new LinearLayoutManager(this));
 
-        folderManager.observeFolders().observe(this, uris -> {
-            List<FolderEntry> folderNames = map(uris, uri -> new FolderEntry(this, uri));
+        folderManager.observeFolders().observe(this, folders -> {
+            List<FolderEntry> folderNames =
+                    map(folders, folder -> new FolderEntry(this, Objects.requireNonNull(folder.getUri())));
             Collections.sort(folderNames);
             foldersAdapter.submitList(folderNames);
         });
-
-        if (folderManager.getFolderUris().isEmpty()) {
-            addFolder();
-        }
     }
 
     @Override
@@ -105,12 +102,12 @@ public class SettingsFoldersActivity extends AppCompatActivity {
         @NonNull
         public final String name;
         @NonNull
-        public final String uri;
+        public final Uri uri;
 
-        private FolderEntry(@NonNull Context context, @NonNull String uri) {
+        private FolderEntry(@NonNull Context context, @NonNull Uri uri) {
             this.uri = uri;
             DocumentFile documentFile =
-                    Objects.requireNonNull(DocumentFile.fromTreeUri(context, Uri.parse(uri)));
+                    Objects.requireNonNull(DocumentFile.fromTreeUri(context, uri));
             name = (documentFile.getName() != null)
                     ? documentFile.getName()
                     : documentFile.getUri().toString();
@@ -197,7 +194,7 @@ public class SettingsFoldersActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull FolderVH holder, int position) {
             FolderEntry folder = getItem(position);
             holder.views.name.setText(folder.name);
-            holder.views.buttonRemove.setOnClickListener(view -> onDelete.onFinished(folder.uri));
+            holder.views.buttonRemove.setOnClickListener(view -> onDelete.onFinished(folder.uri.toString()));
         }
     }
 

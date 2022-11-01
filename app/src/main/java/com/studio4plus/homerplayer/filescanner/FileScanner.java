@@ -3,21 +3,21 @@ package com.studio4plus.homerplayer.filescanner;
 import static com.studio4plus.homerplayer.util.CollectionUtils.map;
 
 import android.content.Context;
-import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.documentfile.provider.DocumentFile;
 
 import com.studio4plus.homerplayer.ApplicationScope;
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.concurrency.BackgroundExecutor;
 import com.studio4plus.homerplayer.concurrency.SimpleFuture;
 import com.studio4plus.homerplayer.demosamples.DemoSamplesFolderProvider;
+import com.studio4plus.homerplayer.ui.settings.AudiobooksFolderManager;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
@@ -31,15 +31,18 @@ public class FileScanner {
     private final GlobalSettings globalSettings;
     private final BackgroundExecutor ioExecutor;
     private final Context applicationContext;
+    private final AudiobooksFolderManager folderManager;
 
     @Inject
     public FileScanner(
             @Named("IO_EXECUTOR") BackgroundExecutor ioExecutor,
             @NonNull GlobalSettings globalSettings,
-            @NonNull Context applicationContext) {
+            @NonNull Context applicationContext,
+            @NonNull AudiobooksFolderManager folderManager) {
         this.ioExecutor = ioExecutor;
         this.globalSettings = globalSettings;
         this.applicationContext = applicationContext;
+        this.folderManager = folderManager;
     }
 
     public SimpleFuture<List<FileSet>> scanAudioBooksDirectories() {
@@ -53,10 +56,10 @@ public class FileScanner {
                             new ScanFilesTask(demoFolderProvider, true));
             return ioExecutor.postTask(task);
         }
-        Set<String> audiobooksFolderStrings = globalSettings.audiobooksFolders();
+        List<DocumentFile> audiobooksFolders = folderManager.getCurrentFolders();
         final Callable<List<FileSet>> task;
-        if (!audiobooksFolderStrings.isEmpty()) {
-            task = new ScanDocumentTreeTask(applicationContext, map(audiobooksFolderStrings, Uri::parse));
+        if (!audiobooksFolders.isEmpty()) {
+            task = new ScanDocumentTreeTask(applicationContext, map(audiobooksFolders, DocumentFile::getUri));
         } else {
             task = new ScanFilesTask(demoFolderProvider, true);
         }

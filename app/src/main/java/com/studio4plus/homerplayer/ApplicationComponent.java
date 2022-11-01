@@ -19,6 +19,7 @@ import com.studio4plus.homerplayer.ui.classic.ClassicPlaybackUi;
 import com.studio4plus.homerplayer.ui.classic.FragmentBookItem;
 import com.studio4plus.homerplayer.ui.classic.ClassicBookList;
 import com.studio4plus.homerplayer.ui.classic.ClassicNoBooksUi;
+import com.studio4plus.homerplayer.ui.settings.AudiobooksFolderManager;
 import com.studio4plus.homerplayer.ui.settings.KioskSettingsFragment;
 import com.studio4plus.homerplayer.ui.settings.MainSettingsFragment;
 import com.studio4plus.homerplayer.ui.settings.PlaybackSettingsFragment;
@@ -55,6 +56,7 @@ public interface ApplicationComponent {
 
     AnalyticsTracker getAnalyticsTracker();
     AudioBookManager getAudioBookManager();
+    AudiobooksFolderManager getAudiobooksFolderManager();
     AudioManager getAudioManager();
     Context getContext();
     EventBus getEventBus();

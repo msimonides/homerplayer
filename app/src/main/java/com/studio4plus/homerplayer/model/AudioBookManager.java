@@ -1,6 +1,5 @@
 package com.studio4plus.homerplayer.model;
 
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.MainThread;
@@ -8,14 +7,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.studio4plus.homerplayer.ApplicationScope;
-import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.concurrency.SimpleFuture;
 import com.studio4plus.homerplayer.crashreporting.CrashReporting;
 import com.studio4plus.homerplayer.events.AudioBooksChangedEvent;
 import com.studio4plus.homerplayer.events.CurrentBookChangedEvent;
-import com.studio4plus.homerplayer.events.MediaStoreUpdateEvent;
 import com.studio4plus.homerplayer.filescanner.FileScanner;
 import com.studio4plus.homerplayer.filescanner.FileSet;
+import com.studio4plus.homerplayer.ui.settings.AudiobooksFolderManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +26,7 @@ import javax.inject.Inject;
 import de.greenrobot.event.EventBus;
 
 @ApplicationScope
-public class AudioBookManager implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class AudioBookManager {
 
     @NonNull
     private final List<AudioBook> audioBooks = new ArrayList<>();
@@ -48,18 +46,11 @@ public class AudioBookManager implements SharedPreferences.OnSharedPreferenceCha
     public AudioBookManager(@NonNull EventBus eventBus,
                             @NonNull FileScanner fileScanner,
                             @NonNull Storage storage,
-                            @NonNull SharedPreferences sharedPreferences) {
+                            @NonNull AudiobooksFolderManager folderManager) {
         this.fileScanner = fileScanner;
         this.storage = storage;
         this.eventBus = eventBus;
-        eventBus.register(this);
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    @MainThread
-    public void onEvent(MediaStoreUpdateEvent ignored) {
-        scanFiles();
+        folderManager.observeFolders().observeForever(ignores -> scanFiles());
     }
 
     @MainThread
@@ -103,7 +94,7 @@ public class AudioBookManager implements SharedPreferences.OnSharedPreferenceCha
     }
 
     @MainThread
-    public void scanFiles() {
+    private void scanFiles() {
         SimpleFuture<List<FileSet>> future = fileScanner.scanAudioBooksDirectories();
         future.addListener(new SimpleFuture.Listener<List<FileSet>>() {
             @Override
@@ -198,13 +189,6 @@ public class AudioBookManager implements SharedPreferences.OnSharedPreferenceCha
     public void resetAllBookProgress() {
         for (AudioBook book : audioBooks) {
             book.resetPosition();
-        }
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @NonNull String key) {
-        if (key.equals(GlobalSettings.KEY_AUDIOBOOKS_FOLDERS) || key.equals(GlobalSettings.KEY_LEGACY_FILE_ACCESS_MODE)) {
-            scanFiles();
         }
     }
 

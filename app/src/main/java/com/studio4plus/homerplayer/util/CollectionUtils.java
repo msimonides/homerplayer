@@ -33,4 +33,14 @@ public class CollectionUtils {
         }
         return false;
     }
+
+    public static <Type> List<Type> filter(@NonNull Collection<Type> collection, @NonNull Predicate<Type> predicate) {
+        List<Type> result = new ArrayList<>(collection.size());
+        for (Type item : collection) {
+            if (predicate.isTrue(item)) {
+                result.add(item);
+            }
+        }
+        return result;
+    }
 }
