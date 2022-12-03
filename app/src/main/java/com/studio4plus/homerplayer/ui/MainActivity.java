@@ -10,7 +10,6 @@ import android.speech.tts.TextToSpeech;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
@@ -226,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements SpeakerProvider {
                 startActivityForResult(checkIntent, TTS_CHECK_CODE);
                 ttsDeferred = result;
             } catch (ActivityNotFoundException e) {
-                Timber.w("Text-to-Speech not available");
+                Timber.w(e, "Text-to-Speech not available");
                 result.setException(e);
                 // ttsDeferred stays unset because the result is delivered.
             }
