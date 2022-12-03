@@ -9,6 +9,7 @@ import com.michaelflisar.lumberjack.FileLoggingSetup;
 import com.studio4plus.homerplayer.ApplicationScope;
 import com.studio4plus.homerplayer.BuildConfig;
 import com.studio4plus.homerplayer.GlobalSettings;
+import com.studio4plus.homerplayer.KioskModeSwitcher;
 import com.studio4plus.homerplayer.concurrency.BackgroundExecutor;
 import com.studio4plus.homerplayer.concurrency.SimpleFuture;
 import com.studio4plus.homerplayer.crashreporting.CrashReporting;
@@ -37,6 +38,8 @@ public class ShareLogs {
     @NonNull
     private final GlobalSettings globalSettings;
     @NonNull
+    private final KioskModeSwitcher kioskModeSwitcher;
+    @NonNull
     private final Context appContext;
 
     @Inject
@@ -44,16 +47,19 @@ public class ShareLogs {
             @ApplicationScope @NonNull Context appContext,
             @NonNull FileLoggingSetup fileLoggingSetup,
             @Named("IO_EXECUTOR") @NonNull BackgroundExecutor ioExecutor,
-            @NonNull GlobalSettings globalSettings) {
+            @NonNull GlobalSettings globalSettings,
+            @NonNull KioskModeSwitcher kioskModeSwitcher) {
         this.ioExecutor = ioExecutor;
         this.fileLoggingSetup = fileLoggingSetup;
         this.globalSettings = globalSettings;
+        this.kioskModeSwitcher = kioskModeSwitcher;
         this.appContext = appContext;
     }
 
     public SimpleFuture<File> shareLogs() {
         File logsFolder = logsFolder();
-        SimpleFuture<File> resultFuture = ioExecutor.postTask(new SaveLog(logsFolder, fileLoggingSetup, globalSettings));
+        SimpleFuture<File> resultFuture = ioExecutor.postTask(
+                new SaveLog(logsFolder, fileLoggingSetup, globalSettings, kioskModeSwitcher));
         ioExecutor.postTask(new ClearOldLogs(logsFolder));
         return resultFuture;
     }
@@ -71,13 +77,17 @@ public class ShareLogs {
         private final FileLoggingSetup fileLoggingSetup;
         @NonNull
         private final GlobalSettings globalSettings;
+        @NonNull
+        private final KioskModeSwitcher kioskModeSwitcher;
 
         private SaveLog(@NonNull File outputFolder,
                         @NonNull FileLoggingSetup fileLoggingSetup,
-                        @NonNull GlobalSettings globalSettings) {
+                        @NonNull GlobalSettings globalSettings,
+                        @NonNull KioskModeSwitcher kioskModeSwitcher) {
             this.outputFolder = outputFolder;
             this.fileLoggingSetup = fileLoggingSetup;
             this.globalSettings = globalSettings;
+            this.kioskModeSwitcher = kioskModeSwitcher;
         }
 
         @Override
@@ -127,6 +137,7 @@ public class ShareLogs {
             writer.println("App Version: " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ") " + BuildConfig.FLAVOR);
             writer.println("Legacy file access mode: " + globalSettings.legacyFileAccessMode());
             writer.println("Audiobooks folders: " + globalSettings.audiobooksFolders());
+            writer.println("Lock task permissions: " + kioskModeSwitcher.statusForDiagnosticLog());
             String crashreporting = CrashReporting.statusForDiagnosticLog();
             if (crashreporting != null) {
                 writer.println(crashreporting);

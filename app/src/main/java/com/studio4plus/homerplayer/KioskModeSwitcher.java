@@ -66,6 +66,11 @@ public class KioskModeSwitcher {
         eventBus.post(new KioskModeChanged(activity, KioskModeChanged.Type.SIMPLE, enable));
     }
 
+    @NonNull
+    public String statusForDiagnosticLog() {
+        return API21.statusForDiagnosticLog(context);
+    }
+
     private void triggerHomeAppSelectionIfNecessary() {
         final Intent homeIntent = new Intent(Intent.ACTION_MAIN);
         homeIntent.addCategory(Intent.CATEGORY_HOME);
@@ -114,6 +119,18 @@ public class KioskModeSwitcher {
                     new ComponentName(context, HomerPlayerDeviceAdmin.class);
             dpm.clearPackagePersistentPreferredActivities(
                     adminComponentName, context.getPackageName());
+        }
+
+        @NonNull
+        static String statusForDiagnosticLog(@NonNull Context context) {
+            DevicePolicyManager dpm =
+                    (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+            if (dpm != null) {
+                return "permitted: " + dpm.isLockTaskPermitted(context.getPackageName()) +
+                        "; is device owner: " + dpm.isDeviceOwnerApp(context.getPackageName());
+            } else {
+                return "no DPM!";
+            }
         }
     }
 }
