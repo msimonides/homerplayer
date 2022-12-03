@@ -27,6 +27,7 @@ import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.R;
 import com.studio4plus.homerplayer.concurrency.SimpleFuture;
+import com.studio4plus.homerplayer.logging.ShareLogs;
 import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.util.LifecycleAwareRunnable;
 

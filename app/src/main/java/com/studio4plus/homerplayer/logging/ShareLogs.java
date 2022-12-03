@@ -1,4 +1,4 @@
-package com.studio4plus.homerplayer.ui.settings;
+package com.studio4plus.homerplayer.logging;
 
 import android.content.Context;
 import android.os.Build;
