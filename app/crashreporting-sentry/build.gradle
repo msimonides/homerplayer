@@ -26,7 +26,7 @@ android {
 }
 
 dependencies {
-    implementation 'io.sentry:sentry-android-core:6.2.1'
-    implementation 'io.sentry:sentry-android-timber:6.2.1'
-    implementation 'androidx.annotation:annotation:1.4.0'
+    implementation 'io.sentry:sentry-android-core:6.9.1'
+    implementation 'io.sentry:sentry-android-timber:6.9.1'
+    implementation 'androidx.annotation:annotation:1.5.0'
 }

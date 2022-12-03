@@ -142,10 +142,10 @@ dependencies {
 
     implementation 'com.google.guava:guava:24.1-android'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.18.1'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.18.2'
 
-    implementation 'com.google.dagger:dagger:2.44'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.44'
+    implementation 'com.google.dagger:dagger:2.44.2'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.44.2'
     compileOnly 'org.glassfish:javax.annotation:10.0-b28'
 
     implementation 'com.github.ozodrukh:CircularReveal:2.0.1@aar'
