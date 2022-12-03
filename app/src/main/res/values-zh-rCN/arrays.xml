@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="color_theme_entries">
+        <item>正常</item>
+        <item>高对比度</item>
+    </string-array>
+    <string-array name="screen_orientation_entries">
+        <item>自动横屏</item>
+        <item>锁定了横屏</item>
+        <item>撤销了锁定</item>
+    </string-array>
+    <string-array name="playback_speed_entries">
+        <item>非常快</item>
+        <item>快</item>
+        <item>正常</item>
+        <item>较慢</item>
+        <item>慢</item>
+        <item>非常慢</item>
+    </string-array>
+</resources>
