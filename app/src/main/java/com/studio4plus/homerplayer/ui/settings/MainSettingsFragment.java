@@ -17,6 +17,7 @@ import androidx.preference.Preference;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
@@ -117,6 +118,7 @@ public class MainSettingsFragment extends BaseSettingsFragment {
         String versionString = String.format(
                 Locale.US, "%s (%d)", BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
         preference.setSummary(versionString);
+        preference.setOnPreferenceClickListener(new TestCrashListener());
     }
 
     private void updateKioskModeSummary() {
@@ -215,6 +217,28 @@ public class MainSettingsFragment extends BaseSettingsFragment {
             preference.setSummary((count % 2 == 0) ? " " : summary);
             if (--count > 0)
                 handler.postDelayed(this, DELAY_MS);
+        }
+    }
+
+    private static class TestCrashListener implements Preference.OnPreferenceClickListener {
+
+        private static final long THRESHOLD_MS = 500L;
+        private long lastClickTimestamp = 0;
+        private int count = 0;
+
+        @Override
+        public boolean onPreferenceClick(@NonNull Preference preference) {
+            long now = SystemClock.elapsedRealtime();
+            count = now - lastClickTimestamp < THRESHOLD_MS ? count + 1 : 0;
+            if (count == 5) throw new TestCrashException();
+            lastClickTimestamp = now;
+            return false;
+        }
+    }
+
+    private static class TestCrashException extends RuntimeException {
+        public TestCrashException() {
+            super("Test exception");
         }
     }
 }

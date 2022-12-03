@@ -13,6 +13,7 @@ import com.michaelflisar.lumberjack.FileLoggingSetup;
 import com.michaelflisar.lumberjack.FileLoggingTree;
 import com.studio4plus.homerplayer.analytics.AnalyticsTracker;
 import com.studio4plus.homerplayer.crashreporting.CrashReporting;
+import com.studio4plus.homerplayer.logging.UncaughtExceptionLogger;
 import com.studio4plus.homerplayer.ui.HomeActivity;
 import com.studio4plus.homerplayer.service.NotificationUtil;
 
@@ -50,6 +51,7 @@ public class HomerPlayerApplication extends MultiDexApplication {
             Timber.plant(new Timber.DebugTree());
         }
         Timber.i("Application started");
+        UncaughtExceptionLogger.install();
 
         long currentVersionCode = getVersionCode();
         long previousVersionCode = globalSettings.lastVersionCode();
