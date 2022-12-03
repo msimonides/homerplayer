@@ -49,8 +49,9 @@ public class KioskModeSwitcher {
 
         eventBus.post(new KioskModeChanged(activity, KioskModeChanged.Type.FULL, fullKioskEnabled));
 
+        HomeActivity.setEnabled(context, fullKioskEnabled);
         if (fullKioskEnabled)
-            API21.setPreferredHomeActivity(context, MainActivity.class);
+            API21.setPreferredHomeActivity(context, HomeActivity.class);
         else
             API21.clearPreferredHomeActivity(context);
     }
