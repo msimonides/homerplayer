@@ -1,12 +1,9 @@
 package com.studio4plus.homerplayer;
 
 import android.annotation.SuppressLint;
-import android.content.ContentResolver;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
-import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
@@ -58,6 +55,8 @@ public class GlobalSettings {
     private static final String KEY_BOOKS_EVER_INSTALLED = "action_history.books_ever_installed";
     private static final String KEY_SETTINGS_EVER_ENTERED = "action_history.settings_ever_entered";
     private static final String KEY_LAST_STARTED_VERSION_CODE = "last_version_code";
+    private static final String KEY_LAST_START_TIMESTAMP = "last_start_timestamp";
+    private static final String KEY_QUICK_CONSECUTIVE_RESTART_COUNT = "quick_restart_count";
     public static final String KEY_LEGACY_FILE_ACCESS_MODE = "legacy_file_access";
 
     private final Resources resources;
@@ -194,6 +193,11 @@ public class GlobalSettings {
         sharedPreferences.edit().putBoolean(KEY_KIOSK_MODE, enabled).commit();
     }
 
+    @SuppressLint("ApplySharedPref")
+    public void setSimpleKioskModeEnabledNow(boolean enabled) {
+        sharedPreferences.edit().putBoolean(KEY_SIMPLE_KIOSK_MODE, enabled).commit();
+    }
+
     public boolean isSimpleKioskModeEnabled() {
         return sharedPreferences.getBoolean(KEY_SIMPLE_KIOSK_MODE, false);
     }
@@ -220,6 +224,22 @@ public class GlobalSettings {
 
     public void setLastVersionCode(long versionCode) {
         sharedPreferences.edit().putLong(KEY_LAST_STARTED_VERSION_CODE, versionCode).apply();
+    }
+
+    public long lastStartTimestamp() {
+        return sharedPreferences.getLong(KEY_LAST_STARTED_VERSION_CODE, 0L);
+    }
+
+    public int quickConsecutiveStartCount() {
+        return sharedPreferences.getInt(KEY_QUICK_CONSECUTIVE_RESTART_COUNT, 0);
+    }
+
+    @SuppressLint("ApplySharedPref")
+    public void setStartTimeInfo(long timestamp, int quick_restart_count) {
+        sharedPreferences.edit()
+                .putLong(KEY_LAST_START_TIMESTAMP, timestamp)
+                .putInt(KEY_QUICK_CONSECUTIVE_RESTART_COUNT, quick_restart_count)
+                .commit();
     }
 
     @NonNull

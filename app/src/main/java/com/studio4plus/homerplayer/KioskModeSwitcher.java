@@ -12,6 +12,7 @@ import android.content.pm.ResolveInfo;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.events.KioskModeChanged;
@@ -41,13 +42,15 @@ public class KioskModeSwitcher {
         return Build.VERSION.SDK_INT >= 21 && API21.isLockTaskPermitted(context);
     }
 
-    public void onFullKioskModeEnabled(@NonNull Activity activity, boolean fullKioskEnabled) {
+    public void onFullKioskModeEnabled(@Nullable Activity activity, boolean fullKioskEnabled) {
         Preconditions.checkState(!fullKioskEnabled || isLockTaskPermitted());
 
         if (globalSettings.isSimpleKioskModeEnabled())
             onSimpleKioskModeEnabled(activity, !fullKioskEnabled);
 
-        eventBus.post(new KioskModeChanged(activity, KioskModeChanged.Type.FULL, fullKioskEnabled));
+        if (activity != null) {
+            eventBus.post(new KioskModeChanged(activity, KioskModeChanged.Type.FULL, fullKioskEnabled));
+        }
 
         HomeActivity.setEnabled(context, fullKioskEnabled);
         if (fullKioskEnabled)
@@ -56,14 +59,16 @@ public class KioskModeSwitcher {
             API21.clearPreferredHomeActivity(context);
     }
 
-    public void onSimpleKioskModeEnabled(@NonNull Activity activity, boolean enable) {
+    public void onSimpleKioskModeEnabled(@Nullable Activity activity, boolean enable) {
         if (globalSettings.isFullKioskModeEnabled() & enable)
             return;
 
         HomeActivity.setEnabled(context, enable);
         if (enable)
             triggerHomeAppSelectionIfNecessary();
-        eventBus.post(new KioskModeChanged(activity, KioskModeChanged.Type.SIMPLE, enable));
+        if (activity != null) {
+            eventBus.post(new KioskModeChanged(activity, KioskModeChanged.Type.SIMPLE, enable));
+        }
     }
 
     @NonNull

@@ -31,6 +31,7 @@ public class HomerPlayerApplication extends MultiDexApplication {
     @Inject public GlobalSettings globalSettings;
     @Inject public AnalyticsTracker analyticsTracker;  // Force creation of the tracker early.
     @Inject public FileLoggingSetup fileLoggingSetup;
+    @Inject public CrashLoopProtection crashLoopProtection;
 
     @Override
     public void onCreate() {
@@ -45,6 +46,7 @@ public class HomerPlayerApplication extends MultiDexApplication {
                 .audioBookManagerModule(new AudioBookManagerModule(AUDIOBOOKS_DIRECTORY))
                 .build();
         component.inject(this);
+        crashLoopProtection.onAppStart();
 
         Timber.plant(new FileLoggingTree(fileLoggingSetup));
         if (BuildConfig.DEBUG) {
