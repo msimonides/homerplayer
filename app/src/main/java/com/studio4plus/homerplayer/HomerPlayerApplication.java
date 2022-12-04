@@ -46,7 +46,6 @@ public class HomerPlayerApplication extends MultiDexApplication {
                 .audioBookManagerModule(new AudioBookManagerModule(AUDIOBOOKS_DIRECTORY))
                 .build();
         component.inject(this);
-        crashLoopProtection.onAppStart();
 
         Timber.plant(new FileLoggingTree(fileLoggingSetup));
         if (BuildConfig.DEBUG) {
@@ -54,6 +53,7 @@ public class HomerPlayerApplication extends MultiDexApplication {
         }
         Timber.i("Application started");
         UncaughtExceptionLogger.install();
+        crashLoopProtection.onAppStart();
 
         long currentVersionCode = getVersionCode();
         long previousVersionCode = globalSettings.lastVersionCode();

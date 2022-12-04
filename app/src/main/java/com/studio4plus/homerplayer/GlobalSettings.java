@@ -227,7 +227,7 @@ public class GlobalSettings {
     }
 
     public long lastStartTimestamp() {
-        return sharedPreferences.getLong(KEY_LAST_STARTED_VERSION_CODE, 0L);
+        return sharedPreferences.getLong(KEY_LAST_START_TIMESTAMP, 0L);
     }
 
     public int quickConsecutiveStartCount() {
