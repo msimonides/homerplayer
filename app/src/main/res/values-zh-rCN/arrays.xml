@@ -5,9 +5,9 @@
         <item>高对比度</item>
     </string-array>
     <string-array name="screen_orientation_entries">
-        <item>自动横屏</item>
-        <item>锁定了横屏</item>
-        <item>撤销了锁定</item>
+        <item>随设备转动自动调整横屏方向</item>
+        <item>锁定当前横屏方向</item>
+        <item>将横屏方向旋转180度并锁定</item>
     </string-array>
     <string-array name="playback_speed_entries">
         <item>非常快</item>
