@@ -99,7 +99,11 @@ public class AudiobooksFolderManager {
                 folders.setValue(result.validFolders);
 
                 for (String invalidUri : result.invalidFolderUris) {
-                    contentResolver.releasePersistableUriPermission(Uri.parse(invalidUri), Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    try {
+                        contentResolver.releasePersistableUriPermission(Uri.parse(invalidUri), Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    } catch (Throwable e) {
+                        Timber.w(e, "Error while releasing permission to folder.");
+                    }
                 }
                 globalSettings.removeAudiobooksFolders(result.invalidFolderUris);
             }
