@@ -53,7 +53,7 @@ android {
         minSdkVersion 21
         targetSdkVersion rootProject.ext.targetSdkVersion
         multiDexEnabled true
-        versionCode 70
+        versionCode 71
         versionName getVersionName()
     }
     buildTypes {
