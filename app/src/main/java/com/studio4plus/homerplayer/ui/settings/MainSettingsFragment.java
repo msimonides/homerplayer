@@ -141,14 +141,14 @@ public class MainSettingsFragment extends BaseSettingsFragment {
         });
     }
 
-    private void updateAudiobooksFolderSummary(@NonNull Collection<DocumentFile> folders) {
+    private void updateAudiobooksFolderSummary(@NonNull Collection<AudiobooksFolderManager.Folder> folders) {
         Preference preference = getPreference(KEY_AUDIOBOOKS_FOLDER);
         preference.setVisible(!globalSettings.legacyFileAccessMode());
         if (folders.isEmpty()) {
             preference.setSummary(R.string.pref_folder_audiobooks_summery_empty);
             new BlinkPrefSummary(mainHandler, preference);
         } else {
-            List<String> folderNames = map(folders, DocumentFile::getName);
+            List<String> folderNames = map(folders, folder -> folder.file.getName());
             Collections.sort(folderNames);
             String summary = TextUtils.join(", ", folderNames);
             preference.setSummary(summary);

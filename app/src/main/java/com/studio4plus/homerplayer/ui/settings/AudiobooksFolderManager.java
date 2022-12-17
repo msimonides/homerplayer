@@ -36,12 +36,24 @@ import timber.log.Timber;
 @ApplicationScope
 public class AudiobooksFolderManager {
 
+    public static class Folder {
+        @NonNull
+        public final DocumentFile file;
+        @NonNull
+        public final String originalUri;
+
+        public Folder(@NonNull DocumentFile file, @NonNull String originalUri) {
+            this.file = file;
+            this.originalUri = originalUri;
+        }
+    }
+
     private final Context context;
     private final ContentResolver contentResolver;
     private final GlobalSettings globalSettings;
     private final BackgroundExecutor ioExecutor;
 
-    private final MutableLiveData<List<DocumentFile>> folders =
+    private final MutableLiveData<List<Folder>> folders =
             new MutableLiveData<>(Collections.emptyList());
 
     @Inject
@@ -81,13 +93,13 @@ public class AudiobooksFolderManager {
     }
 
     @NonNull
-    public LiveData<List<DocumentFile>> observeFolders() {
+    public LiveData<List<Folder>> observeFolders() {
         return folders;
     }
 
     @NonNull
     public List<DocumentFile> getCurrentFolders() {
-        return folders.getValue();
+        return map(folders.getValue(), folder -> folder.file);
     }
 
     public void updateFolders() {
@@ -117,11 +129,11 @@ public class AudiobooksFolderManager {
 
     private static class ValidationResult {
         @NonNull
-        public final List<DocumentFile> validFolders;
+        public final List<Folder> validFolders;
         @NonNull
         public final List<String> invalidFolderUris;
 
-        private ValidationResult(@NonNull List<DocumentFile> validFolders, @NonNull List<String> invalidFolderUris) {
+        private ValidationResult(@NonNull List<Folder> validFolders, @NonNull List<String> invalidFolderUris) {
             this.validFolders = validFolders;
             this.invalidFolderUris = invalidFolderUris;
         }
@@ -148,13 +160,13 @@ public class AudiobooksFolderManager {
             List<UriPermission> appPermissions =
                     filter(contentResolver.getPersistedUriPermissions(), UriPermission::isReadPermission);
             List<String> readPermissionUris = map(appPermissions, permission -> permission.getUri().toString());
-            List<DocumentFile> validFolders = new ArrayList<>(folderUris.size());
+            List<Folder> validFolders = new ArrayList<>(folderUris.size());
             List<String> invalidUris = new ArrayList<>();
             for (String folderUri : folderUris) {
                 if (readPermissionUris.contains(folderUri)) {
                     DocumentFile folderDocument = DocumentFile.fromTreeUri(context, Uri.parse(folderUri));
                     if (folderDocument != null && folderDocument.exists() && folderDocument.isDirectory()) {
-                        validFolders.add(folderDocument);
+                        validFolders.add(new Folder(folderDocument, folderUri));
                     } else {
                         Timber.w("Folder doesn't exist or URI doesn't point to a folder: %s", folderUri);
                         invalidUris.add(folderUri);

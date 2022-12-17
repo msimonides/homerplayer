@@ -2,7 +2,6 @@ package com.studio4plus.homerplayer.ui.settings;
 
 import static com.studio4plus.homerplayer.util.CollectionUtils.map;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -63,7 +62,7 @@ public class SettingsFoldersActivity extends AppCompatActivity {
 
         folderManager.observeFolders().observe(this, folders -> {
             List<FolderEntry> folderNames =
-                    map(folders, folder -> new FolderEntry(this, Objects.requireNonNull(folder.getUri())));
+                    map(folders, folder -> new FolderEntry(folder.file, folder.originalUri));
             Collections.sort(folderNames);
             foldersAdapter.submitList(folderNames);
         });
@@ -101,12 +100,10 @@ public class SettingsFoldersActivity extends AppCompatActivity {
         @NonNull
         public final String name;
         @NonNull
-        public final Uri uri;
+        public final String originalUri;
 
-        private FolderEntry(@NonNull Context context, @NonNull Uri uri) {
-            this.uri = uri;
-            DocumentFile documentFile =
-                    Objects.requireNonNull(DocumentFile.fromTreeUri(context, uri));
+        private FolderEntry(@NonNull DocumentFile documentFile, @NonNull String originalUri) {
+            this.originalUri = originalUri;
             name = (documentFile.getName() != null)
                     ? documentFile.getName()
                     : documentFile.getUri().toString();
@@ -122,12 +119,12 @@ public class SettingsFoldersActivity extends AppCompatActivity {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             FolderEntry that = (FolderEntry) o;
-            return name.equals(that.name) && uri.equals(that.uri);
+            return name.equals(that.name) && originalUri.equals(that.originalUri);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(name, uri);
+            return Objects.hash(name, originalUri);
         }
     }
 
@@ -193,7 +190,7 @@ public class SettingsFoldersActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull FolderVH holder, int position) {
             FolderEntry folder = getItem(position);
             holder.views.name.setText(folder.name);
-            holder.views.buttonRemove.setOnClickListener(view -> onDelete.onFinished(folder.uri.toString()));
+            holder.views.buttonRemove.setOnClickListener(view -> onDelete.onFinished(folder.originalUri));
         }
     }
 
@@ -205,7 +202,7 @@ public class SettingsFoldersActivity extends AppCompatActivity {
 
         @Override
         public boolean areContentsTheSame(@NonNull FolderEntry oldItem, @NonNull FolderEntry newItem) {
-            return oldItem.uri.equals(newItem.uri);
+            return oldItem.originalUri.equals(newItem.originalUri);
         }
     }
 }
