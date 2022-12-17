@@ -33,7 +33,7 @@ public class CrashReporting {
         SentryAndroid.init(context, options -> {
             options.setDsn(context.getString(R.string.sentry_dsn));
             options.addIntegration(
-                    new SentryTimberIntegration(SentryLevel.ERROR, SentryLevel.INFO)
+                    new SentryTimberIntegration(SentryLevel.FATAL, SentryLevel.INFO)
             );
         });
         User user = new User();
