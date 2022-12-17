@@ -52,7 +52,7 @@ public class ClassicNoBooksUi extends Fragment implements NoBooksUi {
         ApplicationComponent component = HomerPlayerApplication.getComponent(requireContext());
         component.inject(this);
         openDocumentTreeContract = registerForActivityResult(
-                new ActivityResultContracts.OpenDocumentTree(), onFolderSelected::onSelected);
+                new OpenDocumentTreeUtils.Contract(), onFolderSelected::onSelected);
     }
 
     @Override

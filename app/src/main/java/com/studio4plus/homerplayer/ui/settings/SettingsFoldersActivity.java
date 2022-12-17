@@ -11,7 +11,6 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -51,7 +50,7 @@ public class SettingsFoldersActivity extends AppCompatActivity {
 
         HomerPlayerApplication.getComponent(this).inject(this);
         openDocumentTreeContract = registerForActivityResult(
-                new ActivityResultContracts.OpenDocumentTree(), onFolderSelected::onSelected);
+                new OpenDocumentTreeUtils.Contract(), onFolderSelected::onSelected);
 
         setSupportActionBar(views.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
