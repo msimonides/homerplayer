@@ -15,9 +15,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
+import com.studio4plus.homerplayer.deviceadmin.HomerPlayerDeviceAdmin;
 import com.studio4plus.homerplayer.events.KioskModeChanged;
 import com.studio4plus.homerplayer.ui.HomeActivity;
-import com.studio4plus.homerplayer.ui.MainActivity;
 
 import javax.inject.Inject;
 

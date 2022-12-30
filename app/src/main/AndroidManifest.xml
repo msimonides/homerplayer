@@ -75,7 +75,7 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
-        <receiver android:name=".HomerPlayerDeviceAdmin"
+        <receiver android:name=".deviceadmin.HomerPlayerDeviceAdmin"
             android:label="@string/device_admin_label"
             android:description="@string/device_admin_description"
             android:exported="true">

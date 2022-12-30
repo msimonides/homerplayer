@@ -3,7 +3,7 @@
     package="com.studio4plus.homerplayer">
 
     <application>
-        <receiver android:name=".HomerPlayerDeviceAdmin"
+        <receiver android:name=".deviceadmin.HomerPlayerDeviceAdmin"
             android:permission="android.permission.BIND_DEVICE_ADMIN"
             tools:node="merge"/>
     </application>

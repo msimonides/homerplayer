@@ -5,15 +5,15 @@ import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.preference.SwitchPreference;
+
 import androidx.preference.Preference;
+import androidx.preference.SwitchPreference;
 
 import com.studio4plus.homerplayer.GlobalSettings;
 import com.studio4plus.homerplayer.HomerPlayerApplication;
-import com.studio4plus.homerplayer.HomerPlayerDeviceAdmin;
 import com.studio4plus.homerplayer.KioskModeSwitcher;
 import com.studio4plus.homerplayer.R;
+import com.studio4plus.homerplayer.deviceadmin.HomerPlayerDeviceAdmin;
 import com.studio4plus.homerplayer.events.DeviceAdminChangeEvent;
 
 import javax.inject.Inject;

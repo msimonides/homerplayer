@@ -1,4 +1,4 @@
-package com.studio4plus.homerplayer;
+package com.studio4plus.homerplayer.deviceadmin;
 
 import android.annotation.TargetApi;
 import android.app.admin.DeviceAdminReceiver;
@@ -10,9 +10,8 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 
+import com.studio4plus.homerplayer.HomerPlayerApplication;
 import com.studio4plus.homerplayer.events.DeviceAdminChangeEvent;
-
-import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
