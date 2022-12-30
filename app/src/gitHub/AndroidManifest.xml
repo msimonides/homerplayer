@@ -3,6 +3,26 @@
     package="com.studio4plus.homerplayer">
 
     <application>
+        <activity
+            android:name=".deviceadmin.GetProvisioningModeActivity"
+            android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <intent-filter>
+                <action android:name="android.app.action.GET_PROVISIONING_MODE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".deviceadmin.AdminPolicyComplianceActivity"
+            android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <intent-filter>
+                <action android:name="android.app.action.ADMIN_POLICY_COMPLIANCE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <receiver android:name=".deviceadmin.HomerPlayerDeviceAdmin"
             android:permission="android.permission.BIND_DEVICE_ADMIN"
             tools:node="merge"/>
