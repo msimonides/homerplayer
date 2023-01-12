@@ -87,7 +87,11 @@ public class AudiobooksFolderManager {
     public void removeAudiobooksFolder(@NonNull String removeFolderUri) {
         Timber.i("Removing audiobooks folder: %s", removeFolderUri);
         if (globalSettings.removeAudiobooksFolder(removeFolderUri)) {
-            contentResolver.releasePersistableUriPermission(Uri.parse(removeFolderUri), Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            try {
+                contentResolver.releasePersistableUriPermission(Uri.parse(removeFolderUri), Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } catch (Throwable e) {
+                Timber.w(e, "Error while releasing permission to folder.");
+            }
             updateFolders();
         }
     }
