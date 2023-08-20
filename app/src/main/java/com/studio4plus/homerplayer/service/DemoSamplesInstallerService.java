@@ -1,7 +1,6 @@
 package com.studio4plus.homerplayer.service;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -168,13 +167,11 @@ public class DemoSamplesInstallerService extends Service {
         Intent intent = new Intent(BROADCAST_INSTALL_STARTED_ACTION);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Notification notification = NotificationUtil.createForegroundServiceNotification(
                 getApplicationContext(),
                 R.string.demo_samples_service_notification_install,
                 android.R.drawable.stat_sys_download_done);
-        notificationManager.notify(NOTIFICATION_ID, notification);
+        startForeground(NOTIFICATION_ID, notification);
     }
 
     private void onInstallFinished() {

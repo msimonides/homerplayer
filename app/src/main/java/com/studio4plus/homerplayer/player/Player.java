@@ -11,7 +11,6 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.PlaybackParameters;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.common.base.Preconditions;
 import com.studio4plus.homerplayer.events.PlaybackErrorEvent;
 
@@ -27,7 +26,6 @@ public class Player {
 
     private final ExoPlayer exoPlayer;
     private final EventBus eventBus;
-    private ProgressiveMediaSource.Factory mediaSourceFactory;
 
     private float playbackSpeed = 1.0f;
 
