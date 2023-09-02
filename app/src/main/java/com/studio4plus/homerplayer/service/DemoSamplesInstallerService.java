@@ -104,7 +104,8 @@ public class DemoSamplesInstallerService extends Service {
                 Notification notification = NotificationUtil.createForegroundServiceNotification(
                         getApplicationContext(),
                         R.string.demo_samples_service_notification_download,
-                        android.R.drawable.stat_sys_download);
+                        android.R.drawable.stat_sys_download
+                ).build();
                 startForeground(NOTIFICATION_ID, notification);
 
                 try {
@@ -170,7 +171,8 @@ public class DemoSamplesInstallerService extends Service {
         Notification notification = NotificationUtil.createForegroundServiceNotification(
                 getApplicationContext(),
                 R.string.demo_samples_service_notification_install,
-                android.R.drawable.stat_sys_download_done);
+                android.R.drawable.stat_sys_download_done
+        ).build();
         startForeground(NOTIFICATION_ID, notification);
     }
 

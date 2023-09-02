@@ -11,6 +11,9 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.core.content.ContextCompat;
 import androidx.media.AudioAttributesCompat;
@@ -26,6 +29,7 @@ import com.studio4plus.homerplayer.events.PlaybackProgressedEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppedEvent;
 import com.studio4plus.homerplayer.events.PlaybackStoppingEvent;
 import com.studio4plus.homerplayer.model.AudioBook;
+import com.studio4plus.homerplayer.model.AudioBookManager;
 import com.studio4plus.homerplayer.player.DurationQueryController;
 import com.studio4plus.homerplayer.player.PlaybackController;
 import com.studio4plus.homerplayer.player.Player;
@@ -54,6 +58,7 @@ public class PlaybackService
     private static final PlaybackStoppingEvent PLAYBACK_STOPPING_EVENT = new PlaybackStoppingEvent();
     private static final PlaybackStoppedEvent PLAYBACK_STOPPED_EVENT = new PlaybackStoppedEvent();
 
+    @Inject public AudioBookManager audioBookManager;
     @Inject public GlobalSettings globalSettings;
     @Inject public EventBus eventBus;
 
@@ -64,6 +69,7 @@ public class PlaybackService
     private Handler handler;
     private final SleepFadeOut sleepFadeOut = new SleepFadeOut();
     private final AudioFocusRequestCompat audioFocusRequest = createAudioFocusRequest();
+    private MediaSessionCompat mediaSession;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -80,13 +86,26 @@ public class PlaybackService
         if (sensorManager != null && DeviceMotionDetector.hasSensors(sensorManager)) {
             motionDetector = new DeviceMotionDetector(sensorManager, this);
         }
+        mediaSession = new MediaSessionCompat(this, "playback");
+        mediaSession.setCallback(new MediaSessionCompat.Callback() {
+            @Override
+            public void onPause() {
+                onStop();
+            }
+
+            @Override
+            public void onStop() {
+                stopPlayback();
+            }
+        });
     }
 
     @Override
     public void onDestroy() {
         Timber.i("PlaybackService.onDestroy");
-        super.onDestroy();
         stopPlayback();
+        mediaSession = null;
+        super.onDestroy();
     }
 
     public void startPlayback(AudioBook book) {
@@ -104,7 +123,11 @@ public class PlaybackService
         Notification notification = NotificationUtil.createForegroundServiceNotification(
                 getApplicationContext(),
                 R.string.playback_service_notification,
-                android.R.drawable.ic_media_play);
+                android.R.drawable.ic_media_play
+        ).setStyle(
+                new androidx.media.app.NotificationCompat.MediaStyle()
+                        .setMediaSession(mediaSession.getSessionToken())
+        ).build();
         ContextCompat.startForegroundService(
                 this, new Intent(this, PlaybackService.class));
         startForeground(NOTIFICATION_ID, notification);
@@ -115,7 +138,12 @@ public class PlaybackService
         } else {
             Timber.i("PlaybackService.startPlayback: create AudioBookPlayback");
             playbackInProgress = new AudioBookPlayback(
-                    player, handler, book, globalSettings.getJumpBackPreferenceMs());
+                    player,
+                    mediaSession,
+                    handler,
+                    book,
+                    globalSettings.getJumpBackPreferenceMs(),
+                    globalSettings.getPlaybackSpeed());
         }
     }
 
@@ -187,11 +215,16 @@ public class PlaybackService
         }
     }
 
+    private void restartPlayback() {
+        startPlayback(audioBookManager.getCurrentBook());
+    }
+
     private void onPlaybackEnded() {
         durationQueryInProgress = null;
         playbackInProgress = null;
         if (motionDetector != null)
              motionDetector.disable();
+        mediaSession.setActive(false);
 
         stopSleepTimer();
         dropAudioFocus();
@@ -248,6 +281,9 @@ public class PlaybackService
         final @NonNull AudioBook audioBook;
         private final @NonNull PlaybackController controller;
         private final @NonNull Handler handler;
+        private final @NonNull MediaSessionCompat mediaSession;
+        private final float playbackSpeed;
+        private @NonNull PlaybackStateCompat mediaSessionState;
         private final @NonNull Runnable updatePosition = new Runnable() {
             @Override
             public void run() {
@@ -260,17 +296,33 @@ public class PlaybackService
 
         private AudioBookPlayback(
                 @NonNull Player player,
+                @NonNull MediaSessionCompat mediaSession,
                 @NonNull Handler handler,
                 @NonNull AudioBook audioBook,
-                int jumpBackMs) {
+                int jumpBackMs,
+                float playbackSpeed
+        ) {
             this.audioBook = audioBook;
             this.handler = handler;
+            this.mediaSession = mediaSession;
+            this.playbackSpeed = playbackSpeed;
 
             controller = player.createPlayback();
             controller.setObserver(this);
             AudioBook.Position position = audioBook.getLastPosition();
             long startPositionMs = Math.max(0, position.seekPosition - jumpBackMs);
             controller.start(position.uri, startPositionMs);
+            mediaSessionState = new PlaybackStateCompat.Builder()
+                    .setState(PlaybackStateCompat.STATE_BUFFERING, getCurrentTotalPositionMs(), playbackSpeed)
+                    .setActions(PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_STOP)
+                    .build();
+            mediaSession.setPlaybackState(mediaSessionState);
+            mediaSession.setMetadata(
+                    new MediaMetadataCompat.Builder()
+                            .putText(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, audioBook.getTitle())
+                            .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, audioBook.getTotalDurationMs())
+                            .build());
+            mediaSession.setActive(true);
             handler.postDelayed(updatePosition, UPDATE_TIME_MS);
             resetSleepTimer();
         }
@@ -300,6 +352,10 @@ public class PlaybackService
         public void onPlaybackProgressed(long currentPositionMs) {
             eventBus.post(new PlaybackProgressedEvent(
                     audioBook, audioBook.getLastPositionTime(currentPositionMs)));
+            mediaSessionState = new PlaybackStateCompat.Builder(mediaSessionState)
+                    .setState(PlaybackStateCompat.STATE_PLAYING, getCurrentTotalPositionMs(), playbackSpeed)
+                    .build();
+            mediaSession.setPlaybackState(mediaSessionState);
         }
 
         @Override
@@ -349,6 +405,11 @@ public class PlaybackService
             List<Uri> uris = audioBook.getFilesWithNoDuration();
             controller = player.createDurationQuery(uris);
             controller.start(this);
+            mediaSession.setMetadata(
+                    new MediaMetadataCompat.Builder()
+                            .putText(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, audioBook.getTitle())
+                            .build());
+            mediaSession.setActive(true);
         }
 
         public void stop() {
@@ -366,7 +427,12 @@ public class PlaybackService
             Preconditions.checkState(durationQueryInProgress == this);
             durationQueryInProgress = null;
             playbackInProgress = new AudioBookPlayback(
-                    player, handler, audioBook, globalSettings.getJumpBackPreferenceMs());
+                    player,
+                    mediaSession,
+                    handler,
+                    audioBook,
+                    globalSettings.getJumpBackPreferenceMs(),
+                    globalSettings.getPlaybackSpeed());
         }
 
         @Override

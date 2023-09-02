@@ -1,7 +1,6 @@
 package com.studio4plus.homerplayer.service;
 
 import android.annotation.TargetApi;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -24,7 +23,7 @@ public class NotificationUtil {
     private static final int FLAG_IMMUTABLE =
             Build.VERSION.SDK_INT < 23 ? 0 : PendingIntent.FLAG_IMMUTABLE;
 
-    static Notification createForegroundServiceNotification(
+    static NotificationCompat.Builder createForegroundServiceNotification(
             Context context, int stringId, int drawableId) {
         Intent activityIntent = new Intent(context, MainActivity.class);
         activityIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -35,8 +34,7 @@ public class NotificationUtil {
                 .setContentTitle(context.getResources().getString(stringId))
                 .setContentIntent(intent)
                 .setSmallIcon(drawableId)
-                .setOngoing(true)
-                .build();
+                .setOngoing(true);
     }
 
     @TargetApi(26)
