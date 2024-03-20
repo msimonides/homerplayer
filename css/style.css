@@ -86,6 +86,16 @@ footer a {
 	max-width: 450px;
 }
 
+.container.content:before {
+	/* Removes clearfix */
+	display: inline;
+	content: ''
+}
+
+.container.content {
+	margin-top: 4rem;
+}
+
 .page-title-header {
 	width: 100%;
 	background: no-repeat center center;
