@@ -7,6 +7,10 @@ An audio book player for the elderly and visually impaired.
 or
 [watch the video](https://www.youtube.com/watch?v=RfLkoLtxzng).
 
+Project Ended
+-------------
+This project is no longer being maintained. See [homerplayer2](https://github.com/msimonides/homerplayer2) for the successor of this app.
+
 Project Goal
 ------------
 Turn a regular Android tablet into a dedicated audio book player that can be
@@ -41,4 +45,4 @@ marcin@studio4plus.com
 
 License
 -------
-Copyright (c) 2015-2017 Marcin Simonides Licensed under the MIT license.
+Copyright (c) 2015 Marcin Simonides Licensed under the MIT license.
