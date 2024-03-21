@@ -276,6 +276,11 @@ footer {
 
 footer .row div {
 	vertical-align: bottom;
+	margin-bottom: 0.5em;
+}
+
+footer .text-left-sm {
+	font-size: 90%;
 }
 
 footer hr {
