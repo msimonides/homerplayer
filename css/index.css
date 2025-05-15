@@ -77,3 +77,12 @@ html,body {
 	text-align: center;
 }
 
+.check-new-homer {
+    text-align: center;
+}
+
+.check-new-homer a {
+	font-weight: bold;
+	color: #ffff66;
+	text-decoration: underline;
+}
